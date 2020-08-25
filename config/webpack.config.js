@@ -178,6 +178,7 @@ module.exports = function (webpackEnv) {
         // initialization, it doesn't blow up the WebpackDevServer client, and
         // changing JS code would still trigger a refresh.
       ].filter(Boolean),
+      background: [paths.appBackgroundJs],
     },
     output: {
       // The build folder.
@@ -533,6 +534,13 @@ module.exports = function (webpackEnv) {
         filename: 'index.html',
         inject: true,
         chunks: ['main'],
+        template: paths.appHtml,
+        ...htmlWebpackPluginOptions,
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'background.html',
+        inject: true,
+        chunks: ['background'],
         template: paths.appHtml,
         ...htmlWebpackPluginOptions,
       }),
