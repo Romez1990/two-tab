@@ -179,6 +179,11 @@ module.exports = function (webpackEnv) {
         // changing JS code would still trigger a refresh.
       ].filter(Boolean),
       background: [paths.appBackgroundJs],
+      popup: [
+        isEnvDevelopment &&
+          require.resolve('react-dev-utils/webpackHotDevClient'),
+        paths.appPopupJs,
+      ].filter(Boolean),
     },
     output: {
       // The build folder.
@@ -541,6 +546,13 @@ module.exports = function (webpackEnv) {
         filename: 'background.html',
         inject: true,
         chunks: ['background'],
+        template: paths.appHtml,
+        ...htmlWebpackPluginOptions,
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'popup.html',
+        inject: true,
+        chunks: ['popup'],
         template: paths.appHtml,
         ...htmlWebpackPluginOptions,
       }),
