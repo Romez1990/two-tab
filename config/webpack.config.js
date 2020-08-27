@@ -57,10 +57,13 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 const isEnvDevelopment = process.env.NODE_ENV === 'development';
 const isEnvProduction = process.env.NODE_ENV === 'production';
 
-// Variable used for enabling profiling in Production
-// passed into alias object. Uses a flag if passed into the build command
-const isEnvProductionProfile =
-  isEnvProduction && process.argv.includes('--profile');
+const isRunningDevServer = process.env.USE_DEV_SERVER === 'true';
+  const notRunningDevServer = process.env.USE_DEV_SERVER === 'false';
+
+  // Variable used for enabling profiling in Production
+  // passed into alias object. Uses a flag if passed into the build command
+  const isEnvProductionProfile =
+    isEnvProduction && process.argv.includes('--profile');
 
 // We will provide `paths.publicUrlOrPath` to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
@@ -169,7 +172,7 @@ module.exports = {
       // the line below with these two lines if you prefer the stock client:
       // require.resolve('webpack-dev-server/client') + '?/',
       // require.resolve('webpack/hot/dev-server'),
-      isEnvDevelopment &&
+      isEnvDevelopment && isRunningDevServer &&
         require.resolve('react-dev-utils/webpackHotDevClient'),
       // Finally, this is your app's code:
       paths.appIndexJs,
@@ -179,7 +182,7 @@ module.exports = {
     ].filter(Boolean),
     background: [paths.appBackgroundJs],
     popup: [
-      isEnvDevelopment &&
+      isEnvDevelopment && isRunningDevServer &&
         require.resolve('react-dev-utils/webpackHotDevClient'),
       paths.appPopupJs,
     ].filter(Boolean),
