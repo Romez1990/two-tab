@@ -26,7 +26,7 @@ const printBuildError = require('react-dev-utils/printBuildError');
 const { checkBrowsers } = require('react-dev-utils/browsersHelper');
 
 const paths = require('../config/paths');
-const configFactory = require('../config/webpack.config');
+const config = require('../config/webpack.config');
 
 const { measureFileSizesBeforeBuild } = FileSizeReporter;
 const { printFileSizesAfterBuild } = FileSizeReporter;
@@ -42,9 +42,6 @@ const isInteractive = process.stdout.isTTY;
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
   process.exit(1);
 }
-
-// Generate configuration
-const config = configFactory();
 
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
