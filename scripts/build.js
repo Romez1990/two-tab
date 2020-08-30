@@ -25,6 +25,7 @@ const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
 const printBuildError = require('react-dev-utils/printBuildError');
 const { checkBrowsers } = require('react-dev-utils/browsersHelper');
 
+const { handleWarnings } = require('./common');
 const paths = require('../config/paths');
 const config = require('../config/webpack.config');
 
@@ -62,14 +63,7 @@ checkBrowsers(paths.appPath, isInteractive)
   })
   .then(
     ({ stats, previousFileSizes, warnings }) => {
-      if (warnings.length) {
-        console.log(chalk.yellow('Compiled with warnings.\n'));
-        console.log(warnings.join('\n\n'));
-        console.log(`\nSearch for the ${chalk.underline(chalk.yellow('keywords'))} to learn more about each warning.`);
-        console.log(`To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.\n`);
-      } else {
-        console.log(chalk.green('Compiled successfully.\n'));
-      }
+      handleWarnings(warnings);
 
       console.log('File sizes after gzip:\n');
       printFileSizesAfterBuild(
