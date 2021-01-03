@@ -22,10 +22,14 @@ const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
 const printBuildError = require('react-dev-utils/printBuildError');
 const ignoredFiles = require('react-dev-utils/ignoredFiles');
+const semver = require('semver');
 const paths = require('../config/paths');
 const { handleWarnings } = require('./common');
 const config = require('../config/webpack.config');
+const getClientEnvironment = require('../config/env');
+const react = require(require.resolve('react', { paths: [paths.appPath] }));
 
+const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
 const isInteractive = process.stdout.isTTY;
 
 // Warn and crash if required files are missing
@@ -47,17 +51,13 @@ checkBrowsers(paths.appPath, isInteractive)
 
     // Start the webpack build
 
-    // We used to support resolving modules according to `NODE_PATH`.
-    // This now has been deprecated in favor of jsconfig/tsconfig.json
-    // This lets you use absolute paths in imports inside large monorepos:
-    if (process.env.NODE_PATH) {
-      console.log(
-        chalk.yellow(
-          'Setting NODE_PATH to resolve modules absolutely has been deprecated in favor of setting baseUrl in jsconfig.json (or tsconfig.json if you are using TypeScript) and will be removed in a future major release of create-react-app.',
-        ),
-      );
-      console.log();
-    }
+      if (env.raw.FAST_REFRESH && semver.lt(react.version, '16.10.0')) {
+        console.log(
+          chalk.yellow(
+            `Fast Refresh requires React 16.10 or higher. You are using React ${react.version}.`
+          )
+        );
+      }
 
     const compiler = webpack(config);
     compiler.watch(
