@@ -19,7 +19,12 @@
   ],
   "rules": {
     "prettier/prettier": "error",
-    //"no-use-before-define": "off",
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
     "class-methods-use-this": "off",
     "import/prefer-default-export": "off",
     "import/extensions": [
@@ -81,14 +86,13 @@
         "@typescript-eslint"
       ],
       "rules": {
-        //"@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/explicit-member-accessibility": "warn"
       }
     },
     {
       "files": [
-        "config/*",
-        "scripts/*"
+        "config/**/*",
+        "scripts/**/*"
       ],
       "rules": {
         "strict": "off"
@@ -96,7 +100,7 @@
     },
     {
       "files": [
-        "scripts/*"
+        "scripts/**/*"
       ],
       "rules": {
         "no-console": "off"
