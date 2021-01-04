@@ -5,6 +5,7 @@ export abstract class AppError extends Error {
   }
 
   public throw(): never {
+    // eslint-disable-next-line no-throw-literal
     throw this;
   }
 }
