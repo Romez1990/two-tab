@@ -5,6 +5,7 @@
     "jest": true
   },
   "extends": [
+    //"react-app",
     "airbnb",
     "prettier",
     "prettier/react"
@@ -18,7 +19,7 @@
   ],
   "rules": {
     "prettier/prettier": "error",
-    "no-use-before-define": "off",
+    //"no-use-before-define": "off",
     "class-methods-use-this": "off",
     "import/prefer-default-export": "off",
     "import/extensions": [
@@ -80,14 +81,14 @@
         "@typescript-eslint"
       ],
       "rules": {
-        "@typescript-eslint/no-use-before-define": "off",
+        //"@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/explicit-member-accessibility": "warn"
       }
     },
     {
       "files": [
-        "config/**/*.js",
-        "scripts/**/*.js"
+        "config/*",
+        "scripts/*"
       ],
       "rules": {
         "strict": "off"
@@ -95,7 +96,7 @@
     },
     {
       "files": [
-        "scripts/**/*.js"
+        "scripts/*"
       ],
       "rules": {
         "no-console": "off"
