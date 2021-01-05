@@ -14,7 +14,6 @@ process.on('unhandledRejection', err => {
 // Ensure environment variables are read.
 require('../config/env');
 
-
 const path = require('path');
 const chalk = require('react-dev-utils/chalk');
 const fs = require('fs-extra');
@@ -56,7 +55,7 @@ checkBrowsers(paths.appPath, isInteractive)
   .then(() =>
     // First, read the current file sizes in build directory.
     // This lets us display how much they changed later.
-     measureFileSizesBeforeBuild(paths.appBuild)
+    measureFileSizesBeforeBuild(paths.appBuild),
   )
   .then(previousFileSizes => {
     // Remove all content but keep the directory so that
@@ -72,16 +71,8 @@ checkBrowsers(paths.appPath, isInteractive)
       if (warnings.length) {
         console.log(chalk.yellow('Compiled with warnings.\n'));
         console.log(warnings.join('\n\n'));
-        console.log(
-          `\nSearch for the ${ 
-            chalk.underline(chalk.yellow('keywords')) 
-            } to learn more about each warning.`
-        );
-        console.log(
-          `To ignore, add ${ 
-            chalk.cyan('// eslint-disable-next-line') 
-            } to the line before.\n`
-        );
+        console.log(`\nSearch for the ${chalk.underline(chalk.yellow('keywords'))} to learn more about each warning.`);
+        console.log(`To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.\n`);
       } else {
         console.log(chalk.green('Compiled successfully.\n'));
       }
@@ -92,7 +83,7 @@ checkBrowsers(paths.appPath, isInteractive)
         previousFileSizes,
         paths.appBuild,
         WARN_AFTER_BUNDLE_GZIP_SIZE,
-        WARN_AFTER_CHUNK_GZIP_SIZE
+        WARN_AFTER_CHUNK_GZIP_SIZE,
       );
       console.log();
 
@@ -100,21 +91,15 @@ checkBrowsers(paths.appPath, isInteractive)
       const publicUrl = paths.publicUrlOrPath;
       const { publicPath } = config.output;
       const buildFolder = path.relative(process.cwd(), paths.appBuild);
-      printHostingInstructions(
-        appPackage,
-        publicUrl,
-        publicPath,
-        buildFolder,
-        useYarn
-      );
+      printHostingInstructions(appPackage, publicUrl, publicPath, buildFolder, useYarn);
     },
     err => {
       const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === 'true';
       if (tscCompileOnError) {
         console.log(
           chalk.yellow(
-            'Compiled with the following type errors (you may want to check these before deploying your app):\n'
-          )
+            'Compiled with the following type errors (you may want to check these before deploying your app):\n',
+          ),
         );
         printBuildError(err);
       } else {
@@ -122,7 +107,7 @@ checkBrowsers(paths.appPath, isInteractive)
         printBuildError(err);
         process.exit(1);
       }
-    }
+    },
   )
   .catch(err => {
     if (err && err.message) {
@@ -148,9 +133,7 @@ function build(previousFileSizes) {
 
         // Add additional information for postcss errors
         if (Object.prototype.hasOwnProperty.call(err, 'postcssNode')) {
-          errMessage +=
-            `\nCompileError: Begins at CSS selector ${ 
-            err.postcssNode.selector}`;
+          errMessage += `\nCompileError: Begins at CSS selector ${err.postcssNode.selector}`;
         }
 
         messages = formatWebpackMessages({
@@ -158,9 +141,7 @@ function build(previousFileSizes) {
           warnings: [],
         });
       } else {
-        messages = formatWebpackMessages(
-          stats.toJson({ all: false, warnings: true, errors: true })
-        );
+        messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
       }
       if (messages.errors.length) {
         // Only keep the first error. Others are often indicative
@@ -172,15 +153,14 @@ function build(previousFileSizes) {
       }
       if (
         process.env.CI &&
-        (typeof process.env.CI !== 'string' ||
-          process.env.CI.toLowerCase() !== 'false') &&
+        (typeof process.env.CI !== 'string' || process.env.CI.toLowerCase() !== 'false') &&
         messages.warnings.length
       ) {
         console.log(
           chalk.yellow(
             '\nTreating warnings as errors because process.env.CI = true.\n' +
-              'Most CI servers set it automatically.\n'
-          )
+              'Most CI servers set it automatically.\n',
+          ),
         );
         return reject(new Error(messages.warnings.join('\n\n')));
       }
@@ -193,7 +173,7 @@ function build(previousFileSizes) {
 
       if (writeStatsJson) {
         return bfj
-          .write(`${paths.appBuild  }/bundle-stats.json`, stats.toJson())
+          .write(`${paths.appBuild}/bundle-stats.json`, stats.toJson())
           .then(() => resolve(resolveArgs))
           .catch(error => reject(new Error(error)));
       }
