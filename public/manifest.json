@@ -6,5 +6,9 @@
   "browser_action": {
     "default_title": "Two Tab",
     "default_popup": "popup.html"
+  },
+  "background": {
+    "page": "background.html",
+    "persistent": false
   }
 }
