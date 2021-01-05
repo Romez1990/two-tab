@@ -2,5 +2,9 @@
   "name": "Two Tab",
   "version": "0.1.0",
   "description": "Saving tabs and sync between different devices",
-  "manifest_version": 2
+  "manifest_version": 2,
+  "browser_action": {
+    "default_title": "Two Tab",
+    "default_popup": "popup.html"
+  }
 }
