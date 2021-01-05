@@ -1,7 +1,7 @@
 import { ExtensionService, ExtensionServiceImpl } from '../../services/Extension';
 
 export interface ServiceContainer {
-  extensionService: ExtensionService;
+  extensionService?: ExtensionService;
 }
 
 export const serviceContainer: ServiceContainer = {

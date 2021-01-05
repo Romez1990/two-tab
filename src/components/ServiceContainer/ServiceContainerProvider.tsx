@@ -1,7 +1,11 @@
 import React, { FC } from 'react';
 import { ServiceContainerContext } from './ServiceContainerContext';
-import { serviceContainer } from './ServiceContainer';
+import { ServiceContainer, serviceContainer as serviceContainerDefault } from './ServiceContainer';
 
-export const ServiceContainerProvider: FC = ({ children }) => (
+interface Props {
+  serviceContainer?: ServiceContainer;
+}
+
+export const ServiceContainerProvider: FC<Props> = ({ serviceContainer = serviceContainerDefault, children }) => (
   <ServiceContainerContext.Provider value={serviceContainer}>{children}</ServiceContainerContext.Provider>
 );
