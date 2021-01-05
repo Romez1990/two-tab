@@ -203,6 +203,7 @@ module.exports = function (webpackEnv) {
         require.resolve('react-dev-utils/webpackHotDevClient'),
         paths.appPopupJs,
       ].filter(Boolean),
+      background: [paths.appBackgroundJs],
     },
     output: {
       // The build folder.
@@ -548,6 +549,13 @@ module.exports = function (webpackEnv) {
         filename: 'popup.html',
         inject: true,
         chunks: ['popup'],
+        template: paths.appHtml,
+        ...htmlWebpackPluginOptions,
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'background.html',
+        inject: true,
+        chunks: ['background'],
         template: paths.appHtml,
         ...htmlWebpackPluginOptions,
       }),
