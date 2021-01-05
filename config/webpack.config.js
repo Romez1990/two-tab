@@ -198,6 +198,11 @@ module.exports = function (webpackEnv) {
         // initialization, it doesn't blow up the WebpackDevServer client, and
         // changing JS code would still trigger a refresh.
       ].filter(Boolean),
+      popup: [
+        isEnvDevelopment &&
+        require.resolve('react-dev-utils/webpackHotDevClient'),
+        paths.appPopupJs,
+      ].filter(Boolean),
     },
     output: {
       // The build folder.
@@ -536,6 +541,13 @@ module.exports = function (webpackEnv) {
         filename: 'index.html',
         inject: true,
         chunks: ['main'],
+        template: paths.appHtml,
+        ...htmlWebpackPluginOptions,
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'popup.html',
+        inject: true,
+        chunks: ['popup'],
         template: paths.appHtml,
         ...htmlWebpackPluginOptions,
       }),
