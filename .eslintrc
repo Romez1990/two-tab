@@ -18,6 +18,22 @@
   ],
   "rules": {
     "prettier/prettier": "error",
+    "no-unused-vars": [
+      "warn",
+      {
+        "vars": "local",
+        "args": "all",
+        "ignoreRestSiblings": true,
+        "caughtErrors": "all"
+      }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "peerDependencies": true
+      }
+    ],
     "no-use-before-define": "off",
     "class-methods-use-this": "off",
     "import/prefer-default-export": "off",
@@ -80,14 +96,23 @@
         "@typescript-eslint"
       ],
       "rules": {
-        "@typescript-eslint/no-use-before-define": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "vars": "local",
+            "args": "all",
+            "ignoreRestSiblings": true,
+            "caughtErrors": "all"
+          }
+        ],
         "@typescript-eslint/explicit-member-accessibility": "warn"
       }
     },
     {
       "files": [
-        "config/**/*.js",
-        "scripts/**/*.js"
+        "config/**/*",
+        "scripts/**/*"
       ],
       "rules": {
         "strict": "off"
@@ -95,7 +120,7 @@
     },
     {
       "files": [
-        "scripts/**/*.js"
+        "scripts/**/*"
       ],
       "rules": {
         "no-console": "off"
