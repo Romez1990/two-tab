@@ -12,11 +12,14 @@
   "dependencies": {
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
+    "fp-ts": "^2.9.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",
+    "@babel/helper-builder-react-jsx": "^7.10.4",
+    "@babel/helper-builder-react-jsx-experimental": "^7.12.11",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.2",
     "@svgr/webpack": "5.4.0",
     "@testing-library/jest-dom": "^5.11.4",
