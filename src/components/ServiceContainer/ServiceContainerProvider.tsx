@@ -1,6 +1,9 @@
 import React, { FC } from 'react';
-import { ServiceContainerContext } from './ServiceContainerContext';
-import { ServiceContainer, serviceContainer as serviceContainerDefault } from './ServiceContainer';
+import {
+  ServiceContainer,
+  serviceContainer as serviceContainerDefault,
+  ServiceContainerContext,
+} from '../../services/ServiceContainer';
 
 interface Props {
   serviceContainer?: ServiceContainer;
