@@ -1,6 +1,4 @@
-export * from './Connection';
+export * from './MessageSender';
 export * from './MessageService';
 export * from './MessageServiceImpl';
-export * from './ConnectionService';
-export * from './ConnectionServiceImpl';
 export * from './Message';

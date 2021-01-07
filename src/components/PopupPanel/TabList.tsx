@@ -3,8 +3,8 @@ import { Formik, Form } from 'formik';
 import { Button } from '@material-ui/core';
 import { TabCheckbox } from './TabCheckbox';
 import { Tab } from '../../services/Tab';
-import { TabElement, mapTab } from './TabElement';
 import { useService } from '../../services/ServiceContainer';
+import { TabElement, mapTab } from './TabElement';
 
 interface Props {
   tabs: ReadonlyArray<Tab>;
@@ -14,6 +14,8 @@ export const TabList: FC<Props> = ({ tabs }) => {
   const tabElements = tabs.map(mapTab);
 
   const loggerService = useService('loggerService');
+
+  loggerService.log('hello from popup');
 
   function submit(values: ReadonlyArray<TabElement>): void {
     loggerService.log(values);

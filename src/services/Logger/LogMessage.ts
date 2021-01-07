@@ -1,7 +1,9 @@
-import { Message } from '../MessageService';
+import { BaseMessage } from '../MessageService/BaseMessage';
 
-export class LogMessage extends Message<unknown> {
+const messageType = 'log';
+
+export class LogMessage extends BaseMessage<typeof messageType, unknown> {
   public constructor(data: unknown) {
-    super(data);
+    super(messageType, data);
   }
 }

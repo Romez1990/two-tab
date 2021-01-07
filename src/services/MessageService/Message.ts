@@ -1,11 +1,6 @@
-export abstract class Message<T> {
-  protected constructor(data: T) {
-    this._data = data;
-  }
+import { MessageType } from './MessageType';
 
-  private readonly _data: T;
-
-  public get data(): T {
-    return this._data;
-  }
+export interface Message<TType extends MessageType, TData> {
+  readonly type: TType;
+  readonly data: TData;
 }

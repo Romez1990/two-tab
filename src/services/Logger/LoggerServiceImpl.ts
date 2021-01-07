@@ -1,14 +1,10 @@
 import { LoggerService } from './LoggerService';
 import { LoggerDriver } from './LoggerDriver';
-import { MessageService, ConnectionService, Message } from '../MessageService';
+import { MessageService } from '../MessageService';
 import { LogMessage } from './LogMessage';
 
 export class LoggerServiceImpl implements LoggerService {
-  public constructor(private readonly loggerDriver: LoggerDriver, messageService: MessageService) {
-    this.connection = messageService.connect('loggerService');
-  }
-
-  private readonly connection: ConnectionService;
+  public constructor(private readonly loggerDriver: LoggerDriver, private readonly messageService: MessageService) {}
 
   private isReceiver = false;
 
@@ -18,7 +14,7 @@ export class LoggerServiceImpl implements LoggerService {
   }
 
   private addMessageHandlers(): void {
-    this.connection.onMessage(LogMessage as typeof Message, this.log);
+    this.messageService.addHandler<LogMessage, 'log', unknown>('log', this.log.bind(this));
   }
 
   public log(data: unknown): void {
@@ -26,7 +22,7 @@ export class LoggerServiceImpl implements LoggerService {
       this.loggerDriver.log(data);
     } else {
       const message = new LogMessage(data);
-      this.connection.sendMessage(message);
+      this.messageService.sendMessage(message);
     }
   }
 }
