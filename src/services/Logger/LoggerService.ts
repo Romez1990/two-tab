@@ -1,3 +1,5 @@
-import { LoggerState } from './LoggerState';
+import { LoggerDriver } from './LoggerDriver';
 
-export type LoggerService = LoggerState;
+export interface LoggerService extends LoggerDriver {
+  registerReceiver(): void;
+}

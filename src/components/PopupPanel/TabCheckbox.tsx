@@ -1,18 +1,19 @@
-import React, { FC } from 'react';
+import React, { FC, ChangeEvent } from 'react';
 import { ListItem, ListItemIcon, ListItemText, Avatar, Checkbox } from '@material-ui/core';
-import { Tab } from '../../services/Tab';
+import { TabElement } from './TabElement';
 
 interface Props {
-  tab: Tab;
+  tab: TabElement;
+  onChange(e: ChangeEvent<HTMLInputElement>): void;
 }
 
-export const TabCheckbox: FC<Props> = ({ tab }) => {
-  const { title, favIconUrl } = tab;
+export const TabCheckbox: FC<Props> = ({ tab, onChange }) => {
+  const { title, favIconUrl, checked } = tab;
 
   return (
     <ListItem>
       <ListItemIcon>
-        <Checkbox />
+        <Checkbox checked={checked} onChange={onChange} />
       </ListItemIcon>
       <ListItemIcon>
         <Avatar src={favIconUrl} />

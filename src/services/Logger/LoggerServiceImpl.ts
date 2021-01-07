@@ -1,21 +1,32 @@
 import { LoggerService } from './LoggerService';
 import { LoggerDriver } from './LoggerDriver';
-import { LoggerState } from './LoggerState';
-import { UnregisteredLogger } from './UnregisteredLogger';
-import { RegisteredLogger } from './RegisteredLogger';
+import { MessageService, ConnectionService, Message } from '../MessageService';
+import { LogMessage } from './LogMessage';
 
 export class LoggerServiceImpl implements LoggerService {
-  public constructor() {
-    this.loggerState = new UnregisteredLogger();
+  public constructor(private readonly loggerDriver: LoggerDriver, messageService: MessageService) {
+    this.connection = messageService.connect('loggerService');
   }
 
-  private loggerState: LoggerState;
+  private readonly connection: ConnectionService;
 
-  public registerDriver(driver: LoggerDriver): void {
-    this.loggerState = new RegisteredLogger(driver);
+  private isReceiver = false;
+
+  public registerReceiver(): void {
+    this.isReceiver = true;
+    this.addMessageHandlers();
+  }
+
+  private addMessageHandlers(): void {
+    this.connection.onMessage(LogMessage as typeof Message, this.log);
   }
 
   public log(data: unknown): void {
-    this.loggerState.log(data);
+    if (this.isReceiver) {
+      this.loggerDriver.log(data);
+    } else {
+      const message = new LogMessage(data);
+      this.connection.sendMessage(message);
+    }
   }
 }

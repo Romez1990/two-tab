@@ -1,25 +1,34 @@
-import { ExtensionService, ExtensionServiceImpl } from '../Extension';
+import { ExtensionService, ChromeExtensionService } from '../Extension';
 import { TabService, TabServiceImpl, BrowserTabService, ChromeTabService } from '../Tab';
-import { LoggerService, LoggerServiceImpl } from '../Logger';
+import { LoggerService, LoggerServiceImpl, LoggerDriver, ConsoleLoggerDriver } from '../Logger';
 import { ServiceNotProvidedError } from './errors';
 import { ServiceContainer } from './ServiceContainer';
+import { MessageService, MessageServiceImpl, ChromeConnectionFactory, ConnectionFactory } from '../MessageService';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
-    this.loggerService = new LoggerServiceImpl();
+    this.connectionFactory = new ChromeConnectionFactory();
+    this.messageService = new MessageServiceImpl(this.connectionFactory);
 
-    this.extensionService = new ExtensionServiceImpl();
+    this.loggerDriver = new ConsoleLoggerDriver();
+    this.loggerService = new LoggerServiceImpl(this.loggerDriver, this.messageService);
+
+    this.extensionService = new ChromeExtensionService();
 
     this.browserTabService = new ChromeTabService();
     this.tabService = new TabServiceImpl(this.browserTabService, this.extensionService);
   }
 
-  public readonly extensionService?: ExtensionService;
+  public readonly extensionService: ExtensionService;
 
-  public readonly tabService?: TabService;
-  public readonly browserTabService?: BrowserTabService;
+  public readonly tabService: TabService;
+  public readonly browserTabService: BrowserTabService;
 
-  public readonly loggerService?: LoggerService;
+  public readonly loggerService: LoggerService;
+  public readonly loggerDriver: LoggerDriver;
+
+  public readonly messageService: MessageService;
+  public readonly connectionFactory: ConnectionFactory;
 
   public get<T extends keyof ServiceContainer>(serviceName: T): NonNullable<ServiceContainer[T]> {
     const service = this[serviceName];

@@ -1,11 +1,17 @@
 import { ExtensionService } from '../Extension';
-import { TabService } from '../Tab';
-import { BrowserTabService } from '../Tab/BrowserTab';
-import { LoggerService } from '../Logger';
+import { TabService, BrowserTabService } from '../Tab';
+import { LoggerService, LoggerDriver } from '../Logger';
+import { MessageService, ConnectionFactory } from '../MessageService';
 
 export interface ServiceContainer {
   readonly extensionService?: ExtensionService;
+
   readonly tabService?: TabService;
   readonly browserTabService?: BrowserTabService;
+
   readonly loggerService?: LoggerService;
+  readonly loggerDriver?: LoggerDriver;
+
+  readonly messageService?: MessageService;
+  readonly connectionFactory?: ConnectionFactory;
 }

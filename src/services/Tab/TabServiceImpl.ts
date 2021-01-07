@@ -2,16 +2,13 @@ import { pipe } from 'fp-ts/pipeable';
 import { Task, map } from 'fp-ts/lib/Task';
 import { filter } from 'fp-ts/lib/ReadonlyArray';
 import { fold } from 'fp-ts/lib/boolean';
-import { not } from 'fp-ts/lib/function';
-import { TabService } from './TabService';
-import { Tab } from './Tab';
-import { BrowserTabService } from './BrowserTab';
 import { ExtensionService } from '../Extension';
+import { BrowserTabService, Tab, BrowserWindow } from './BrowserTab';
+import { TabService } from './TabService';
 
 export class TabServiceImpl implements TabService {
   public constructor(private readonly browserTabService: BrowserTabService, extensionService: ExtensionService) {
     this.extensionURL = extensionService.getURL('/');
-    console.log(this.extensionURL);
   }
 
   private readonly extensionURL: string;
@@ -32,7 +29,10 @@ export class TabServiceImpl implements TabService {
   }
 
   private filterTabs(tabs: ReadonlyArray<Tab>): ReadonlyArray<Tab> {
-    return pipe(tabs, filter(not(this.isTabPinned)), filter(not(this.isTabOfExtension)));
+    return pipe(
+      tabs,
+      filter(tab => !this.isTabPinned(tab) && !this.isTabOfExtension(tab)),
+    );
   }
 
   private isTabPinned(tab: Tab): boolean {
@@ -41,5 +41,13 @@ export class TabServiceImpl implements TabService {
 
   private isTabOfExtension(tab: Tab): boolean {
     return tab.url.startsWith(this.extensionURL);
+  }
+
+  public getWindows(): Task<ReadonlyArray<BrowserWindow>> {
+    return this.browserTabService.getWindows();
+  }
+
+  public close(tabs: ReadonlyArray<Tab>): Task<void> {
+    return this.browserTabService.close(tabs);
   }
 }

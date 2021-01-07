@@ -1,2 +1,2 @@
 export * from './ExtensionService';
-export * from './ExtensionServiceImpl';
+export * from './ChromeExtensionService';
