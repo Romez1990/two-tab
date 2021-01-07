@@ -28,6 +28,15 @@
         "caughtErrors": "all"
       }
     ],
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allowAfterThis": true
+      }
+    ],
+    "no-use-before-define": "off",
+    "class-methods-use-this": "off",
+    "lines-between-class-members": "off",
     "import/no-extraneous-dependencies": [
       "error",
       {
@@ -35,9 +44,6 @@
         "peerDependencies": true
       }
     ],
-    "no-use-before-define": "off",
-    "class-methods-use-this": "off",
-    "lines-between-class-members": "off",
     "import/prefer-default-export": "off",
     "import/extensions": [
       "error",
@@ -51,10 +57,7 @@
     ],
     "react/prop-types": "off",
     "react/no-array-index-key": "off",
-    "react/jsx-fragments": [
-      "error",
-      "syntax"
-    ],
+    "react/jsx-fragments": "off",
     "react/jsx-filename-extension": [
       "error",
       {
