@@ -5,6 +5,7 @@
     "jest": true
   },
   "extends": [
+    "plugin:react/recommended",
     "airbnb",
     "prettier",
     "prettier/react"
@@ -21,7 +22,7 @@
     "no-unused-vars": [
       "warn",
       {
-        "vars": "local",
+        "vars": "all",
         "args": "all",
         "ignoreRestSiblings": true,
         "caughtErrors": "all"
@@ -36,6 +37,7 @@
     ],
     "no-use-before-define": "off",
     "class-methods-use-this": "off",
+    "lines-between-class-members": "off",
     "import/prefer-default-export": "off",
     "import/extensions": [
       "error",
@@ -47,6 +49,12 @@
         "tsx": "never"
       }
     ],
+    "react/prop-types": "off",
+    "react/no-array-index-key": "off",
+    "react/jsx-fragments": [
+      "error",
+      "syntax"
+    ],
     "react/jsx-filename-extension": [
       "error",
       {
@@ -55,12 +63,7 @@
           ".tsx"
         ]
       }
-    ],
-    "react/jsx-fragments": [
-      "error",
-      "element"
-    ],
-    "react/prop-types": "off"
+    ]
   },
   "settings": {
     "import/resolver": {
@@ -96,7 +99,6 @@
         "@typescript-eslint"
       ],
       "rules": {
-        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
           "warn",
           {
@@ -105,6 +107,17 @@
             "ignoreRestSiblings": true,
             "caughtErrors": "all"
           }
+        ],
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": [
+          "error",
+          {
+            "functions": false
+          }
+        ],
+        "no-useless-constructor": "off",
+        "@typescript-eslint/no-useless-constructor": [
+          "error"
         ],
         "@typescript-eslint/explicit-member-accessibility": "warn"
       }
