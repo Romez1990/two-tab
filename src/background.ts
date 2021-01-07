@@ -1,4 +1,7 @@
-// eslint-disable-next-line no-console
-console.log(1);
+import { serviceContainer } from './services/ServiceContainer';
+import { ConsoleLoggerDriver } from './services/Logger';
 
-export {};
+const loggerService = serviceContainer.get('loggerService');
+const consoleLoggerDriver = new ConsoleLoggerDriver();
+
+loggerService.registerDriver(consoleLoggerDriver);
