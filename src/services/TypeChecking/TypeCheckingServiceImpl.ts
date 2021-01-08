@@ -1,5 +1,5 @@
-import { pipe } from 'fp-ts/lib/pipeable';
-import { Either, mapLeft, getOrElseW } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/function';
+import { Either, mapLeft, getOrElseW } from 'fp-ts/Either';
 import { Type } from 'io-ts';
 import { TypeCheckingError } from './TypeCheckingError';
 import { TypeCheckingService } from './TypeCheckingService';

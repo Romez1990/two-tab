@@ -1,6 +1,6 @@
-import { Task } from 'fp-ts/lib/Task';
-import { map, toArray } from 'fp-ts/lib/ReadonlyArray';
-import { pipe } from 'fp-ts/pipeable';
+import { Task } from 'fp-ts/Task';
+import { map, toArray } from 'fp-ts/ReadonlyArray';
+import { pipe } from 'fp-ts/function';
 import { BrowserTabService } from './BrowserTabService';
 import { Tab } from './Tab';
 import { BrowserWindow } from './BrowserWindow';

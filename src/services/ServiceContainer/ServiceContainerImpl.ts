@@ -4,12 +4,15 @@ import { LoggerService, LoggerServiceImpl, LoggerDriver, ConsoleLoggerDriver } f
 import { ServiceNotProvidedError } from './Errors';
 import { ServiceContainer } from './ServiceContainer';
 import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../MessageService';
+import { KeyPressingService, KeyPressingServiceImpl } from '../KeyPressingService';
 import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
     this.errorReporter = new ErrorReporterImpl();
     this.typeCheckingService = new TypeCheckingServiceImpl(this.errorReporter);
+
+    this.keyPressingService = new KeyPressingServiceImpl(window);
 
     this.messageSender = new ChromeMessageSender();
     this.messageService = new MessageServiceImpl(this.messageSender, this.typeCheckingService);
@@ -33,6 +36,8 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly messageService: MessageService;
   public readonly messageSender: MessageSender;
+
+  public readonly keyPressingService: KeyPressingService;
 
   public readonly typeCheckingService: TypeCheckingService;
   public readonly errorReporter: ErrorReporter;

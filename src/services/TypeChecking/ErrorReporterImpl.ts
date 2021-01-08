@@ -1,6 +1,6 @@
-import { pipe } from 'fp-ts/lib/pipeable';
-import { map, filter, last, compact } from 'fp-ts/lib/ReadonlyArray';
-import { Option, map as mapO } from 'fp-ts/lib/Option';
+import { pipe } from 'fp-ts/function';
+import { map, filter, last, compact } from 'fp-ts/ReadonlyArray';
+import { Option, map as mapO } from 'fp-ts/Option';
 import { Errors, ContextEntry, ValidationError } from 'io-ts';
 import { join } from '../Utils/fp-ts/ReadonlyArray';
 import { ErrorReporter } from './ErrorReporter';

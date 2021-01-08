@@ -2,6 +2,7 @@ import { ExtensionService } from '../Extension';
 import { TabService, BrowserTabService } from '../Tab';
 import { LoggerService, LoggerDriver } from '../Logger';
 import { MessageService, MessageSender } from '../MessageService';
+import { KeyPressingService } from '../KeyPressingService';
 import { TypeCheckingService, ErrorReporter } from '../TypeChecking';
 
 export interface ServiceContainer {
@@ -15,6 +16,8 @@ export interface ServiceContainer {
 
   readonly messageService?: MessageService;
   readonly messageSender?: MessageSender;
+
+  readonly keyPressingService?: KeyPressingService;
 
   readonly typeCheckingService?: TypeCheckingService;
   readonly errorReporter?: ErrorReporter;

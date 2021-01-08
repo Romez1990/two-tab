@@ -1,11 +1,13 @@
 import React, { FC, ReactNode } from 'react';
 import { Formik, Form, FormikHelpers } from 'formik';
-import { pipe } from 'fp-ts/pipeable';
-import { filter, map } from 'fp-ts/ReadonlyArray';
 import { Button } from '@material-ui/core';
-import { TabElement } from './TabElement';
-import { Tab } from '../../services/Tab';
+import { pipe } from 'fp-ts/function';
+import { filter, map, mapWithIndex, difference } from 'fp-ts/ReadonlyArray';
 import { TabList } from './TabList';
+import { useService } from '../../services/ServiceContainer';
+import { Tab } from '../../services/Tab';
+import { inRange } from '../../services/Utils/Math';
+import { TabElement, toTabElement, toTab, eqTab } from './TabElement';
 
 interface Props {
   readonly tabs: ReadonlyArray<Tab>;
@@ -17,14 +19,13 @@ interface Values {
 }
 
 export const PopupForm: FC<Props> = ({ tabs, onSave }) => {
-  const tabElements = pipe(
-    tabs,
-    map(tab => new TabElement(tab)),
-  );
+  const loggerService = useService('loggerService');
 
   const initialValues = {
-    tabs: tabElements,
+    tabs: pipe(tabs, map(toTabElement)),
   };
+
+  loggerService.log('PopupForm render');
 
   function submit(values: Values, { setValues }: FormikHelpers<Values>): void {
     const checkedTabs = pipe(
@@ -35,38 +36,41 @@ export const PopupForm: FC<Props> = ({ tabs, onSave }) => {
       ...oldValues,
       tabs: removeCheckedTabs(oldValues.tabs, checkedTabs),
     }));
-    onSave(
-      pipe(
-        checkedTabs,
-        map(tabElement => tabElement.toTab()),
-      ),
-    );
+    onSave(pipe(checkedTabs, map(toTab)));
   }
 
   function removeCheckedTabs(
     oldTabs: ReadonlyArray<TabElement>,
     checkedTabs: ReadonlyArray<TabElement>,
   ): ReadonlyArray<TabElement> {
-    const checkedTabIds = pipe(
-      checkedTabs,
-      map(tab => tab.id),
-    );
-    return pipe(
-      oldTabs,
-      filter(tab => !checkedTabIds.includes(tab.id)),
-    );
+    return difference(eqTab)(oldTabs, checkedTabs);
   }
 
   return (
     <Formik<Values> initialValues={initialValues} onSubmit={submit}>
-      {({ values, handleChange }): ReactNode => (
-        <Form>
-          <TabList name="tabs" tabs={values.tabs} onChange={handleChange} />
-          <Button type="submit" variant="contained" color="primary">
-            Save
-          </Button>
-        </Form>
-      )}
+      {({ values, setValues, handleChange }): ReactNode => {
+        function changeRange(start: number, end: number): void {
+          setValues(oldValues => ({
+            ...oldValues,
+            tabs: pipe(
+              oldValues.tabs,
+              mapWithIndex((i, tab) => ({
+                ...tab,
+                checked: inRange(i, start, end),
+              })),
+            ),
+          }));
+        }
+
+        return (
+          <Form>
+            <TabList name="tabs" tabs={values.tabs} onChange={handleChange} onChangeRange={changeRange} />
+            <Button type="submit" variant="contained" color="primary">
+              Save
+            </Button>
+          </Form>
+        );
+      }}
     </Formik>
   );
 };

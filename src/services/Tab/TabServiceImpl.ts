@@ -1,7 +1,7 @@
-import { pipe } from 'fp-ts/pipeable';
-import { Task, map } from 'fp-ts/lib/Task';
-import { filter } from 'fp-ts/lib/ReadonlyArray';
-import { fold } from 'fp-ts/lib/boolean';
+import { pipe } from 'fp-ts/function';
+import { Task, map } from 'fp-ts/Task';
+import { filter } from 'fp-ts/ReadonlyArray';
+import { fold } from 'fp-ts/boolean';
 import { ExtensionService } from '../Extension';
 import { BrowserTabService, Tab, BrowserWindow } from './BrowserTab';
 import { TabService } from './TabService';

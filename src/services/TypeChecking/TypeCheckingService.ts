@@ -1,5 +1,5 @@
 import { Type } from 'io-ts';
-import { Either } from 'fp-ts/lib/Either';
+import { Either } from 'fp-ts/Either';
 import { TypeCheckingError } from './TypeCheckingError';
 
 export interface TypeCheckingService {
