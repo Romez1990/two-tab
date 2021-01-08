@@ -17,13 +17,9 @@ export const PopupPanel: FC = () => {
     getTabs();
   }, []);
 
-  async function getTabs(): Promise<void> {
-    setTabs(await run(tabService.getTabsInCurrentWindow(false)));
-  }
+  const getTabs = async (): Promise<void> => setTabs(await run(tabService.getTabsInCurrentWindow(false)));
 
-  async function save(checkedTabs: ReadonlyArray<Tab>): Promise<void> {
-    await run(tabService.close(checkedTabs));
-  }
+  const save = async (checkedTabs: ReadonlyArray<Tab>): Promise<void> => run(tabService.close(checkedTabs));
 
   return (
     <>

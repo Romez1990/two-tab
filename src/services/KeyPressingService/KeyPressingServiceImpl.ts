@@ -22,7 +22,5 @@ export class KeyPressingServiceImpl implements KeyPressingService {
     this.keyStates[key] = KeyState.NotPressed;
   }
 
-  private changeKeyName(key: string): Key {
-    return key.toLowerCase() as Key;
-  }
+  private changeKeyName = (key: string): Key => key.toLowerCase() as Key;
 }

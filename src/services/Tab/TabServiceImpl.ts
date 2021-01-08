@@ -13,8 +13,8 @@ export class TabServiceImpl implements TabService {
 
   private readonly extensionURL: string;
 
-  public getTabsInCurrentWindow(all: boolean): Task<ReadonlyArray<Tab>> {
-    return pipe(
+  public getTabsInCurrentWindow = (all: boolean): Task<ReadonlyArray<Tab>> =>
+    pipe(
       this.browserTabService.getTabsInCurrentWindow(),
       map(tabs =>
         pipe(
@@ -26,28 +26,18 @@ export class TabServiceImpl implements TabService {
         ),
       ),
     );
-  }
 
-  private filterTabs(tabs: ReadonlyArray<Tab>): ReadonlyArray<Tab> {
-    return pipe(
+  private filterTabs = (tabs: ReadonlyArray<Tab>): ReadonlyArray<Tab> =>
+    pipe(
       tabs,
       filter(tab => !this.isTabPinned(tab) && !this.isTabOfExtension(tab)),
     );
-  }
 
-  private isTabPinned(tab: Tab): boolean {
-    return tab.pinned;
-  }
+  private isTabPinned = (tab: Tab): boolean => tab.pinned;
 
-  private isTabOfExtension(tab: Tab): boolean {
-    return tab.url.startsWith(this.extensionURL);
-  }
+  private isTabOfExtension = (tab: Tab): boolean => tab.url.startsWith(this.extensionURL);
 
-  public getWindows(): Task<ReadonlyArray<BrowserWindow>> {
-    return this.browserTabService.getWindows();
-  }
+  public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabService.getWindows();
 
-  public close(tabs: ReadonlyArray<Tab>): Task<void> {
-    return this.browserTabService.close(tabs);
-  }
+  public close = (tabs: ReadonlyArray<Tab>): Task<void> => this.browserTabService.close(tabs);
 }

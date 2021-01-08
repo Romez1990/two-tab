@@ -49,7 +49,7 @@ export const PopupForm: FC<Props> = ({ tabs, onSave }) => {
   return (
     <Formik<Values> initialValues={initialValues} onSubmit={submit}>
       {({ values, setValues, handleChange }): ReactNode => {
-        function changeRange(start: number, end: number): void {
+        const changeRange = (start: number, end: number): void =>
           setValues(oldValues => ({
             ...oldValues,
             tabs: pipe(
@@ -60,7 +60,6 @@ export const PopupForm: FC<Props> = ({ tabs, onSave }) => {
               })),
             ),
           }));
-        }
 
         return (
           <Form>

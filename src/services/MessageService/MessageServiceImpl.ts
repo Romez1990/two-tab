@@ -21,18 +21,18 @@ export class MessageServiceImpl implements MessageService {
 
   private readonly handlers = new Map<MessageType, Handler<unknown>>();
 
-  public addHandler<TM extends Message<TType, TData>, TType extends MessageType, TData>(
-    messageType: TType,
-    handler: (data: TData) => void,
-  ): void {
+  public addHandler = <TM extends Message<MessageType, unknown>>() => (
+    messageType: TM['type'],
+    handler: (data: TM['data']) => void,
+  ): void => {
     if (this.handlers.has(messageType)) {
       throw new HandlerAlreadyAddedError(messageType);
     }
     this.handlers.set(messageType, handler as Handler<unknown>);
-  }
+  };
 
   private handleData(data: unknown): void {
-    const message = this.typeCheckingService.checkAndThrow(MessageT, data);
+    const message = this.typeCheckingService.checkAndThrow(MessageT)(data);
     this.handleMessage(message);
   }
 

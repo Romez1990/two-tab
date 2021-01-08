@@ -6,9 +6,7 @@ import { join } from '../Utils/fp-ts/ReadonlyArray';
 import { ErrorReporter } from './ErrorReporter';
 
 export class ErrorReporterImpl implements ErrorReporter {
-  public report(errs: Errors): ReadonlyArray<string> {
-    return pipe(errs, map(this.getMessage.bind(this)), compact);
-  }
+  public report = (errs: Errors): ReadonlyArray<string> => pipe(errs, map(this.getMessage.bind(this)), compact);
 
   private getMessage(err: ValidationError): Option<string> {
     const { context } = err;
@@ -25,12 +23,11 @@ export class ErrorReporterImpl implements ErrorReporter {
     );
   }
 
-  private getPath(context: ReadonlyArray<ContextEntry>): string {
-    return pipe(
+  private getPath = (context: ReadonlyArray<ContextEntry>): string =>
+    pipe(
       context,
       map(c => c.key),
       filter(key => key.length > 0),
       join('.'),
     );
-  }
 }

@@ -14,7 +14,7 @@ export class LoggerServiceImpl implements LoggerService {
   }
 
   private addMessageHandlers(): void {
-    this.messageService.addHandler<LogMessage, 'log', unknown>('log', this.log.bind(this));
+    this.messageService.addHandler<LogMessage>()('log', this.log.bind(this));
   }
 
   public log(data: unknown): void {
