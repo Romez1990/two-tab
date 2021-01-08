@@ -1,4 +1,4 @@
-import { Task } from 'fp-ts/Task';
+import { Task } from 'fp-ts/lib/Task';
 import { Tab, BrowserWindow } from './BrowserTab';
 
 export interface TabService {

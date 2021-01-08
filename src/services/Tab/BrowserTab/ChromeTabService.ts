@@ -6,9 +6,9 @@ import { Tab } from './Tab';
 import { BrowserWindow } from './BrowserWindow';
 import { OpenProperties } from './OpenProperties';
 import { LoggerService } from '../../Logger';
-
-type ChromeTab = chrome.tabs.Tab;
-type ChromeWindow = chrome.windows.Window;
+import { ChromeTab } from './ChromeTab';
+import { ChromeWindow } from './ChromeWindow';
+import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
 
 export class ChromeTabService implements BrowserTabService {
   public constructor(private readonly loggerService: LoggerService) {}
@@ -49,7 +49,7 @@ export class ChromeTabService implements BrowserTabService {
     const { id, windowId, title, url, favIconUrl, pinned } = tab;
     if (typeof id === 'undefined' || typeof title === 'undefined' || typeof url === 'undefined') {
       this.loggerService.log(tab);
-      throw new Error();
+      throw new InvalidChromeTabError(tab);
     }
     return {
       id,
@@ -65,7 +65,7 @@ export class ChromeTabService implements BrowserTabService {
     const { id, incognito, focused, tabs } = window;
     if (typeof tabs === 'undefined') {
       this.loggerService.log(tabs);
-      throw new Error();
+      throw new InvalidChromeWindowError(window);
     }
     return {
       id,

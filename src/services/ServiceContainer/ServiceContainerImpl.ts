@@ -1,14 +1,18 @@
 import { ExtensionService, ChromeExtensionService } from '../Extension';
 import { TabService, TabServiceImpl, BrowserTabService, ChromeTabService } from '../Tab';
 import { LoggerService, LoggerServiceImpl, LoggerDriver, ConsoleLoggerDriver } from '../Logger';
-import { ServiceNotProvidedError } from './errors';
+import { ServiceNotProvidedError } from './Errors';
 import { ServiceContainer } from './ServiceContainer';
 import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../MessageService';
+import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
+    this.errorReporter = new ErrorReporterImpl();
+    this.typeCheckingService = new TypeCheckingServiceImpl(this.errorReporter);
+
     this.messageSender = new ChromeMessageSender();
-    this.messageService = new MessageServiceImpl(this.messageSender);
+    this.messageService = new MessageServiceImpl(this.messageSender, this.typeCheckingService);
 
     this.loggerDriver = new ConsoleLoggerDriver();
     this.loggerService = new LoggerServiceImpl(this.loggerDriver, this.messageService);
@@ -29,6 +33,9 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly messageService: MessageService;
   public readonly messageSender: MessageSender;
+
+  public readonly typeCheckingService: TypeCheckingService;
+  public readonly errorReporter: ErrorReporter;
 
   public get<T extends keyof ServiceContainer>(serviceName: T): NonNullable<ServiceContainer[T]> {
     const service = this[serviceName];

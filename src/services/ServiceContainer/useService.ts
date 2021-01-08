@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { ServiceContainer } from './ServiceContainer';
 import { ServiceContainerContext } from './ServiceContainerContext';
-import { ServiceContainerNotProvidedError, ServiceNotProvidedError } from './errors';
+import { ServiceContainerNotProvidedError, ServiceNotProvidedError } from './Errors';
 
 function useServiceContainer(): ServiceContainer {
   const serviceContainer = useContext(ServiceContainerContext);

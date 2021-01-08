@@ -1,40 +1,42 @@
 import React, { FC, ReactNode } from 'react';
 import { Formik, Form } from 'formik';
-import { Button } from '@material-ui/core';
-import { TabCheckbox } from './TabCheckbox';
+import { List, Button } from '@material-ui/core';
+import { pipe } from 'fp-ts/lib/pipeable';
+import { map, filter } from 'fp-ts/lib/ReadonlyArray';
+import { TabItem } from './TabItem';
 import { Tab } from '../../services/Tab';
-import { useService } from '../../services/ServiceContainer';
-import { TabElement, mapTab } from './TabElement';
+import { TabElement } from './TabElement';
 
 interface Props {
   tabs: ReadonlyArray<Tab>;
+  onSave(checkedTabs: ReadonlyArray<Tab>): void;
 }
 
-export const TabList: FC<Props> = ({ tabs }) => {
-  const tabElements = tabs.map(mapTab);
-
-  const loggerService = useService('loggerService');
-
-  loggerService.log('hello from popup');
+export const TabList: FC<Props> = ({ tabs, onSave }) => {
+  const tabElements = pipe(
+    tabs,
+    map(tab => new TabElement(tab)),
+  );
 
   function submit(values: ReadonlyArray<TabElement>): void {
-    loggerService.log(values);
+    pipe(
+      values,
+      filter(tab => tab.checked),
+      map(tabElement => tabElement.toTab()),
+      onSave,
+    );
   }
 
   return (
     <Formik<ReadonlyArray<TabElement>> initialValues={tabElements} onSubmit={submit}>
-      {({ values }): ReactNode => (
+      {({ values, handleChange }): ReactNode => (
         <Form>
-          {values.map((tab, i) => (
-            <TabCheckbox
-              key={i}
-              tab={tab}
-              onChange={e => {
-                loggerService.log(e);
-              }}
-            />
-          ))}
-          <Button variant="contained" color="primary">
+          <List>
+            {values.map((tab, i) => (
+              <TabItem key={i} name={i} tab={tab} onChange={handleChange} />
+            ))}
+          </List>
+          <Button type="submit" variant="contained" color="primary">
             Submit
           </Button>
         </Form>

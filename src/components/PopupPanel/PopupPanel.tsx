@@ -1,42 +1,49 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Button, CircularProgress, Container, List } from '@material-ui/core';
+import { CircularProgress, Button } from '@material-ui/core';
+import { pipe } from 'fp-ts/lib/pipeable';
+import { map, filter } from 'fp-ts/lib/ReadonlyArray';
 import { TabList } from './TabList';
 import { useService } from '../../services/ServiceContainer';
 import { Tab } from '../../services/Tab';
-import { run } from '../../services/Utis/fp-ts/Task';
-import { MessageServiceImpl, ChromeMessageSender } from '../../services/MessageService';
+import { run } from '../../services/Utils/fp-ts/Task';
 
 export const PopupPanel: FC = () => {
   const extensionService = useService('extensionService');
   const tabService = useService('tabService');
-  const loggerService = useService('loggerService');
 
   const appUrl = extensionService.getURL('index.html');
 
   const [tabs, setTabs] = useState<ReadonlyArray<Tab> | null>(null);
 
-  const [number, setNumber] = useState(4);
-
   useEffect(() => {
-    // setNumber(5);
-    // getTabs().then();
-    // const messageSender = new ChromeMessageSender();
-    // const messageService = new MessageServiceImpl(messageSender);
-    // messageService.sendMessage({ type: 'test', data: { greeting: 'hello' } });
-  });
-
-  loggerService.log(`number ${number}`);
+    getTabs();
+  }, []);
 
   async function getTabs(): Promise<void> {
     setTabs(await run(tabService.getTabsInCurrentWindow(false)));
   }
 
+  async function save(checkedTabs: ReadonlyArray<Tab>): Promise<void> {
+    await run(tabService.close(checkedTabs));
+    const checkedTabIds = pipe(
+      checkedTabs,
+      map(tab => tab.id),
+    );
+    setTabs(oldTabs => {
+      if (oldTabs === null) throw new Error();
+      return pipe(
+        oldTabs,
+        filter(tab => !checkedTabIds.includes(tab.id)),
+      );
+    });
+  }
+
   return (
-    <Container maxWidth="md" fixed>
+    <>
       <Button variant="contained" color="primary" href={appUrl} target="_blank">
         Open in full screen
       </Button>
-      <List>{tabs === null ? <CircularProgress /> : <TabList tabs={tabs} />}</List>
-    </Container>
+      {tabs === null ? <CircularProgress /> : <TabList tabs={tabs} onSave={save} />}
+    </>
   );
 };
