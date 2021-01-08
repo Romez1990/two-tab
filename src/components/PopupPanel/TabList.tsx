@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC, useEffect } from 'react';
 import { List } from '@material-ui/core';
 import { TabItem } from './TabItem';
 import { TabElement } from './TabElement';
@@ -12,10 +12,14 @@ interface Props {
   onChangeRange(start: number, end: number): void;
 }
 
-let lastCheckIndex = 0;
+let lastCheckIndex: number;
 
 export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange }) => {
   const keyPressingService = useService('keyPressingService');
+
+  useEffect((): void => {
+    lastCheckIndex = 0;
+  }, []);
 
   const rangeKey: Key = 'shift';
 
