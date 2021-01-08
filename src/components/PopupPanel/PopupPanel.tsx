@@ -1,8 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { CircularProgress, Button } from '@material-ui/core';
-import { pipe } from 'fp-ts/lib/pipeable';
-import { map, filter } from 'fp-ts/lib/ReadonlyArray';
-import { TabList } from './TabList';
+import { PopupForm } from './PopupForm';
 import { useService } from '../../services/ServiceContainer';
 import { Tab } from '../../services/Tab';
 import { run } from '../../services/Utils/fp-ts/Task';
@@ -25,17 +23,6 @@ export const PopupPanel: FC = () => {
 
   async function save(checkedTabs: ReadonlyArray<Tab>): Promise<void> {
     await run(tabService.close(checkedTabs));
-    const checkedTabIds = pipe(
-      checkedTabs,
-      map(tab => tab.id),
-    );
-    setTabs(oldTabs => {
-      if (oldTabs === null) throw new Error();
-      return pipe(
-        oldTabs,
-        filter(tab => !checkedTabIds.includes(tab.id)),
-      );
-    });
   }
 
   return (
@@ -43,7 +30,7 @@ export const PopupPanel: FC = () => {
       <Button variant="contained" color="primary" href={appUrl} target="_blank">
         Open in full screen
       </Button>
-      {tabs === null ? <CircularProgress /> : <TabList tabs={tabs} onSave={save} />}
+      {tabs === null ? <CircularProgress /> : <PopupForm tabs={tabs} onSave={save} />}
     </>
   );
 };

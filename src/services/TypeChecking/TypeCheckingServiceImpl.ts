@@ -1,7 +1,6 @@
 import { pipe } from 'fp-ts/lib/pipeable';
 import { Either, mapLeft, getOrElseW } from 'fp-ts/lib/Either';
 import { Type } from 'io-ts';
-import { PathReporter } from 'io-ts/lib/PathReporter';
 import { TypeCheckingError } from './TypeCheckingError';
 import { TypeCheckingService } from './TypeCheckingService';
 import { ErrorReporter } from './ErrorReporter';

@@ -12,8 +12,8 @@ import {
 import { TabElement } from './TabElement';
 
 interface Props {
-  name: number;
-  tab: TabElement;
+  readonly name: string;
+  readonly tab: TabElement;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -27,9 +27,7 @@ const useStyles = makeStyles(({ spacing }: Theme) =>
   }),
 );
 
-export const TabItem: FC<Props> = ({ name, tab, onChange }) => {
-  const { title, favIconUrl, checked } = tab;
-
+export const TabItem: FC<Props> = ({ name, tab: { title, favIconUrl, checked }, onChange }) => {
   const classes = useStyles();
 
   return (
