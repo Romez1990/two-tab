@@ -31,7 +31,6 @@ const paths = require('../config/paths');
 const configFactory = require('../config/webpack.config');
 const { checkWarnings, copyPublicFolder } = require('./common');
 
-const { measureFileSizesBeforeBuild } = FileSizeReporter;
 const { printFileSizesAfterBuild } = FileSizeReporter;
 const useYarn = fs.existsSync(paths.yarnLockFile);
 
@@ -55,12 +54,7 @@ const config = configFactory('development');
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
 checkBrowsers(paths.appPath, isInteractive)
-  .then(() =>
-    // First, read the current file sizes in build directory.
-    // This lets us display how much they changed later.
-    measureFileSizesBeforeBuild(paths.appBuild),
-  )
-  .then(previousFileSizes => {
+  .then(() => {
     // Remove all content but keep the directory so that
     // if you're in it, you don't end up in Trash
     fs.emptyDirSync(paths.appBuild);
