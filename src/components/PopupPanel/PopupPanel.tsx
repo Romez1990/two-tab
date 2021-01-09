@@ -6,10 +6,7 @@ import { Tab } from '../../services/Tab';
 import { run } from '../../services/Utils/fp-ts/Task';
 
 export const PopupPanel: FC = () => {
-  const extensionService = useService('extensionService');
-  const tabService = useService('tabService');
-
-  const appUrl = extensionService.getURL('index.html');
+  const popupService = useService('popupService');
 
   const [tabs, setTabs] = useState<ReadonlyArray<Tab> | null>(null);
 
@@ -17,9 +14,11 @@ export const PopupPanel: FC = () => {
     getTabs();
   }, []);
 
-  const getTabs = async (): Promise<void> => setTabs(await run(tabService.getTabsInCurrentWindow(false)));
+  const getTabs = async (): Promise<void> => setTabs(await run(popupService.getTabsInCurrentWindow(false)));
 
-  const save = async (checkedTabs: ReadonlyArray<Tab>): Promise<void> => run(tabService.close(checkedTabs));
+  const save = async (checkedTabs: ReadonlyArray<Tab>): Promise<void> => run(popupService.saveTabs(checkedTabs));
+
+  const { appUrl } = popupService;
 
   return (
     <>

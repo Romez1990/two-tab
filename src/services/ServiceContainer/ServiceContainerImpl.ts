@@ -1,11 +1,12 @@
+import { PopupService, PopupServiceImpl } from '../Popup';
 import { ExtensionService, ChromeExtensionService } from '../Extension';
 import { TabService, TabServiceImpl, BrowserTabService, ChromeTabService } from '../Tab';
 import { LoggerService, LoggerServiceImpl, LoggerDriver, ConsoleLoggerDriver } from '../Logger';
-import { ServiceNotProvidedError } from './Errors';
-import { ServiceContainer } from './ServiceContainer';
 import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../MessageService';
 import { KeyPressingService, KeyPressingServiceImpl } from '../KeyPressingService';
 import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
+import { ServiceContainer } from './ServiceContainer';
+import { ServiceNotProvidedError } from './Errors';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
@@ -24,7 +25,11 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.browserTabService = new ChromeTabService(this.loggerService);
     this.tabService = new TabServiceImpl(this.browserTabService, this.extensionService);
+
+    this.popupService = new PopupServiceImpl(this.extensionService, this.tabService);
   }
+
+  public readonly popupService: PopupService;
 
   public readonly extensionService: ExtensionService;
 
