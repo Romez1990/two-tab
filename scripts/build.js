@@ -29,6 +29,7 @@ const printBuildError = require('react-dev-utils/printBuildError');
 const { checkBrowsers } = require('react-dev-utils/browsersHelper');
 const paths = require('../config/paths');
 const configFactory = require('../config/webpack.config');
+const { checkWarnings, copyPublicFolder } = require('./common');
 
 const { measureFileSizesBeforeBuild } = FileSizeReporter;
 const { printFileSizesAfterBuild } = FileSizeReporter;
@@ -70,14 +71,7 @@ checkBrowsers(paths.appPath, isInteractive)
   })
   .then(
     ({ stats, previousFileSizes, warnings }) => {
-      if (warnings.length) {
-        console.log(chalk.yellow('Compiled with warnings.\n'));
-        console.log(warnings.join('\n\n'));
-        console.log(`\nSearch for the ${chalk.underline(chalk.yellow('keywords'))} to learn more about each warning.`);
-        console.log(`To ignore, add ${chalk.cyan('// eslint-disable-next-line')} to the line before.\n`);
-      } else {
-        console.log(chalk.green('Compiled successfully.\n'));
-      }
+      checkWarnings(warnings);
 
       console.log('File sizes after gzip:\n');
       printFileSizesAfterBuild(
@@ -182,12 +176,5 @@ function build(previousFileSizes) {
 
       return resolve(resolveArgs);
     });
-  });
-}
-
-function copyPublicFolder() {
-  fs.copySync(paths.appPublic, paths.appBuild, {
-    dereference: true,
-    filter: file => file !== paths.appHtml,
   });
 }
