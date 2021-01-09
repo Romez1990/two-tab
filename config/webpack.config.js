@@ -71,6 +71,8 @@ module.exports = function (webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
+  const isRunningDevServer = process.env.USE_DEV_SERVER === 'true';
+
   // Variable used for enabling profiling in Production
   // passed into alias object. Uses a flag if passed into the build command
   const isEnvProductionProfile = isEnvProduction && process.argv.includes('--profile');
@@ -170,7 +172,7 @@ module.exports = function (webpackEnv) {
         //
         // When using the experimental react-refresh integration,
         // the webpack plugin takes care of injecting the dev client for us.
-        isEnvDevelopment && !shouldUseReactRefresh && webpackDevClientEntry,
+        isEnvDevelopment && isRunningDevServer && !shouldUseReactRefresh && webpackDevClientEntry,
         // Finally, this is your app's code:
         paths.appMainJs,
         // We include the app code last so that if there is a runtime error during
@@ -388,7 +390,7 @@ module.exports = function (webpackEnv) {
                       },
                     },
                   ],
-                  isEnvDevelopment && shouldUseReactRefresh && require.resolve('react-refresh/babel'),
+                  isEnvDevelopment && isRunningDevServer && shouldUseReactRefresh && require.resolve('react-refresh/babel'),
                 ].filter(Boolean),
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
@@ -551,10 +553,11 @@ module.exports = function (webpackEnv) {
       // Otherwise React will be compiled in the very slow development mode.
       new webpack.DefinePlugin(env.stringified),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
-      isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
+      isEnvDevelopment && isRunningDevServer && new webpack.HotModuleReplacementPlugin(),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/master/packages/react-refresh
       isEnvDevelopment &&
+        isRunningDevServer &&
         shouldUseReactRefresh &&
         new ReactRefreshWebpackPlugin({
           overlay: {
