@@ -17,9 +17,9 @@ export class LoggerServiceImpl implements LoggerService {
     this.messageService.addHandler<LogMessage>()('log', this.log.bind(this));
   }
 
-  public log(data: unknown): void {
+  public log(...data: ReadonlyArray<unknown>): void {
     if (this.isReceiver) {
-      this.loggerDriver.log(data);
+      this.loggerDriver.log(...data);
     } else {
       const message = new LogMessage(data);
       this.messageService.sendMessage(message);

@@ -1,3 +1,3 @@
 export interface LoggerDriver {
-  log(data: unknown): void;
+  log(...data: ReadonlyArray<unknown>): void;
 }
