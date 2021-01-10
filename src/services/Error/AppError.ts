@@ -10,4 +10,4 @@ export abstract class AppError extends Error {
   }
 }
 
-export const throwErr = (err: AppError): never => err.throw();
+export const throwError = (error: AppError): never => error.throw();

@@ -1,28 +1,36 @@
 import { LoggerService } from './LoggerService';
-import { LoggerDriver } from './LoggerDriver';
-import { MessageService } from '../MessageService';
-import { LogMessage } from './LogMessage';
+import { LoggerState, LoggerStateFactory } from './LoggerState';
+import { ReceiverAlreadyRegisteredError } from './ReceiverAlreadyRegisteredError';
 
 export class LoggerServiceImpl implements LoggerService {
-  public constructor(private readonly loggerDriver: LoggerDriver, private readonly messageService: MessageService) {}
+  public constructor(private readonly loggerStateFactory: LoggerStateFactory) {
+    this.loggerState = this.loggerStateFactory.createTransmitter();
+  }
 
+  private loggerState: LoggerState;
   private isReceiver = false;
 
   public registerReceiver(): void {
-    this.isReceiver = true;
-    this.addMessageHandlers();
-  }
-
-  private addMessageHandlers(): void {
-    this.messageService.addHandler<LogMessage>()('log', this.log.bind(this));
-  }
-
-  public log(...data: ReadonlyArray<unknown>): void {
     if (this.isReceiver) {
-      this.loggerDriver.log(...data);
-    } else {
-      const message = new LogMessage(data);
-      this.messageService.sendMessage(message);
+      throw new ReceiverAlreadyRegisteredError();
     }
+    this.isReceiver = true;
+    this.loggerState = this.loggerStateFactory.createReceiver();
+  }
+
+  public debug(...args: ReadonlyArray<unknown>): void {
+    this.loggerState.debug(args);
+  }
+
+  public info(...args: ReadonlyArray<unknown>): void {
+    this.loggerState.info(args);
+  }
+
+  public warning(...args: ReadonlyArray<unknown>): void {
+    this.loggerState.warning(args);
+  }
+
+  public error(...args: ReadonlyArray<unknown>): void {
+    this.loggerState.error(args);
   }
 }
