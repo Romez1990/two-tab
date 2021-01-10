@@ -23,7 +23,7 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.extensionService = new ChromeExtensionService();
 
-    this.browserTabService = new ChromeTabService(this.loggerService);
+    this.browserTabService = new ChromeTabService();
     this.tabService = new TabServiceImpl(this.browserTabService, this.extensionService);
 
     this.popupService = new PopupServiceImpl(this.extensionService, this.tabService);

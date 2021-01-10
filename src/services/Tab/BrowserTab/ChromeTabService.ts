@@ -4,14 +4,11 @@ import { BrowserTabService } from './BrowserTabService';
 import { Tab } from './Tab';
 import { BrowserWindow } from './BrowserWindow';
 import { OpenProperties } from './OpenProperties';
-import { LoggerService } from '../../Logger';
 import { ChromeTab } from './ChromeTab';
 import { ChromeWindow } from './ChromeWindow';
 import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
 
 export class ChromeTabService implements BrowserTabService {
-  public constructor(private readonly loggerService: LoggerService) {}
-
   public getTabsInCurrentWindow = () => (): Promise<ReadonlyArray<Tab>> =>
     new Promise(resolve =>
       chrome.tabs.query(
@@ -40,7 +37,6 @@ export class ChromeTabService implements BrowserTabService {
   private mapTab(tab: ChromeTab): Tab {
     const { id, windowId, title, url, favIconUrl, pinned } = tab;
     if (typeof id === 'undefined' || typeof title === 'undefined' || typeof url === 'undefined') {
-      this.loggerService.log(tab);
       throw new InvalidChromeTabError(tab);
     }
     return {
@@ -56,7 +52,6 @@ export class ChromeTabService implements BrowserTabService {
   private mapWindow(window: ChromeWindow): BrowserWindow {
     const { id, incognito, focused, tabs } = window;
     if (typeof tabs === 'undefined') {
-      this.loggerService.log(tabs);
       throw new InvalidChromeWindowError(window);
     }
     return {

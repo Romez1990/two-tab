@@ -5,7 +5,6 @@ import { pipe } from 'fp-ts/function';
 import { filter, map, mapWithIndex, difference } from 'fp-ts/ReadonlyArray';
 import { Lens } from 'monocle-ts';
 import { TabList } from './TabList';
-import { useService } from '../../services/ServiceContainer';
 import { Tab } from '../../services/Tab';
 import { inRange } from '../../services/Utils/Math';
 import { TabElement, toTabElement, toTab, eqTab, checkedLens } from './TabElement';
@@ -22,13 +21,9 @@ interface Values {
 const tabsLens = Lens.fromProp<Values>()('tabs');
 
 export const PopupForm: FC<Props> = ({ tabs, onSave }) => {
-  const loggerService = useService('loggerService');
-
   const initialValues = {
     tabs: pipe(tabs, map(toTabElement)),
   };
-
-  loggerService.log('PopupForm render');
 
   function submit(values: Values, { setValues }: FormikHelpers<Values>): void {
     const checkedTabs = pipe(
