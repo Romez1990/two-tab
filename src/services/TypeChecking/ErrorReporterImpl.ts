@@ -4,8 +4,11 @@ import { Option, map as mapO } from 'fp-ts/Option';
 import { Errors, ContextEntry, ValidationError } from 'io-ts';
 import { join } from '../Utils/fp-ts/ReadonlyArray';
 import { ErrorReporter } from './ErrorReporter';
+import { JsonSerializer } from '../Serializer';
 
 export class ErrorReporterImpl implements ErrorReporter {
+  public constructor(private readonly jsonSerializer: JsonSerializer) {}
+
   public report = (errs: Errors): ReadonlyArray<string> => pipe(errs, map(this.getMessage.bind(this)), compact);
 
   private getMessage(err: ValidationError): Option<string> {
@@ -17,7 +20,7 @@ export class ErrorReporterImpl implements ErrorReporter {
       mapO(errorContext => {
         const expectedType = errorContext.type.name;
         const atPath = path === '' ? '' : ` at ${path}`;
-        const value = JSON.stringify(err.value);
+        const value = this.jsonSerializer.serialize(err.value, true);
         return `Expecting ${expectedType}${atPath} but instead got: ${value}`;
       }),
     );
