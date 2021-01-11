@@ -9,10 +9,10 @@ interface Props {
 }
 
 export const DevelopmentErrorDisplay: FC<Props> = ({ error, resetErrorBoundary }) => {
-  const errorProcessingService = useService('errorProcessingService');
+  const errorProcessing = useService('errorProcessingService');
 
-  const header = errorProcessingService.getHeader(error);
-  const json = errorProcessingService.toJson(error);
+  const header = errorProcessing.getHeader(error);
+  const json = errorProcessing.toJson(error);
 
   return (
     <div>

@@ -15,7 +15,7 @@ interface Props {
 let lastCheckIndex: number;
 
 export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange }) => {
-  const keyPressingService = useService('keyPressingService');
+  const keyPressing = useService('keyPressingService');
 
   useEffect((): void => {
     lastCheckIndex = 0;
@@ -24,7 +24,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange }) => {
   const rangeKey: Key = 'shift';
 
   const change = (currentCheckIndex: number) => (e: ChangeEvent<HTMLInputElement>): void => {
-    const rangeKeyPressed = keyPressingService.keyStates[rangeKey] === KeyState.Pressed;
+    const rangeKeyPressed = keyPressing.keyStates[rangeKey] === KeyState.Pressed;
     if (rangeKeyPressed) {
       const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
       const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);

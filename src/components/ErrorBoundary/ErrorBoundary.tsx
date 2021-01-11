@@ -8,10 +8,10 @@ interface ErrorInfo {
 }
 
 export const ErrorBoundary: FC = ({ children }) => {
-  const errorReportingService = useService('errorReportingService');
+  const errorReporting = useService('errorReportingService');
 
   function reportError(error: Error, { componentStack }: ErrorInfo): void {
-    errorReportingService.report(error, componentStack);
+    errorReporting.report(error, componentStack);
   }
 
   return (

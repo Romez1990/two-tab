@@ -6,7 +6,7 @@ import { TypeCheckingService } from '../TypeChecking';
 type ProcessEnv = NodeJS.ProcessEnv;
 
 export class EnvServiceImpl implements EnvService {
-  public constructor(private readonly env: ProcessEnv, private readonly typeCheckingService: TypeCheckingService) {}
+  public constructor(private readonly env: ProcessEnv, private readonly typeChecking: TypeCheckingService) {}
 
   public getString(varName: string): string {
     const value = this.env[varName];
@@ -28,6 +28,6 @@ export class EnvServiceImpl implements EnvService {
 
   public getOfType<T>(varName: string, type: Type<T>): T {
     const value = this.getString(varName);
-    return this.typeCheckingService.checkAndThrow(type)(value);
+    return this.typeChecking.checkAndThrow(type)(value);
   }
 }

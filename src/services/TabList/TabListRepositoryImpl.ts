@@ -6,14 +6,14 @@ import { TabListRepository } from './TabListRepository';
 import { idLens, TabList } from './TabList';
 
 export class TabListRepositoryImpl implements TabListRepository {
-  public constructor(private readonly storageService: StorageService) {
-    storageService.addTable(this.tableName, '++id,data');
+  public constructor(private readonly storage: StorageService) {
+    storage.addTable(this.tableName, '++id,data');
   }
 
   private readonly tableName = 'tabLists';
 
   private get table(): Table<TabList, number> {
-    return this.storageService.getTable(this.tableName);
+    return this.storage.getTable(this.tableName);
   }
 
   public getAll = (): Task<ReadonlyArray<TabList>> => () => this.table.toArray();

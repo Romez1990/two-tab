@@ -7,15 +7,15 @@ import { BrowserTabInteractions, BrowserTab, BrowserWindow } from './BrowserTab'
 import { BrowserTabService } from './BrowserTabService';
 
 export class BrowserTabServiceImpl implements BrowserTabService {
-  public constructor(private readonly browserTabService: BrowserTabInteractions, extensionService: ExtensionService) {
-    this.extensionURL = extensionService.getURL('/');
+  public constructor(private readonly browserTabInteractions: BrowserTabInteractions, extension: ExtensionService) {
+    this.extensionURL = extension.getURL('/');
   }
 
   private readonly extensionURL: string;
 
   public getTabsInCurrentWindow = (all: boolean): Task<ReadonlyArray<BrowserTab>> =>
     pipe(
-      this.browserTabService.getTabsInCurrentWindow(),
+      this.browserTabInteractions.getTabsInCurrentWindow(),
       map(tabs =>
         pipe(
           all,
@@ -37,7 +37,7 @@ export class BrowserTabServiceImpl implements BrowserTabService {
 
   private isTabOfExtension = (tab: BrowserTab): boolean => tab.url.startsWith(this.extensionURL);
 
-  public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabService.getWindows();
+  public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabInteractions.getWindows();
 
-  public close = (tabs: ReadonlyArray<BrowserTab>): Task<void> => this.browserTabService.close(tabs);
+  public close = (tabs: ReadonlyArray<BrowserTab>): Task<void> => this.browserTabInteractions.close(tabs);
 }

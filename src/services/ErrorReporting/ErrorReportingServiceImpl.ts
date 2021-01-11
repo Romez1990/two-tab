@@ -2,22 +2,22 @@ import { Task, of } from 'fp-ts/Task';
 import { Config } from '../Config';
 import { ErrorReportingService } from './ErrorReportingService';
 import { LoggerService } from '../Logger';
-import { ErrorProcessingService } from '../Error/ErrorProcessingService';
+import { ErrorProcessingService } from '../Error';
 
 export class ErrorReportingServiceImpl implements ErrorReportingService {
   public constructor(
     private readonly config: Config,
-    private readonly errorProcessingService: ErrorProcessingService,
-    private readonly loggerService: LoggerService,
+    private readonly errorProcessing: ErrorProcessingService,
+    private readonly logger: LoggerService,
   ) {}
 
   public report(error: Error, stack: string): Task<void> {
     if (this.config.environment !== 'production') {
-      const header = this.errorProcessingService.getHeader(error);
-      const json = this.errorProcessingService.toJson(error);
-      this.loggerService.error(header);
-      this.loggerService.error(json);
-      this.loggerService.error('stack:', stack);
+      const header = this.errorProcessing.getHeader(error);
+      const json = this.errorProcessing.toJson(error);
+      this.logger.error(header);
+      this.logger.error(json);
+      this.logger.error('stack:', stack);
       return of(undefined);
     }
 

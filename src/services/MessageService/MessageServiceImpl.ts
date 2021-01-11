@@ -10,7 +10,7 @@ type Handler<T> = (data: T) => void;
 export class MessageServiceImpl implements MessageService {
   public constructor(
     private readonly messageSender: MessageSender,
-    private readonly typeCheckingService: TypeCheckingService,
+    private readonly typeChecking: TypeCheckingService,
   ) {
     this.messageSender.addHandler(this.handleData.bind(this));
   }
@@ -32,7 +32,7 @@ export class MessageServiceImpl implements MessageService {
   };
 
   private handleData(data: unknown): void {
-    const message = this.typeCheckingService.checkAndThrow(MessageT)(data);
+    const message = this.typeChecking.checkAndThrow(MessageT)(data);
     this.handleMessage(message);
   }
 

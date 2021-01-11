@@ -7,11 +7,11 @@ import { PopupService } from './PopupService';
 
 export class PopupServiceImpl implements PopupService {
   public constructor(
-    private readonly extensionService: ExtensionService,
+    private readonly extension: ExtensionService,
     private readonly browserTabService: BrowserTabService,
     private readonly tabListService: TabListService,
   ) {
-    this.appUrl = extensionService.getURL('index.html');
+    this.appUrl = extension.getURL('index.html');
   }
 
   public readonly appUrl: string;

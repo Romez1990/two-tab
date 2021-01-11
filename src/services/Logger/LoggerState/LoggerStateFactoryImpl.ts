@@ -6,13 +6,13 @@ import { LoggerTransmitter } from './LoggerTransmitter';
 import { LoggerReceiver } from './LoggerReceiver';
 
 export class LoggerStateFactoryImpl implements LoggerStateFactory {
-  public constructor(private readonly messageService: MessageService, private readonly loggerDriver: LoggerHandler) {}
+  public constructor(private readonly messageService: MessageService, private readonly loggerHandler: LoggerHandler) {}
 
   public createTransmitter(): LoggerState {
     return new LoggerTransmitter(this.messageService);
   }
 
   public createReceiver(): LoggerState {
-    return new LoggerReceiver(this.loggerDriver, this.messageService);
+    return new LoggerReceiver(this.loggerHandler, this.messageService);
   }
 }
