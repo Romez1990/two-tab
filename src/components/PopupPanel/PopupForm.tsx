@@ -2,6 +2,7 @@ import React, { FC, ReactNode, Dispatch, SetStateAction } from 'react';
 import { Formik, Form, Field, FormikHelpers } from 'formik';
 import { Button } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
+import { object, string } from 'yup';
 import { pipe } from 'fp-ts/function';
 import { filter, map, mapWithIndex, difference } from 'fp-ts/ReadonlyArray';
 import { Lens } from 'monocle-ts';
@@ -19,6 +20,10 @@ interface Values {
   readonly listName: string;
   readonly tabs: ReadonlyArray<BrowserTabElement>;
 }
+
+const validationSchema = object().shape({
+  listName: string().required(),
+});
 
 const tabsLens = Lens.fromProp<Values>()('tabs');
 
@@ -49,11 +54,11 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
     );
 
   return (
-    <Formik<Values> initialValues={initialValues} onSubmit={submit}>
+    <Formik<Values> initialValues={initialValues} validationSchema={validationSchema} onSubmit={submit}>
       {({ values: { tabs }, setValues, handleChange }): ReactNode => (
         <Form>
           <TabList name="tabs" tabs={tabs} onChange={handleChange} onChangeRange={changeRange(setValues)} />
-          <Field name="name" component={TextField} placeholder="List name" />
+          <Field name="listName" component={TextField} placeholder="List name" />
           <Button type="submit" variant="contained" color="primary">
             Save
           </Button>
