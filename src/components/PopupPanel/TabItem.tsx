@@ -9,11 +9,11 @@ import {
   Avatar,
   Checkbox,
 } from '@material-ui/core';
-import { TabElement } from './TabElement';
+import { BrowserTabElement } from './BrowserTabElement';
 
 interface Props {
   readonly name: string;
-  readonly tab: TabElement;
+  readonly tab: BrowserTabElement;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
 }
 

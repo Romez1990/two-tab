@@ -1,66 +1,64 @@
-import React, { FC, ReactNode } from 'react';
-import { Formik, Form, FormikHelpers } from 'formik';
+import React, { FC, ReactNode, Dispatch, SetStateAction } from 'react';
+import { Formik, Form, Field, FormikHelpers } from 'formik';
 import { Button } from '@material-ui/core';
+import { TextField } from 'formik-material-ui';
 import { pipe } from 'fp-ts/function';
 import { filter, map, mapWithIndex, difference } from 'fp-ts/ReadonlyArray';
 import { Lens } from 'monocle-ts';
 import { TabList } from './TabList';
 import { BrowserTab } from '../../services/BrowserTab';
 import { inRange } from '../../services/Utils/Math';
-import { TabElement, toTabElement, toTab, eqTab, checkedLens } from './TabElement';
+import { BrowserTabElement, toBrowserTabElement, toBrowserTab, eqBrowserTab, checkedLens } from './BrowserTabElement';
 
 interface Props {
   readonly tabs: ReadonlyArray<BrowserTab>;
-  onSave(tabs: ReadonlyArray<BrowserTab>): void;
+  onSave(listName: string, tabs: ReadonlyArray<BrowserTab>): void;
 }
 
 interface Values {
-  readonly tabs: ReadonlyArray<TabElement>;
+  readonly listName: string;
+  readonly tabs: ReadonlyArray<BrowserTabElement>;
 }
 
 const tabsLens = Lens.fromProp<Values>()('tabs');
 
-export const PopupForm: FC<Props> = ({ tabs, onSave }) => {
-  const initialValues = {
-    tabs: pipe(tabs, map(toTabElement)),
+export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
+  const initialValues: Values = {
+    listName: '',
+    tabs: map(toBrowserTabElement)(initTabs),
   };
 
-  function submit(values: Values, { setValues }: FormikHelpers<Values>): void {
+  function submit({ listName, tabs }: Values, { setValues }: FormikHelpers<Values>): void {
     const checkedTabs = pipe(
-      values.tabs,
+      tabs,
       filter(tab => tab.checked),
     );
     setValues(tabsLens.modify(oldTabs => removeCheckedTabs(oldTabs, checkedTabs)));
-    onSave(pipe(checkedTabs, map(toTab)));
+    const browserTabs = map(toBrowserTab)(checkedTabs);
+    onSave(listName, browserTabs);
   }
 
   const removeCheckedTabs = (
-    oldTabs: ReadonlyArray<TabElement>,
-    checkedTabs: ReadonlyArray<TabElement>,
-  ): ReadonlyArray<TabElement> => difference(eqTab)(oldTabs, checkedTabs);
+    oldTabs: ReadonlyArray<BrowserTabElement>,
+    checkedTabs: ReadonlyArray<BrowserTabElement>,
+  ): ReadonlyArray<BrowserTabElement> => difference(eqBrowserTab)(oldTabs, checkedTabs);
+
+  const changeRange = (setValues: Dispatch<SetStateAction<Values>>) => (start: number, end: number): void =>
+    setValues(
+      tabsLens.modify(mapWithIndex((i, tab) => checkedLens.modify(checked => checked || inRange(i, start, end))(tab))),
+    );
 
   return (
     <Formik<Values> initialValues={initialValues} onSubmit={submit}>
-      {({ values, setValues, handleChange }): ReactNode => {
-        const changeRange = (start: number, end: number): void =>
-          setValues(
-            tabsLens.modify(oldTabs =>
-              pipe(
-                oldTabs,
-                mapWithIndex((i, tab) => checkedLens.modify(checked => checked || inRange(i, start, end))(tab)),
-              ),
-            ),
-          );
-
-        return (
-          <Form>
-            <TabList name="tabs" tabs={values.tabs} onChange={handleChange} onChangeRange={changeRange} />
-            <Button type="submit" variant="contained" color="primary">
-              Save
-            </Button>
-          </Form>
-        );
-      }}
+      {({ values: { tabs }, setValues, handleChange }): ReactNode => (
+        <Form>
+          <TabList name="tabs" tabs={tabs} onChange={handleChange} onChangeRange={changeRange(setValues)} />
+          <Field name="name" component={TextField} placeholder="List name" />
+          <Button type="submit" variant="contained" color="primary">
+            Save
+          </Button>
+        </Form>
+      )}
     </Formik>
   );
 };

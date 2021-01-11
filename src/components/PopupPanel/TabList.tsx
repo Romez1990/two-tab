@@ -1,13 +1,13 @@
 import React, { ChangeEvent, FC, useEffect } from 'react';
 import { List } from '@material-ui/core';
 import { TabItem } from './TabItem';
-import { TabElement } from './TabElement';
+import { BrowserTabElement } from './BrowserTabElement';
 import { useService } from '../../services/ServiceContainer';
 import { Key, KeyState } from '../../services/KeyPressingService';
 
 interface Props {
   readonly name: string;
-  readonly tabs: ReadonlyArray<TabElement>;
+  readonly tabs: ReadonlyArray<BrowserTabElement>;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
   onChangeRange(start: number, end: number): void;
 }
