@@ -1,3 +1,3 @@
-import { LoggerDriver } from '../LoggerDriver';
+import { LoggerHandler } from '../LoggerHandler';
 
-export type LogType = keyof LoggerDriver;
+export type LogType = keyof LoggerHandler;

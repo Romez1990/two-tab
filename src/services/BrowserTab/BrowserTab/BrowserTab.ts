@@ -1,4 +1,4 @@
-export interface Tab {
+export interface BrowserTab {
   readonly id: number;
   readonly windowId: number;
   readonly title: string;

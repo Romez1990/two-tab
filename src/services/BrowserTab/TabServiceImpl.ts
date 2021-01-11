@@ -3,7 +3,7 @@ import { Task, map } from 'fp-ts/Task';
 import { filter } from 'fp-ts/ReadonlyArray';
 import { fold } from 'fp-ts/boolean';
 import { ExtensionService } from '../Extension';
-import { BrowserTabService, Tab, BrowserWindow } from './BrowserTab';
+import { BrowserTabService, BrowserTab, BrowserWindow } from './BrowserTab';
 import { TabService } from './TabService';
 
 export class TabServiceImpl implements TabService {
@@ -13,7 +13,7 @@ export class TabServiceImpl implements TabService {
 
   private readonly extensionURL: string;
 
-  public getTabsInCurrentWindow = (all: boolean): Task<ReadonlyArray<Tab>> =>
+  public getTabsInCurrentWindow = (all: boolean): Task<ReadonlyArray<BrowserTab>> =>
     pipe(
       this.browserTabService.getTabsInCurrentWindow(),
       map(tabs =>
@@ -27,17 +27,17 @@ export class TabServiceImpl implements TabService {
       ),
     );
 
-  private filterTabs = (tabs: ReadonlyArray<Tab>): ReadonlyArray<Tab> =>
+  private filterTabs = (tabs: ReadonlyArray<BrowserTab>): ReadonlyArray<BrowserTab> =>
     pipe(
       tabs,
       filter(tab => !this.isTabPinned(tab) && !this.isTabOfExtension(tab)),
     );
 
-  private isTabPinned = (tab: Tab): boolean => tab.pinned;
+  private isTabPinned = (tab: BrowserTab): boolean => tab.pinned;
 
-  private isTabOfExtension = (tab: Tab): boolean => tab.url.startsWith(this.extensionURL);
+  private isTabOfExtension = (tab: BrowserTab): boolean => tab.url.startsWith(this.extensionURL);
 
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabService.getWindows();
 
-  public close = (tabs: ReadonlyArray<Tab>): Task<void> => this.browserTabService.close(tabs);
+  public close = (tabs: ReadonlyArray<BrowserTab>): Task<void> => this.browserTabService.close(tabs);
 }

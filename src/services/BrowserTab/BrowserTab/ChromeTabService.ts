@@ -1,7 +1,7 @@
 import { map, toArray } from 'fp-ts/ReadonlyArray';
 import { pipe } from 'fp-ts/function';
 import { BrowserTabService } from './BrowserTabService';
-import { Tab } from './Tab';
+import { BrowserTab } from './BrowserTab';
 import { BrowserWindow } from './BrowserWindow';
 import { OpenProperties } from './OpenProperties';
 import { ChromeTab } from './ChromeTab';
@@ -9,7 +9,7 @@ import { ChromeWindow } from './ChromeWindow';
 import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
 
 export class ChromeTabService implements BrowserTabService {
-  public getTabsInCurrentWindow = () => (): Promise<ReadonlyArray<Tab>> =>
+  public getTabsInCurrentWindow = () => (): Promise<ReadonlyArray<BrowserTab>> =>
     new Promise(resolve =>
       chrome.tabs.query(
         {
@@ -29,12 +29,12 @@ export class ChromeTabService implements BrowserTabService {
       ),
     );
 
-  private mapTabs = (tabs: ReadonlyArray<ChromeTab>): ReadonlyArray<Tab> => map(this.mapTab.bind(this))(tabs);
+  private mapTabs = (tabs: ReadonlyArray<ChromeTab>): ReadonlyArray<BrowserTab> => map(this.mapTab.bind(this))(tabs);
 
   private mapWindows = (windows: ReadonlyArray<ChromeWindow>): ReadonlyArray<BrowserWindow> =>
     map(this.mapWindow)(windows);
 
-  private mapTab(tab: ChromeTab): Tab {
+  private mapTab(tab: ChromeTab): BrowserTab {
     const { id, windowId, title, url, favIconUrl, pinned } = tab;
     if (typeof id === 'undefined' || typeof title === 'undefined' || typeof url === 'undefined') {
       throw new InvalidChromeTabError(tab);
@@ -62,10 +62,10 @@ export class ChromeTabService implements BrowserTabService {
     };
   }
 
-  public open = (openProperties: OpenProperties) => (): Promise<Tab> =>
+  public open = (openProperties: OpenProperties) => (): Promise<BrowserTab> =>
     new Promise(resolve => chrome.tabs.create(openProperties, tab => resolve(this.mapTab(tab))));
 
-  public close = (tabs: ReadonlyArray<Tab>) => (): Promise<void> =>
+  public close = (tabs: ReadonlyArray<BrowserTab>) => (): Promise<void> =>
     new Promise(resolve =>
       chrome.tabs.remove(
         pipe(

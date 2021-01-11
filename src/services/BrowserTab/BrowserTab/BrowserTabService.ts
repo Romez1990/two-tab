@@ -1,11 +1,11 @@
 import { Task } from 'fp-ts/Task';
-import { Tab } from './Tab';
+import { BrowserTab } from './BrowserTab';
 import { BrowserWindow } from './BrowserWindow';
 import { OpenProperties } from './OpenProperties';
 
 export interface BrowserTabService {
-  getTabsInCurrentWindow(): Task<ReadonlyArray<Tab>>;
+  getTabsInCurrentWindow(): Task<ReadonlyArray<BrowserTab>>;
   getWindows(): Task<ReadonlyArray<BrowserWindow>>;
-  open(tab: OpenProperties): Task<Tab>;
-  close(tabs: ReadonlyArray<Tab>): Task<void>;
+  open(openProperties: OpenProperties): Task<BrowserTab>;
+  close(tabs: ReadonlyArray<BrowserTab>): Task<void>;
 }

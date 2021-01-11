@@ -5,13 +5,13 @@ import { pipe } from 'fp-ts/function';
 import { filter, map, mapWithIndex, difference } from 'fp-ts/ReadonlyArray';
 import { Lens } from 'monocle-ts';
 import { TabList } from './TabList';
-import { Tab } from '../../services/Tab';
+import { BrowserTab } from '../../services/BrowserTab';
 import { inRange } from '../../services/Utils/Math';
 import { TabElement, toTabElement, toTab, eqTab, checkedLens } from './TabElement';
 
 interface Props {
-  readonly tabs: ReadonlyArray<Tab>;
-  onSave(tabs: ReadonlyArray<Tab>): void;
+  readonly tabs: ReadonlyArray<BrowserTab>;
+  onSave(tabs: ReadonlyArray<BrowserTab>): void;
 }
 
 interface Values {

@@ -1,17 +1,17 @@
 import { fromEquals } from 'fp-ts/Eq';
 import { Lens } from 'monocle-ts';
-import { Tab } from '../../services/Tab';
+import { BrowserTab } from '../../services/BrowserTab';
 
-export interface TabElement extends Tab {
+export interface TabElement extends BrowserTab {
   readonly checked: boolean;
 }
 
-export const toTabElement = (tab: Tab): TabElement => ({
+export const toTabElement = (tab: BrowserTab): TabElement => ({
   ...tab,
   checked: false,
 });
 
-export const toTab = (tabElement: TabElement): Tab => ({
+export const toTab = (tabElement: TabElement): BrowserTab => ({
   id: tabElement.id,
   windowId: tabElement.windowId,
   title: tabElement.title,

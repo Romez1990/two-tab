@@ -1,14 +1,15 @@
 import { Type } from 'io-ts';
 import { EnvService } from './EnvService';
-import { EnvDriver } from './EnvDriver';
 import { EnvironmentVariableNotFoundError, BooleanEnvironmentVariableError } from './Errors';
 import { TypeCheckingService } from '../TypeChecking';
 
+type ProcessEnv = NodeJS.ProcessEnv;
+
 export class EnvServiceImpl implements EnvService {
-  public constructor(private readonly driver: EnvDriver, private readonly typeCheckingService: TypeCheckingService) {}
+  public constructor(private readonly env: ProcessEnv, private readonly typeCheckingService: TypeCheckingService) {}
 
   public getString(varName: string): string {
-    const value = this.driver.getString(varName);
+    const value = this.env[varName];
     if (typeof value === 'undefined') throw new EnvironmentVariableNotFoundError(varName);
     return value;
   }

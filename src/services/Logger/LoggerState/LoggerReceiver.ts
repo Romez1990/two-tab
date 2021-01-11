@@ -1,10 +1,10 @@
 import { MessageService } from '../../MessageService';
 import { LogMessage, LogData } from '../Message';
 import { LoggerState } from './LoggerState';
-import { LoggerDriver } from '../LoggerDriver';
+import { LoggerHandler } from '../LoggerHandler';
 
 export class LoggerReceiver implements LoggerState {
-  public constructor(private readonly loggerDriver: LoggerDriver, messageService: MessageService) {
+  public constructor(private readonly loggerDriver: LoggerHandler, messageService: MessageService) {
     messageService.addHandler<LogMessage>()('log', this.messageHandler.bind(this));
   }
 

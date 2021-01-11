@@ -1,8 +1,8 @@
-import { Tab } from './Tab';
+import { BrowserTab } from './BrowserTab';
 
 export interface BrowserWindow {
   readonly id: number;
   readonly incognito: boolean;
   readonly focused: boolean;
-  readonly tabs: ReadonlyArray<Tab>;
+  readonly tabs: ReadonlyArray<BrowserTab>;
 }

@@ -1,19 +1,21 @@
 import { PopupService, PopupServiceImpl } from '../Popup';
+import { TabListService, TabListServiceImpl, TabListRepository, TabListRepositoryImpl } from '../TabList';
+import { StorageService, StorageServiceImpl } from '../Storage';
 import { ExtensionService, ChromeExtensionService } from '../Extension';
-import { TabService, TabServiceImpl, BrowserTabService, ChromeTabService } from '../Tab';
+import { TabService, TabServiceImpl, BrowserTabService, ChromeTabService } from '../BrowserTab';
 import { KeyPressingService, KeyPressingServiceImpl } from '../KeyPressingService';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
 import {
   LoggerService,
   LoggerServiceImpl,
-  LoggerDriver,
-  ConsoleLoggerDriver,
+  LoggerHandler,
+  ConsoleLoggerHandler,
   LoggerStateFactory,
   LoggerStateFactoryImpl,
 } from '../Logger';
 import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../MessageService';
 import { Config, ConfigImpl } from '../Config';
-import { EnvService, EnvServiceImpl, EnvDriver, EnvDriverImpl } from '../Env';
+import { EnvService, EnvServiceImpl } from '../Env';
 import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
 import { ServiceContainer } from './ServiceContainer';
 import { ServiceNotProvidedError } from './Errors';
@@ -24,19 +26,23 @@ class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
     this.jsonSerializer = new JsonSerializerImpl(JSON);
 
-    this.errorReporter = new ErrorReporterImpl();
+    this.storageService = new StorageServiceImpl();
+
+    this.tabListRepository = new TabListRepositoryImpl(this.storageService);
+    this.tabListService = new TabListServiceImpl(this.tabListRepository);
+
+    this.errorReporter = new ErrorReporterImpl(this.jsonSerializer);
     this.typeCheckingService = new TypeCheckingServiceImpl(this.errorReporter);
 
-    this.envDriver = new EnvDriverImpl(process.env);
-    this.envService = new EnvServiceImpl(this.envDriver, this.typeCheckingService);
+    this.envService = new EnvServiceImpl(process.env, this.typeCheckingService);
 
     this.config = new ConfigImpl(this.envService);
 
     this.messageSender = new ChromeMessageSender();
     this.messageService = new MessageServiceImpl(this.messageSender, this.typeCheckingService);
 
-    this.loggerDriver = new ConsoleLoggerDriver(console);
-    this.loggerStateFactory = new LoggerStateFactoryImpl(this.messageService, this.loggerDriver);
+    this.loggerHandler = new ConsoleLoggerHandler(console);
+    this.loggerStateFactory = new LoggerStateFactoryImpl(this.messageService, this.loggerHandler);
     this.loggerService = new LoggerServiceImpl(this.loggerStateFactory);
 
     this.errorProcessingService = new ErrorProcessingServiceImpl(this.jsonSerializer);
@@ -59,6 +65,11 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly popupService: PopupService;
 
+  public readonly tabListService: TabListService;
+  public readonly tabListRepository: TabListRepository;
+
+  public readonly storageService: StorageService;
+
   public readonly extensionService: ExtensionService;
 
   public readonly tabService: TabService;
@@ -72,7 +83,7 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly loggerService: LoggerService;
   public readonly loggerStateFactory: LoggerStateFactory;
-  public readonly loggerDriver: LoggerDriver;
+  public readonly loggerHandler: LoggerHandler;
 
   public readonly messageService: MessageService;
   public readonly messageSender: MessageSender;
@@ -80,7 +91,6 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly config: Config;
 
   public readonly envService: EnvService;
-  public readonly envDriver: EnvDriver;
 
   public readonly typeCheckingService: TypeCheckingService;
   public readonly errorReporter: ErrorReporter;

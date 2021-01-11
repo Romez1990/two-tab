@@ -1,18 +1,25 @@
 import { PopupService } from '../Popup';
+import { TabListService, TabListRepository } from '../TabList';
+import { StorageService } from '../Storage';
 import { ExtensionService } from '../Extension';
-import { TabService, BrowserTabService } from '../Tab';
+import { TabService, BrowserTabService } from '../BrowserTab';
 import { KeyPressingService } from '../KeyPressingService';
-import { ErrorReportingService } from '../ErrorReporting';
-import { LoggerService, LoggerStateFactory, LoggerDriver } from '../Logger';
+import { LoggerService, LoggerStateFactory, LoggerHandler } from '../Logger';
 import { MessageService, MessageSender } from '../MessageService';
+import { ErrorReportingService } from '../ErrorReporting';
+import { ErrorProcessingService } from '../Error';
 import { Config } from '../Config';
-import { EnvService, EnvDriver } from '../Env';
+import { EnvService } from '../Env';
 import { TypeCheckingService, ErrorReporter } from '../TypeChecking';
 import { JsonSerializer } from '../Serializer';
-import { ErrorProcessingService } from '../Error/ErrorProcessingService';
 
 export interface ServiceContainer {
   readonly popupService?: PopupService;
+
+  readonly tabListService?: TabListService;
+  readonly tabListRepository?: TabListRepository;
+
+  readonly storageService?: StorageService;
 
   readonly extensionService?: ExtensionService;
 
@@ -23,7 +30,7 @@ export interface ServiceContainer {
 
   readonly loggerService?: LoggerService;
   readonly loggerStateFactory?: LoggerStateFactory;
-  readonly loggerDriver?: LoggerDriver;
+  readonly loggerHandler?: LoggerHandler;
 
   readonly messageService?: MessageService;
   readonly messageSender?: MessageSender;
@@ -35,7 +42,6 @@ export interface ServiceContainer {
   readonly config?: Config;
 
   readonly envService?: EnvService;
-  readonly envDriver?: EnvDriver;
 
   readonly typeCheckingService?: TypeCheckingService;
   readonly errorReporter?: ErrorReporter;

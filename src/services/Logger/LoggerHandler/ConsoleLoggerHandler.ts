@@ -1,6 +1,6 @@
-import { LoggerDriver } from './LoggerDriver';
+import { LoggerHandler } from './LoggerHandler';
 
-export class ConsoleLoggerDriver implements LoggerDriver {
+export class ConsoleLoggerHandler implements LoggerHandler {
   public constructor(private readonly console: Console) {}
 
   public debug(args: ReadonlyArray<unknown>): void {

@@ -1,3 +1,3 @@
-import { LoggerDriver } from '../LoggerDriver';
+import { LoggerHandler } from '../LoggerHandler';
 
-export type LoggerState = LoggerDriver;
+export type LoggerState = LoggerHandler;

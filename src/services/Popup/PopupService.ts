@@ -1,9 +1,9 @@
 import { Task } from 'fp-ts/Task';
-import { Tab, BrowserWindow } from '../Tab';
+import { BrowserTab, BrowserWindow } from '../BrowserTab';
 
 export interface PopupService {
   readonly appUrl: string;
-  getTabsInCurrentWindow(all: boolean): Task<ReadonlyArray<Tab>>;
+  getTabsInCurrentWindow(all: boolean): Task<ReadonlyArray<BrowserTab>>;
   getWindows(): Task<ReadonlyArray<BrowserWindow>>;
-  saveTabs(tabs: ReadonlyArray<Tab>): Task<void>;
+  saveTabs(tabs: ReadonlyArray<BrowserTab>): Task<void>;
 }
