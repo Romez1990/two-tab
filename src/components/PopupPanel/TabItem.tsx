@@ -15,6 +15,7 @@ interface Props {
   readonly name: string;
   readonly tab: BrowserTabElement;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
+  readonly disabled: boolean;
 }
 
 const useStyles = makeStyles(({ spacing }: Theme) =>
@@ -27,13 +28,13 @@ const useStyles = makeStyles(({ spacing }: Theme) =>
   }),
 );
 
-export const TabItem: FC<Props> = ({ name, tab: { title, favIconUrl, checked }, onChange }) => {
+export const TabItem: FC<Props> = ({ name, tab: { title, favIconUrl, checked }, onChange, disabled }) => {
   const classes = useStyles();
 
   return (
     <ListItem>
       <ListItemIcon>
-        <Checkbox name={`${name}.checked`} checked={checked} onChange={onChange} />
+        <Checkbox name={`${name}.checked`} checked={checked} onChange={onChange} disabled={disabled} />
       </ListItemIcon>
       <ListItemIcon>
         <Avatar src={favIconUrl} />

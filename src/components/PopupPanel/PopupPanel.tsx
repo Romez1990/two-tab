@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { CircularProgress, Button } from '@material-ui/core';
+import { map, Task } from 'fp-ts/Task';
+import { pipe } from 'fp-ts/function';
 import { PopupForm } from './PopupForm';
 import { useService } from '../../services/ServiceContainer';
 import { BrowserTab } from '../../services/BrowserTab';
@@ -11,13 +13,13 @@ export const PopupPanel: FC = () => {
   const [tabs, setTabs] = useState<ReadonlyArray<BrowserTab> | null>(null);
 
   useEffect(() => {
-    getTabs();
+    run(getTabs());
   }, []);
 
-  const getTabs = async (): Promise<void> => setTabs(await run(popupService.getTabsInCurrentWindow(false)));
+  const getTabs = (): Task<void> => pipe(popupService.getTabsInCurrentWindow(false), map(setTabs));
 
-  const save = async (listName: string, checkedTabs: ReadonlyArray<BrowserTab>): Promise<void> =>
-    run(popupService.saveTabs(listName, checkedTabs));
+  const save = (listName: string, checkedTabs: ReadonlyArray<BrowserTab>): Task<void> =>
+    popupService.saveTabs(listName, checkedTabs);
 
   const { appUrl } = popupService;
 

@@ -10,11 +10,12 @@ interface Props {
   readonly tabs: ReadonlyArray<BrowserTabElement>;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
   onChangeRange(start: number, end: number): void;
+  readonly disabled: boolean;
 }
 
 let lastCheckIndex: number;
 
-export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange }) => {
+export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabled }) => {
   const keyPressing = useService('keyPressingService');
 
   useEffect((): void => {
@@ -40,7 +41,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange }) => {
   return (
     <List>
       {tabs.map((tab, i) => (
-        <TabItem key={i} name={`${name}.${i}`} tab={tab} onChange={change(i)} />
+        <TabItem key={i} name={`${name}.${i}`} tab={tab} onChange={change(i)} disabled={disabled} />
       ))}
     </List>
   );
