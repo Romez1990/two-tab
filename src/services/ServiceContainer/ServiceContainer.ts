@@ -1,8 +1,8 @@
 import { PopupService } from '../Popup';
 import { TabListService, TabListRepository } from '../TabList';
 import { StorageService } from '../Storage';
+import { BrowserTabService, BrowserTabInteractions } from '../BrowserTab';
 import { ExtensionService } from '../Extension';
-import { TabService, BrowserTabService } from '../BrowserTab';
 import { KeyPressingService } from '../KeyPressingService';
 import { LoggerService, LoggerStateFactory, LoggerHandler } from '../Logger';
 import { MessageService, MessageSender } from '../MessageService';
@@ -11,6 +11,7 @@ import { ErrorProcessingService } from '../Error';
 import { Config } from '../Config';
 import { EnvService } from '../Env';
 import { TypeCheckingService, ErrorReporter } from '../TypeChecking';
+import { DateService } from '../Date';
 import { JsonSerializer } from '../Serializer';
 
 export interface ServiceContainer {
@@ -21,10 +22,10 @@ export interface ServiceContainer {
 
   readonly storageService?: StorageService;
 
-  readonly extensionService?: ExtensionService;
+  readonly tabService?: BrowserTabService;
+  readonly browserTabService?: BrowserTabInteractions;
 
-  readonly tabService?: TabService;
-  readonly browserTabService?: BrowserTabService;
+  readonly extensionService?: ExtensionService;
 
   readonly keyPressingService?: KeyPressingService;
 
@@ -45,6 +46,8 @@ export interface ServiceContainer {
 
   readonly typeCheckingService?: TypeCheckingService;
   readonly errorReporter?: ErrorReporter;
+
+  readonly dateService?: DateService;
 
   readonly jsonSerializer?: JsonSerializer;
 }

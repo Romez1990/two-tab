@@ -3,7 +3,7 @@ import { BrowserTab } from './BrowserTab';
 import { BrowserWindow } from './BrowserWindow';
 import { OpenProperties } from './OpenProperties';
 
-export interface BrowserTabService {
+export interface BrowserTabInteractions {
   getTabsInCurrentWindow(): Task<ReadonlyArray<BrowserTab>>;
   getWindows(): Task<ReadonlyArray<BrowserWindow>>;
   open(openProperties: OpenProperties): Task<BrowserTab>;

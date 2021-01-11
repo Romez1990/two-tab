@@ -5,5 +5,5 @@ export interface PopupService {
   readonly appUrl: string;
   getTabsInCurrentWindow(all: boolean): Task<ReadonlyArray<BrowserTab>>;
   getWindows(): Task<ReadonlyArray<BrowserWindow>>;
-  saveTabs(tabs: ReadonlyArray<BrowserTab>): Task<void>;
+  saveTabs(listName: string, tabs: ReadonlyArray<BrowserTab>): Task<void>;
 }

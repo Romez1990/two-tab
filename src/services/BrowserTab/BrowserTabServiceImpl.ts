@@ -3,11 +3,11 @@ import { Task, map } from 'fp-ts/Task';
 import { filter } from 'fp-ts/ReadonlyArray';
 import { fold } from 'fp-ts/boolean';
 import { ExtensionService } from '../Extension';
-import { BrowserTabService, BrowserTab, BrowserWindow } from './BrowserTab';
-import { TabService } from './TabService';
+import { BrowserTabInteractions, BrowserTab, BrowserWindow } from './BrowserTab';
+import { BrowserTabService } from './BrowserTabService';
 
-export class TabServiceImpl implements TabService {
-  public constructor(private readonly browserTabService: BrowserTabService, extensionService: ExtensionService) {
+export class BrowserTabServiceImpl implements BrowserTabService {
+  public constructor(private readonly browserTabService: BrowserTabInteractions, extensionService: ExtensionService) {
     this.extensionURL = extensionService.getURL('/');
   }
 

@@ -1,3 +1,3 @@
-export * from './TabService';
-export * from './TabServiceImpl';
+export * from './BrowserTabService';
+export * from './BrowserTabServiceImpl';
 export * from './BrowserTab';

@@ -1,6 +1,6 @@
 import { map, toArray } from 'fp-ts/ReadonlyArray';
 import { pipe } from 'fp-ts/function';
-import { BrowserTabService } from './BrowserTabService';
+import { BrowserTabInteractions } from './BrowserTabInteractions';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWindow } from './BrowserWindow';
 import { OpenProperties } from './OpenProperties';
@@ -8,7 +8,7 @@ import { ChromeTab } from './ChromeTab';
 import { ChromeWindow } from './ChromeWindow';
 import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
 
-export class ChromeTabService implements BrowserTabService {
+export class ChromeTabInteractions implements BrowserTabInteractions {
   public getTabsInCurrentWindow = () => (): Promise<ReadonlyArray<BrowserTab>> =>
     new Promise(resolve =>
       chrome.tabs.query(

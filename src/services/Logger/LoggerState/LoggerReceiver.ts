@@ -4,7 +4,7 @@ import { LoggerState } from './LoggerState';
 import { LoggerHandler } from '../LoggerHandler';
 
 export class LoggerReceiver implements LoggerState {
-  public constructor(private readonly loggerDriver: LoggerHandler, messageService: MessageService) {
+  public constructor(private readonly loggerHandler: LoggerHandler, messageService: MessageService) {
     messageService.addHandler<LogMessage>()('log', this.messageHandler.bind(this));
   }
 
@@ -15,18 +15,18 @@ export class LoggerReceiver implements LoggerState {
   }
 
   public debug(args: ReadonlyArray<unknown>): void {
-    this.loggerDriver.debug(args);
+    this.loggerHandler.debug(args);
   }
 
   public info(args: ReadonlyArray<unknown>): void {
-    this.loggerDriver.info(args);
+    this.loggerHandler.info(args);
   }
 
   public warning(args: ReadonlyArray<unknown>): void {
-    this.loggerDriver.warning(args);
+    this.loggerHandler.warning(args);
   }
 
   public error(args: ReadonlyArray<unknown>): void {
-    this.loggerDriver.error(args);
+    this.loggerHandler.error(args);
   }
 }

@@ -1,10 +1,11 @@
 import { PopupService, PopupServiceImpl } from '../Popup';
 import { TabListService, TabListServiceImpl, TabListRepository, TabListRepositoryImpl } from '../TabList';
 import { StorageService, StorageServiceImpl } from '../Storage';
+import { BrowserTabService, BrowserTabServiceImpl, BrowserTabInteractions, ChromeTabInteractions } from '../BrowserTab';
 import { ExtensionService, ChromeExtensionService } from '../Extension';
-import { TabService, TabServiceImpl, BrowserTabService, ChromeTabService } from '../BrowserTab';
 import { KeyPressingService, KeyPressingServiceImpl } from '../KeyPressingService';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
+import { ErrorProcessingService, ErrorProcessingServiceImpl } from '../Error';
 import {
   LoggerService,
   LoggerServiceImpl,
@@ -19,17 +20,14 @@ import { EnvService, EnvServiceImpl } from '../Env';
 import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
 import { ServiceContainer } from './ServiceContainer';
 import { ServiceNotProvidedError } from './Errors';
+import { DateService, DateServiceImpl } from '../Date';
 import { JsonSerializer, JsonSerializerImpl } from '../Serializer';
-import { ErrorProcessingService, ErrorProcessingServiceImpl } from '../Error';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
     this.jsonSerializer = new JsonSerializerImpl(JSON);
 
-    this.storageService = new StorageServiceImpl();
-
-    this.tabListRepository = new TabListRepositoryImpl(this.storageService);
-    this.tabListService = new TabListServiceImpl(this.tabListRepository);
+    this.dateService = new DateServiceImpl();
 
     this.errorReporter = new ErrorReporterImpl(this.jsonSerializer);
     this.typeCheckingService = new TypeCheckingServiceImpl(this.errorReporter);
@@ -57,10 +55,15 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.extensionService = new ChromeExtensionService();
 
-    this.browserTabService = new ChromeTabService();
-    this.tabService = new TabServiceImpl(this.browserTabService, this.extensionService);
+    this.browserTabService = new ChromeTabInteractions();
+    this.tabService = new BrowserTabServiceImpl(this.browserTabService, this.extensionService);
 
-    this.popupService = new PopupServiceImpl(this.extensionService, this.tabService);
+    this.storageService = new StorageServiceImpl();
+
+    this.tabListRepository = new TabListRepositoryImpl(this.storageService);
+    this.tabListService = new TabListServiceImpl(this.tabListRepository, this.dateService);
+
+    this.popupService = new PopupServiceImpl(this.extensionService, this.tabService, this.tabListService);
   }
 
   public readonly popupService: PopupService;
@@ -70,16 +73,16 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly storageService: StorageService;
 
-  public readonly extensionService: ExtensionService;
+  public readonly tabService: BrowserTabService;
+  public readonly browserTabService: BrowserTabInteractions;
 
-  public readonly tabService: TabService;
-  public readonly browserTabService: BrowserTabService;
+  public readonly extensionService: ExtensionService;
 
   public readonly keyPressingService: KeyPressingService;
 
-  public readonly errorReportingService: ErrorReportingService;
-
   public readonly errorProcessingService: ErrorProcessingService;
+
+  public readonly errorReportingService: ErrorReportingService;
 
   public readonly loggerService: LoggerService;
   public readonly loggerStateFactory: LoggerStateFactory;
@@ -94,6 +97,8 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly typeCheckingService: TypeCheckingService;
   public readonly errorReporter: ErrorReporter;
+
+  public readonly dateService: DateService;
 
   public readonly jsonSerializer: JsonSerializer;
 
