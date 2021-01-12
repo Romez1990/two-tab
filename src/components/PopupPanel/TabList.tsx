@@ -1,9 +1,9 @@
 import React, { ChangeEvent, FC, useEffect } from 'react';
 import { List } from '@material-ui/core';
+import { Key } from '../../services/KeyPressingService';
+import { useService } from '../ServiceContainer';
 import { TabItem } from './TabItem';
 import { BrowserTabElement } from './BrowserTabElement';
-import { useService } from '../ServiceContainer';
-import { Key } from '../../services/KeyPressingService';
 
 interface Props {
   readonly name: string;

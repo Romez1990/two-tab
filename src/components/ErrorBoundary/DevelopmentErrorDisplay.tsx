@@ -1,7 +1,7 @@
 import React, { FC, MouseEvent } from 'react';
 import { isSome } from 'fp-ts/Option';
-import { TryAgainButton } from './TryAgainButton';
 import { useService } from '../ServiceContainer';
+import { TryAgainButton } from './TryAgainButton';
 
 interface Props {
   error: Error;
