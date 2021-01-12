@@ -3,7 +3,7 @@ import { List } from '@material-ui/core';
 import { TabItem } from './TabItem';
 import { BrowserTabElement } from './BrowserTabElement';
 import { useService } from '../../services/ServiceContainer';
-import { Key, KeyState } from '../../services/KeyPressingService';
+import { Key } from '../../services/KeyPressingService';
 
 interface Props {
   readonly name: string;
@@ -25,7 +25,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabl
   const rangeKey: Key = 'shift';
 
   const change = (currentCheckIndex: number) => (e: ChangeEvent<HTMLInputElement>): void => {
-    const rangeKeyPressed = keyPressing.keyStates[rangeKey] === KeyState.Pressed;
+    const rangeKeyPressed = keyPressing.isPressed[rangeKey];
     if (rangeKeyPressed) {
       const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
       const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);

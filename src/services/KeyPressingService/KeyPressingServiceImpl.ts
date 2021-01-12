@@ -1,28 +1,39 @@
+import { ReadonlyRecord } from 'fp-ts/ReadonlyRecord';
 import { hasOwnProperty } from 'fp-ts/Record';
+import { pipe } from 'fp-ts/function';
+import { map } from 'fp-ts/es6/ReadonlyArray';
 import { KeyPressingService } from './KeyPressingService';
-import { KeyState } from './KeyState';
 import { Key } from './Key';
 
 export class KeyPressingServiceImpl implements KeyPressingService {
   public constructor(window: Window) {
+    this.isPressed = this.createIsPressedRecord();
     window.addEventListener('keydown', this.onKeyDown.bind(this));
     window.addEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  public readonly keyStates: Record<Key, KeyState> = {
-    shift: KeyState.NotPressed,
-  };
+  public readonly isPressed: Record<Key, boolean>;
+
+  private createIsPressedRecord(): ReadonlyRecord<Key, boolean> {
+    const keys: ReadonlyArray<Key> = ['shift'];
+    const initValues = false;
+    return pipe(
+      keys,
+      map(key => [key, initValues]),
+      entries => Object.fromEntries(entries),
+    );
+  }
 
   private onKeyDown(e: KeyboardEvent): void {
     const key = this.changeKeyName(e.key);
-    if (!hasOwnProperty(key, this.keyStates)) return;
-    this.keyStates[key] = KeyState.Pressed;
+    if (!hasOwnProperty(key, this.isPressed)) return;
+    this.isPressed[key] = true;
   }
 
   private onKeyUp(e: KeyboardEvent): void {
     const key = this.changeKeyName(e.key);
-    if (!hasOwnProperty(key, this.keyStates)) return;
-    this.keyStates[key] = KeyState.NotPressed;
+    if (!hasOwnProperty(key, this.isPressed)) return;
+    this.isPressed[key] = false;
   }
 
   private changeKeyName = (key: string): Key => key.toLowerCase() as Key;
