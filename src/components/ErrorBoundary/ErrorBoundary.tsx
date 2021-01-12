@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
-import { useService } from '../../services/ServiceContainer';
+import { useService } from '../ServiceContainer';
 import { ErrorDisplay } from './ErrorDisplay';
 
 interface ErrorInfo {

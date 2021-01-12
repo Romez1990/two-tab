@@ -18,8 +18,7 @@ import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender 
 import { Config, ConfigImpl } from '../Config';
 import { EnvService, EnvServiceImpl } from '../Env';
 import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
-import { ServiceContainer } from './ServiceContainer';
-import { ServiceNotProvidedError } from './Errors';
+import { getService, ServiceContainer } from './ServiceContainer';
 import { DateService, DateServiceImpl } from '../Date';
 import { JsonSerializer, JsonSerializerImpl } from '../Serializer';
 
@@ -102,11 +101,8 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly jsonSerializer: JsonSerializer;
 
-  public get<T extends keyof ServiceContainer>(serviceName: T): NonNullable<ServiceContainer[T]> {
-    const service = this[serviceName];
-    if (service === null) throw new ServiceNotProvidedError('name');
-    return service as NonNullable<ServiceContainer[T]>;
-  }
+  public get = <T extends keyof ServiceContainer>(serviceName: T): NonNullable<ServiceContainer[T]> =>
+    getService(this, serviceName);
 }
 
 export const serviceContainer = new ServiceContainerImpl();

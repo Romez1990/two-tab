@@ -2,7 +2,7 @@ import React, { ChangeEvent, FC, useEffect } from 'react';
 import { List } from '@material-ui/core';
 import { TabItem } from './TabItem';
 import { BrowserTabElement } from './BrowserTabElement';
-import { useService } from '../../services/ServiceContainer';
+import { useService } from '../ServiceContainer';
 import { Key } from '../../services/KeyPressingService';
 
 interface Props {

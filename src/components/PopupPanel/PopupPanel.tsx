@@ -3,7 +3,7 @@ import { CircularProgress, Button } from '@material-ui/core';
 import { map, Task } from 'fp-ts/Task';
 import { pipe } from 'fp-ts/function';
 import { PopupForm } from './PopupForm';
-import { useService } from '../../services/ServiceContainer';
+import { useService } from '../ServiceContainer';
 import { BrowserTab } from '../../services/BrowserTab';
 import { run } from '../../services/Utils/fp-ts/Task';
 

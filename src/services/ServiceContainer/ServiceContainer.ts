@@ -13,6 +13,7 @@ import { EnvService } from '../Env';
 import { TypeCheckingService, ErrorReporter } from '../TypeChecking';
 import { DateService } from '../Date';
 import { JsonSerializer } from '../Serializer';
+import { ServiceNotProvidedError } from './Errors';
 
 export interface ServiceContainer {
   readonly popupService?: PopupService;
@@ -50,4 +51,13 @@ export interface ServiceContainer {
   readonly dateService?: DateService;
 
   readonly jsonSerializer?: JsonSerializer;
+}
+
+export function getService<T extends keyof ServiceContainer>(
+  container: ServiceContainer,
+  serviceName: T,
+): NonNullable<ServiceContainer[T]> {
+  const service = container[serviceName];
+  if (service === null) throw new ServiceNotProvidedError(serviceName);
+  return service as NonNullable<ServiceContainer[T]>;
 }

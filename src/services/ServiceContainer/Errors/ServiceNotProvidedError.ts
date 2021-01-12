@@ -1,6 +1,6 @@
-import { ServiceContainerError } from './ServiceContainerError';
+import { AppError } from '../../Error';
 
-export class ServiceNotProvidedError extends ServiceContainerError {
+export class ServiceNotProvidedError extends AppError {
   public constructor(service: string) {
     super(`Service ${service} was not provided`);
   }
