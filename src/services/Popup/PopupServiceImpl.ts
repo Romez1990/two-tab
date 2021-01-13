@@ -1,4 +1,4 @@
-import { constant, pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import { Task, chain } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
 import { BrowserTabService, BrowserTab, BrowserWindow } from '../BrowserTab';
@@ -7,9 +7,9 @@ import { PopupService } from './PopupService';
 
 export class PopupServiceImpl implements PopupService {
   public constructor(
-    private readonly extension: ExtensionService,
-    private readonly browserTabService: BrowserTabService,
     private readonly tabListService: TabListService,
+    private readonly browserTabService: BrowserTabService,
+    private readonly extension: ExtensionService,
   ) {
     this.appUrl = extension.getURL('index.html');
   }
@@ -22,5 +22,8 @@ export class PopupServiceImpl implements PopupService {
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabService.getWindows();
 
   public saveTabs = (listName: string, tabs: ReadonlyArray<BrowserTab>): Task<void> =>
-    this.browserTabService.close(tabs);
+    pipe(
+      this.tabListService.save(listName, tabs),
+      chain(() => this.browserTabService.close(tabs)),
+    );
 }

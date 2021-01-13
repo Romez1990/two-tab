@@ -62,7 +62,7 @@ class ServiceContainerImpl implements ServiceContainer {
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
     this.tabListService = new TabListServiceImpl(this.tabListRepository, this.dateService);
 
-    this.popupService = new PopupServiceImpl(this.extensionService, this.tabService, this.tabListService);
+    this.popupService = new PopupServiceImpl(this.tabListService, this.tabService, this.extensionService);
   }
 
   public readonly popupService: PopupService;
