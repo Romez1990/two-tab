@@ -55,14 +55,14 @@ class ServiceContainerImpl implements ServiceContainer {
     this.extensionService = new ChromeExtensionService();
 
     this.browserTabInteractions = new ChromeTabInteractions();
-    this.tabService = new BrowserTabServiceImpl(this.browserTabInteractions, this.extensionService);
+    this.browserTabService = new BrowserTabServiceImpl(this.browserTabInteractions, this.extensionService);
 
     this.storageService = new StorageServiceImpl();
 
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
     this.tabListService = new TabListServiceImpl(this.tabListRepository, this.dateService);
 
-    this.popupService = new PopupServiceImpl(this.tabListService, this.tabService, this.extensionService);
+    this.popupService = new PopupServiceImpl(this.tabListService, this.browserTabService, this.extensionService);
   }
 
   public readonly popupService: PopupService;
@@ -72,7 +72,7 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly storageService: StorageService;
 
-  public readonly tabService: BrowserTabService;
+  public readonly browserTabService: BrowserTabService;
   public readonly browserTabInteractions: BrowserTabInteractions;
 
   public readonly extensionService: ExtensionService;

@@ -23,7 +23,7 @@ export interface ServiceContainer {
 
   readonly storageService?: StorageService;
 
-  readonly tabService?: BrowserTabService;
+  readonly browserTabService?: BrowserTabService;
   readonly browserTabInteractions?: BrowserTabInteractions;
 
   readonly extensionService?: ExtensionService;
