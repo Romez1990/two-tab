@@ -1,7 +1,7 @@
 import { pipe } from 'fp-ts/function';
 import { eqString } from 'fp-ts/Eq';
 import { filter, elem, isEmpty } from 'fp-ts/ReadonlyArray';
-import { Option, some, none, map } from 'fp-ts/Option';
+import { Option, some, none, map, fromNullable } from 'fp-ts/Option';
 import { ErrorProcessingService } from './ErrorProcessingService';
 import { JsonSerializer } from '../Serializer';
 
@@ -24,6 +24,8 @@ export class ErrorProcessingServiceImpl implements ErrorProcessingService {
       map(Object.fromEntries),
       map(this.jsonSerializer.serialize.bind(this.jsonSerializer)),
     );
+
+  public getTrace = (error: Error): Option<string> => fromNullable(error.stack);
 
   private readonly errorProperties: ReadonlyArray<string> = ['name', 'message', 'stack'];
 
