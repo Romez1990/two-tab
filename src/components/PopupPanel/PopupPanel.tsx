@@ -10,11 +10,11 @@ import { run } from '../../services/Utils/fp-ts/Task';
 export const PopupPanel: FC = () => {
   const popupService = useService('popupService');
 
-  const [tabs, setTabs] = useState<ReadonlyArray<BrowserTab> | null>(null);
-
   useEffect(() => {
     run(getTabs());
   }, []);
+
+  const [tabs, setTabs] = useState<ReadonlyArray<BrowserTab> | null>(null);
 
   const getTabs = (): Task<void> => pipe(popupService.getTabsInCurrentWindow(false), map(setTabs));
 
