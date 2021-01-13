@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { CircularProgress, Button } from '@material-ui/core';
-import { map, Task } from 'fp-ts/Task';
+import { Task, map } from 'fp-ts/Task';
 import { pipe } from 'fp-ts/function';
 import { PopupForm } from './PopupForm';
 import { BrowserTab } from '../../services/BrowserTab';
