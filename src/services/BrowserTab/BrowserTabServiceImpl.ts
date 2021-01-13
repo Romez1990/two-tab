@@ -30,12 +30,14 @@ export class BrowserTabServiceImpl implements BrowserTabService {
   private filterTabs = (tabs: ReadonlyArray<BrowserTab>): ReadonlyArray<BrowserTab> =>
     pipe(
       tabs,
-      filter(tab => !this.isTabPinned(tab) && !this.isTabOfExtension(tab)),
+      filter(tab => !this.isTabPinned(tab) && !this.isTabOfExtension(tab) && !this.isNewTab(tab)),
     );
 
   private isTabPinned = (tab: BrowserTab): boolean => tab.pinned;
 
   private isTabOfExtension = (tab: BrowserTab): boolean => tab.url.startsWith(this.extensionURL);
+
+  private isNewTab = (tab: BrowserTab): boolean => tab.url === 'chrome://newtab/';
 
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabInteractions.getWindows();
 

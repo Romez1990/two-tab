@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { object, string } from 'yup';
 import { pipe, constant } from 'fp-ts/function';
-import { filter, map, mapWithIndex, difference, isEmpty } from 'fp-ts/ReadonlyArray';
+import { map, mapWithIndex, filter, difference, isEmpty } from 'fp-ts/ReadonlyArray';
 import { Task } from 'fp-ts/Task';
 import { Lens } from 'monocle-ts';
 import { TabList } from './TabList';
