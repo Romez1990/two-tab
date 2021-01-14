@@ -1,7 +1,7 @@
 import { MainPageService } from '../MainPage';
 import { PopupService } from '../Popup';
 import { TabListService, TabListRepository } from '../TabList';
-import { StorageService } from '../Storage';
+import { StorageService, StorageStateFactory } from '../Storage';
 import { BrowserTabService, BrowserTabInteractions } from '../BrowserTab';
 import { ExtensionService } from '../Extension';
 import { KeyPressingService } from '../KeyPressingService';
@@ -25,6 +25,7 @@ export interface ServiceContainer {
   readonly tabListRepository?: TabListRepository;
 
   readonly storageService?: StorageService;
+  readonly storageStateFactory?: StorageStateFactory;
 
   readonly browserTabService?: BrowserTabService;
   readonly browserTabInteractions?: BrowserTabInteractions;

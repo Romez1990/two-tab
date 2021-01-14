@@ -1,7 +1,7 @@
 import { MainPageService, MainPageServiceImpl } from '../MainPage';
 import { PopupService, PopupServiceImpl } from '../Popup';
 import { TabListService, TabListServiceImpl, TabListRepository, TabListRepositoryImpl } from '../TabList';
-import { StorageService, StorageServiceImpl } from '../Storage';
+import { StorageService, StorageServiceImpl, StorageStateFactory, StorageStateFactoryImpl } from '../Storage';
 import { BrowserTabService, BrowserTabServiceImpl, BrowserTabInteractions, ChromeTabInteractions } from '../BrowserTab';
 import { ExtensionService, ChromeExtensionService } from '../Extension';
 import { KeyPressingService, KeyPressingServiceImpl } from '../KeyPressingService';
@@ -58,7 +58,8 @@ class ServiceContainerImpl implements ServiceContainer {
     this.browserTabInteractions = new ChromeTabInteractions();
     this.browserTabService = new BrowserTabServiceImpl(this.browserTabInteractions, this.extensionService);
 
-    this.storageService = new StorageServiceImpl();
+    this.storageStateFactory = new StorageStateFactoryImpl();
+    this.storageService = new StorageServiceImpl(this.storageStateFactory);
 
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
     this.tabListService = new TabListServiceImpl(this.tabListRepository, this.dateService);
@@ -76,6 +77,7 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly tabListRepository: TabListRepository;
 
   public readonly storageService: StorageService;
+  public readonly storageStateFactory: StorageStateFactory;
 
   public readonly browserTabService: BrowserTabService;
   public readonly browserTabInteractions: BrowserTabInteractions;
