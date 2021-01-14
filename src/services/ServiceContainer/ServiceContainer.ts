@@ -15,6 +15,7 @@ import { TypeCheckingService, ErrorReporter } from '../TypeChecking';
 import { DateService } from '../Date';
 import { UrlProcessingService } from '../UrlProcessing';
 import { JsonSerializer } from '../Serializer';
+import { StringProcessingService } from '../StringProcessing';
 import { ServiceNotProvidedError } from './Errors';
 
 export interface ServiceContainer {
@@ -58,6 +59,8 @@ export interface ServiceContainer {
   readonly urlProcessingService?: UrlProcessingService;
 
   readonly jsonSerializer?: JsonSerializer;
+
+  readonly stringProcessingService?: StringProcessingService;
 }
 
 export function getService<T extends keyof ServiceContainer>(

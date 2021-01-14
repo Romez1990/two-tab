@@ -23,12 +23,15 @@ import { getService, ServiceContainer } from './ServiceContainer';
 import { DateService, DateServiceImpl } from '../Date';
 import { UrlProcessingService, UrlProcessingServiceImpl } from '../UrlProcessing';
 import { JsonSerializer, JsonSerializerImpl } from '../Serializer';
+import { StringProcessingService, StringProcessingServiceImpl } from '../StringProcessing';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
+    this.stringProcessingService = new StringProcessingServiceImpl();
+
     this.jsonSerializer = new JsonSerializerImpl(JSON);
 
-    this.urlProcessingService = new UrlProcessingServiceImpl();
+    this.urlProcessingService = new UrlProcessingServiceImpl(this.stringProcessingService);
 
     this.dateService = new DateServiceImpl();
 
@@ -112,6 +115,8 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly urlProcessingService: UrlProcessingService;
 
   public readonly jsonSerializer: JsonSerializer;
+
+  public readonly stringProcessingService: StringProcessingService;
 
   public get = <T extends keyof ServiceContainer>(serviceName: T): NonNullable<ServiceContainer[T]> =>
     getService(this, serviceName);
