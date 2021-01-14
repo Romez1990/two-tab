@@ -1,10 +1,9 @@
-import React, { FC, ReactNode, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { pipe, constant } from 'fp-ts/function';
 import { map, fromNullable, getOrElse } from 'fp-ts/Option';
 
 export interface LayoutProps {
   readonly title?: string;
-  readonly children: ReactNode;
 }
 
 export const BaseLayout: FC<LayoutProps> = ({ title, children }) => {
