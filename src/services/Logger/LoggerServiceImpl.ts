@@ -4,10 +4,10 @@ import { ReceiverAlreadyRegisteredError } from './ReceiverAlreadyRegisteredError
 
 export class LoggerServiceImpl implements LoggerService {
   public constructor(private readonly loggerStateFactory: LoggerStateFactory) {
-    this.loggerState = this.loggerStateFactory.createTransmitter();
+    this.state = this.loggerStateFactory.createTransmitter();
   }
 
-  private loggerState: LoggerState;
+  private state: LoggerState;
   private isReceiver = false;
 
   public registerReceiver(): void {
@@ -15,22 +15,22 @@ export class LoggerServiceImpl implements LoggerService {
       throw new ReceiverAlreadyRegisteredError();
     }
     this.isReceiver = true;
-    this.loggerState = this.loggerStateFactory.createReceiver();
+    this.state = this.loggerStateFactory.createReceiver();
   }
 
   public debug(...args: ReadonlyArray<unknown>): void {
-    this.loggerState.debug(args);
+    this.state.debug(args);
   }
 
   public info(...args: ReadonlyArray<unknown>): void {
-    this.loggerState.info(args);
+    this.state.info(args);
   }
 
   public warning(...args: ReadonlyArray<unknown>): void {
-    this.loggerState.warning(args);
+    this.state.warning(args);
   }
 
   public error(...args: ReadonlyArray<unknown>): void {
-    this.loggerState.error(args);
+    this.state.error(args);
   }
 }
