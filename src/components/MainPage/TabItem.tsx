@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ListItem } from '@material-ui/core';
+import { ListItem, Link } from '@material-ui/core';
 import { Tab } from '../../services/TabList';
 import { useService } from '../ServiceContainer';
 
@@ -14,9 +14,11 @@ export const TabItem: FC<Props> = ({ tab }) => {
 
   return (
     <ListItem>
-      <a href={tab.url} target="_blank" rel="noreferrer">
-        {tab.title} <span>{hostName}</span>
-      </a>
+      <Link href={tab.url} target="_blank" rel="noreferrer">
+        {tab.title}
+      </Link>
+      &nbsp;
+      <span>[{hostName}]</span>
     </ListItem>
   );
 };
