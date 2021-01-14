@@ -1,3 +1,4 @@
+import { MainPageService, MainPageServiceImpl } from '../MainPage';
 import { PopupService, PopupServiceImpl } from '../Popup';
 import { TabListService, TabListServiceImpl, TabListRepository, TabListRepositoryImpl } from '../TabList';
 import { StorageService, StorageServiceImpl } from '../Storage';
@@ -63,7 +64,11 @@ class ServiceContainerImpl implements ServiceContainer {
     this.tabListService = new TabListServiceImpl(this.tabListRepository, this.dateService);
 
     this.popupService = new PopupServiceImpl(this.tabListService, this.browserTabService, this.extensionService);
+
+    this.mainPageService = new MainPageServiceImpl(this.tabListService, this.browserTabService);
   }
+
+  public readonly mainPageService: MainPageService;
 
   public readonly popupService: PopupService;
 

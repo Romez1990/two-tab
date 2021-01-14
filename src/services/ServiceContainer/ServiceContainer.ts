@@ -1,3 +1,4 @@
+import { MainPageService } from '../MainPage';
 import { PopupService } from '../Popup';
 import { TabListService, TabListRepository } from '../TabList';
 import { StorageService } from '../Storage';
@@ -16,6 +17,8 @@ import { JsonSerializer } from '../Serializer';
 import { ServiceNotProvidedError } from './Errors';
 
 export interface ServiceContainer {
+  readonly mainPageService?: MainPageService;
+
   readonly popupService?: PopupService;
 
   readonly tabListService?: TabListService;
