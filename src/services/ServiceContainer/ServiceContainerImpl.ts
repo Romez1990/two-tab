@@ -21,11 +21,14 @@ import { EnvService, EnvServiceImpl } from '../Env';
 import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
 import { getService, ServiceContainer } from './ServiceContainer';
 import { DateService, DateServiceImpl } from '../Date';
+import { UrlProcessingService, UrlProcessingServiceImpl } from '../UrlProcessing';
 import { JsonSerializer, JsonSerializerImpl } from '../Serializer';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
     this.jsonSerializer = new JsonSerializerImpl(JSON);
+
+    this.urlProcessingService = new UrlProcessingServiceImpl();
 
     this.dateService = new DateServiceImpl();
 
@@ -105,6 +108,8 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly errorReporter: ErrorReporter;
 
   public readonly dateService: DateService;
+
+  public readonly urlProcessingService: UrlProcessingService;
 
   public readonly jsonSerializer: JsonSerializer;
 

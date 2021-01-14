@@ -13,6 +13,7 @@ import { Config } from '../Config';
 import { EnvService } from '../Env';
 import { TypeCheckingService, ErrorReporter } from '../TypeChecking';
 import { DateService } from '../Date';
+import { UrlProcessingService } from '../UrlProcessing';
 import { JsonSerializer } from '../Serializer';
 import { ServiceNotProvidedError } from './Errors';
 
@@ -53,6 +54,8 @@ export interface ServiceContainer {
   readonly errorReporter?: ErrorReporter;
 
   readonly dateService?: DateService;
+
+  readonly urlProcessingService?: UrlProcessingService;
 
   readonly jsonSerializer?: JsonSerializer;
 }
