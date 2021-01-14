@@ -18,9 +18,9 @@ export const BaseLayout: FC<LayoutProps> = ({ title: inputTitle, children }) => 
 
   const addAppTitle = (pageTitle: string) => `${pageTitle} | ${appTitle}`;
 
-  const setTitle = (title: string) => {
+  function setTitle(title: string): void {
     document.title = title;
-  };
+  }
 
   return <>{children}</>;
 };
