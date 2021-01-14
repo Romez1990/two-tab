@@ -18,8 +18,8 @@ export class StorageServiceImpl extends Dexie implements StorageService {
 
   public connect = (): Task<void> =>
     pipe(
-      () => Promise.resolve(this.version(1).stores(Object.fromEntries(this.schemas.entries()))),
-      map(constant(this.open.bind(this))),
+      this.version(1).stores(Object.fromEntries(this.schemas.entries())),
+      constant(this.open.bind(this)),
       map(constVoid),
     );
 
