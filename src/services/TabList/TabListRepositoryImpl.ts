@@ -7,7 +7,7 @@ import { idLens, TabList } from './TabList';
 
 export class TabListRepositoryImpl implements TabListRepository {
   public constructor(private readonly storage: StorageService) {
-    storage.addTable(this.tableName, '++id,data');
+    storage.addTable(this.tableName, '++id, data');
   }
 
   private readonly tableName = 'tabLists';
