@@ -26,7 +26,7 @@ export const PopupPanel: FC = () => {
 
   return (
     <>
-      <Button variant="contained" color="primary" href={appUrl} target="_blank">
+      <Button variant="contained" color="primary" href={appUrl} target="_blank" rel="noreferrer">
         Open in full screen
       </Button>
       {tabs === null ? <CircularProgress /> : <PopupForm tabs={tabs} onSave={save} />}
