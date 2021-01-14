@@ -10,7 +10,9 @@ export class UnconnectedStorage implements StorageState {
     this.schemas.set(name, schema);
   }
 
-  public getSchema = (): Schema => Object.fromEntries(this.schemas.entries());
+  public get schema(): Schema {
+    return Object.fromEntries(this.schemas.entries());
+  }
 
   public connect(): Task<void> {
     throw new Error('Not implemented');

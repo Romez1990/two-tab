@@ -18,7 +18,7 @@ export class StorageServiceImpl implements StorageService {
     if (this.isConnected) {
       throw new StorageAlreadyConnectedError();
     }
-    const schema = this.state.getSchema();
+    const { schema } = this.state;
     this.state = this.storageStateFactory.createConnectedStorage(schema);
     return this.state.connect();
   }

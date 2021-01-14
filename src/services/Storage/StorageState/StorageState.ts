@@ -4,7 +4,7 @@ import { Schema } from './Schema';
 
 export interface StorageState {
   addTable(name: string, schema: string): void;
-  getSchema(): Schema;
+  readonly schema: Schema;
   connect(): Task<void>;
   getTable<T, TKey = IndexableType>(name: string): Table<T, TKey>;
 }
