@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import { CircularProgress, Button } from '@material-ui/core';
-import { Task, map } from 'fp-ts/Task';
 import { pipe } from 'fp-ts/function';
+import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
+import { Task, map } from 'fp-ts/Task';
 import { PopupForm } from './PopupForm';
 import { BrowserTab } from '../../services/BrowserTab';
 import { useService } from '../ServiceContainer';
@@ -18,7 +19,7 @@ export const PopupPanel: FC = () => {
 
   const getTabs = (): Task<void> => pipe(popupService.getTabsInCurrentWindow(false), map(setTabs));
 
-  const save = (listName: string, checkedTabs: ReadonlyArray<BrowserTab>): Task<void> =>
+  const save = (listName: string, checkedTabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> =>
     popupService.saveTabs(listName, checkedTabs);
 
   const { appUrl } = popupService;

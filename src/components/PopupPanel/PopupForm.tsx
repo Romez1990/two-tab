@@ -4,7 +4,8 @@ import { Button } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { object, string } from 'yup';
 import { pipe, constant } from 'fp-ts/function';
-import { map, mapWithIndex, filter, difference, isEmpty } from 'fp-ts/ReadonlyArray';
+import { map, mapWithIndex, filter, difference, isNonEmpty } from 'fp-ts/ReadonlyArray';
+import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task } from 'fp-ts/Task';
 import { Lens } from 'monocle-ts';
 import { TabList } from './TabList';
@@ -15,7 +16,7 @@ import { BrowserTabElement, toBrowserTabElement, toBrowserTab, eqBrowserTab, che
 
 interface Props {
   readonly tabs: ReadonlyArray<BrowserTab>;
-  onSave(listName: string, tabs: ReadonlyArray<BrowserTab>): Task<void>;
+  onSave(listName: string, tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void>;
 }
 
 interface Values {
@@ -58,9 +59,9 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
       tabs,
       filter(tab => tab.checked),
     );
-    if (isEmpty(checkedTabs)) return;
+    if (!isNonEmpty(checkedTabs)) return;
 
-    const browserTabs = map(toBrowserTab)(checkedTabs);
+    const browserTabs = mapN(toBrowserTab)(checkedTabs);
     await runWithErrorThrowing(onSave(listName, browserTabs));
     resetForm({
       values: {
@@ -90,13 +91,17 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
     >
       {({ values: { tabs }, setValues, handleChange, isSubmitting }) => (
         <Form>
-          <TabList
-            name="tabs"
-            tabs={tabs}
-            onChange={handleChange}
-            onChangeRange={changeRange(setValues)}
-            disabled={isSubmitting}
-          />
+          {!isNonEmpty(tabs) ? (
+            'No tabs to save. Try to remove filtering'
+          ) : (
+            <TabList
+              name="tabs"
+              tabs={tabs}
+              onChange={handleChange}
+              onChangeRange={changeRange(setValues)}
+              disabled={isSubmitting}
+            />
+          )}
           {typeof formErrors.tabs !== 'undefined' && <div>{formErrors.tabs}</div>}
           <Field name="listName" component={TextField} placeholder="List name" disabled={isSubmitting} />
           <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>

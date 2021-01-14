@@ -1,7 +1,8 @@
 import { pipe } from 'fp-ts/function';
-import { Task, map } from 'fp-ts/Task';
-import { filter } from 'fp-ts/ReadonlyArray';
 import { fold } from 'fp-ts/boolean';
+import { filter } from 'fp-ts/ReadonlyArray';
+import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
+import { Task, map } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
 import { BrowserTabInteractions, BrowserTab, BrowserWindow } from './BrowserTab';
 import { BrowserTabService } from './BrowserTabService';
@@ -41,5 +42,5 @@ export class BrowserTabServiceImpl implements BrowserTabService {
 
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabInteractions.getWindows();
 
-  public close = (tabs: ReadonlyArray<BrowserTab>): Task<void> => this.browserTabInteractions.close(tabs);
+  public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> => this.browserTabInteractions.close(tabs);
 }

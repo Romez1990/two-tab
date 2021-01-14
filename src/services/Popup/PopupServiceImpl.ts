@@ -1,4 +1,5 @@
 import { pipe } from 'fp-ts/function';
+import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task, chain } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
 import { BrowserTabService, BrowserTab, BrowserWindow } from '../BrowserTab';
@@ -21,7 +22,7 @@ export class PopupServiceImpl implements PopupService {
 
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabService.getWindows();
 
-  public saveTabs = (listName: string, tabs: ReadonlyArray<BrowserTab>): Task<void> =>
+  public saveTabs = (listName: string, tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> =>
     pipe(
       this.tabListService.save(listName, tabs),
       chain(() => this.browserTabService.close(tabs)),

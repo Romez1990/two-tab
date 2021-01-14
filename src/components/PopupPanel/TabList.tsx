@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FC, useEffect } from 'react';
 import { List } from '@material-ui/core';
+import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Key } from '../../services/KeyPressingService';
 import { useService } from '../ServiceContainer';
 import { TabItem } from './TabItem';
@@ -7,7 +8,7 @@ import { BrowserTabElement } from './BrowserTabElement';
 
 interface Props {
   readonly name: string;
-  readonly tabs: ReadonlyArray<BrowserTabElement>;
+  readonly tabs: ReadonlyNonEmptyArray<BrowserTabElement>;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
   onChangeRange(start: number, end: number): void;
   readonly disabled: boolean;

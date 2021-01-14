@@ -8,8 +8,8 @@ interface Props {
 
 export const TabListsList: FC<Props> = ({ tabLists }) => (
   <>
-    {tabLists.map(tabList => (
-      <TabListItem tabList={tabList} />
+    {tabLists.map((tabList, i) => (
+      <TabListItem key={i} tabList={tabList} />
     ))}
   </>
 );

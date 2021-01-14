@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import { ExpansionPanel, List } from '@material-ui/core';
+import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, Typography } from '@material-ui/core';
+import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { TabList } from '../../services/TabList';
 import { TabItem } from './TabItem';
 
@@ -8,11 +9,18 @@ interface Props {
 }
 
 export const TabListItem: FC<Props> = ({ tabList }) => (
-  <ExpansionPanel>
-    <List>
-      {tabList.tabs.map(tab => (
-        <TabItem tab={tab} />
-      ))}
-    </List>
+  <ExpansionPanel defaultExpanded>
+    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+      <Typography component="h4" variant="h6">
+        {tabList.name} {tabList.date.toLocaleDateString()}
+      </Typography>
+    </ExpansionPanelSummary>
+    <ExpansionPanelDetails>
+      <List>
+        {tabList.tabs.map((tab, i) => (
+          <TabItem key={i} tab={tab} />
+        ))}
+      </List>
+    </ExpansionPanelDetails>
   </ExpansionPanel>
 );

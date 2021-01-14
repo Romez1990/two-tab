@@ -1,5 +1,6 @@
-import { Task } from 'fp-ts/Task';
 import { pipe } from 'fp-ts/function';
+import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
+import { Task } from 'fp-ts/Task';
 import { DateService } from '../Date';
 import { TabList } from './TabList';
 import { TabListService } from './TabListService';
@@ -14,10 +15,10 @@ export class TabListServiceImpl implements TabListService {
 
   public getAll = (): Task<ReadonlyArray<TabList>> => this.tabListRepository.getAll();
 
-  public save = (listName: string, tabs: ReadonlyArray<Tab>): Task<TabList> =>
+  public save = (listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList> =>
     pipe(this.createTabList(listName, tabs), this.tabListRepository.save.bind(this.tabListRepository));
 
-  private createTabList = (name: string, tabs: ReadonlyArray<Tab>): TabList => ({
+  private createTabList = (name: string, tabs: ReadonlyNonEmptyArray<Tab>): TabList => ({
     name,
     date: this.dateService.getCurrentDate(),
     tabs,
