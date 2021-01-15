@@ -1,4 +1,4 @@
-import { AppError } from '../Error';
+import { AppError } from '../../Error';
 
 export class ReceiverAlreadyRegisteredError extends AppError {
   public constructor() {

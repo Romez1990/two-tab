@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { makeStyles, createStyles, Theme, ListItem, Typography } from '@material-ui/core';
+import { makeStyles, createStyles, Theme, ListItem, Typography, Avatar } from '@material-ui/core';
 import { Tab } from '../../services/TabList';
 import { useService } from '../ServiceContainer';
 
@@ -16,10 +16,10 @@ const useStyles = makeStyles(({ spacing }: Theme) =>
   }),
 );
 
-export const TabItem: FC<Props> = ({ tab }) => {
+export const TabItem: FC<Props> = ({ tab: { title, url, favIconUrl } }) => {
   const urlProcessing = useService('urlProcessingService');
 
-  const hostName = urlProcessing.getHostName(tab.url);
+  const hostName = urlProcessing.getHostName(url);
 
   const [isSelected, setSelected] = useState(false);
 
@@ -30,7 +30,8 @@ export const TabItem: FC<Props> = ({ tab }) => {
 
   return (
     <ListItem className={classes.item} selected={isSelected} onMouseEnter={select} onMouseLeave={unSelect}>
-      <Typography>{tab.title}</Typography>
+      <Avatar src={favIconUrl} />
+      <Typography>{title}</Typography>
       &nbsp;
       <Typography>[{hostName}]</Typography>
     </ListItem>

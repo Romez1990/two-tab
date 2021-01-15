@@ -42,7 +42,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabl
   return (
     <List>
       {tabs.map((tab, i) => (
-        <TabItem key={i} name={`${name}.${i}`} tab={tab} onChange={change(i)} disabled={disabled} />
+        <TabItem key={tab.id} name={`${name}.${i}`} tab={tab} onChange={change(i)} disabled={disabled} />
       ))}
     </List>
   );

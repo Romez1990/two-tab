@@ -36,13 +36,12 @@ export class MessageServiceImpl implements MessageService {
     this.handleMessage(message);
   }
 
-  private handleMessage(message: Message<MessageType, unknown>): void {
-    const { type } = message;
+  private handleMessage({ type, data }: Message<MessageType, unknown>): void {
     const handler = this.handlers.get(type);
     if (typeof handler === 'undefined') {
       throw new HandlerNotFoundError(type);
     } else {
-      handler(message.data);
+      handler(data);
     }
   }
 }

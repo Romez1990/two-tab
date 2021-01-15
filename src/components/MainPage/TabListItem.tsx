@@ -9,14 +9,14 @@ interface Props {
   readonly tabList: TabList;
 }
 
-export const TabListItem: FC<Props> = ({ tabList }) => {
+export const TabListItem: FC<Props> = ({ tabList: { name, date, tabs } }) => {
   const datetimeService = useService('datetimeService');
 
   const tabsCount = getTabCount();
-  const datetime = datetimeService.toLocaleString(tabList.date);
+  const datetime = datetimeService.toLocaleString(date);
 
   function getTabCount() {
-    const tabCount = tabList.tabs.length;
+    const tabCount = tabs.length;
     const tabWord = tabCount === 1 ? 'tab' : 'tabs';
     return `${tabCount} ${tabWord}`;
   }
@@ -25,13 +25,13 @@ export const TabListItem: FC<Props> = ({ tabList }) => {
     <ExpansionPanel defaultExpanded>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
         <Typography component="h4" variant="h6">
-          {tabList.name} ({tabsCount}) [{datetime}]
+          {name} ({tabsCount}) [{datetime}]
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <List>
-          {tabList.tabs.map((tab, i) => (
-            <TabItem key={i} tab={tab} />
+          {tabs.map(tab => (
+            <TabItem key={tab.id} tab={tab} />
           ))}
         </List>
       </ExpansionPanelDetails>

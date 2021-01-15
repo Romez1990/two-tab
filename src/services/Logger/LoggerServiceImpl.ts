@@ -1,6 +1,6 @@
+import { ReceiverAlreadyRegisteredError } from './Errors';
 import { LoggerService } from './LoggerService';
 import { LoggerState, LoggerStateFactory } from './LoggerState';
-import { ReceiverAlreadyRegisteredError } from './ReceiverAlreadyRegisteredError';
 
 export class LoggerServiceImpl implements LoggerService {
   public constructor(private readonly loggerStateFactory: LoggerStateFactory) {
