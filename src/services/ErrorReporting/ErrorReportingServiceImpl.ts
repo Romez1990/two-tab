@@ -12,7 +12,7 @@ export class ErrorReportingServiceImpl implements ErrorReportingService {
   ) {}
 
   public report(error: Error, stack: string): Task<void> {
-    if (this.config.environment !== 'production') {
+    if (!this.config.isProduction) {
       const header = this.errorProcessing.getHeader(error);
       const json = this.errorProcessing.toJson(error);
       this.logger.error(header);

@@ -1,11 +1,16 @@
 import { EnvService } from '../Env';
 import { Config } from './Config';
-import { Environment, EnvironmentT } from './Types';
+import { EnvironmentT } from './Types';
 
 export class ConfigImpl implements Config {
   public constructor(private readonly env: EnvService) {
-    this.environment = env.getOfType('NODE_ENV', EnvironmentT);
+    const environment = env.getOfType('NODE_ENV', EnvironmentT);
+    this.isDevelopment = environment === 'development';
+    this.isProduction = environment === 'production';
+    this.isTesting = environment === 'test';
   }
 
-  public readonly environment: Environment;
+  public readonly isDevelopment: boolean;
+  public readonly isProduction: boolean;
+  public readonly isTesting: boolean;
 }

@@ -1,5 +1,5 @@
-import { Environment } from './Types';
-
 export interface Config {
-  readonly environment: Environment;
+  readonly isDevelopment: boolean;
+  readonly isProduction: boolean;
+  readonly isTesting: boolean;
 }
