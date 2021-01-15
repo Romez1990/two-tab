@@ -5,10 +5,10 @@ export const run = <T>(task: Task<T>): Promise<T> => task();
 export async function runWithErrorThrowing<T>(task: Task<T>): Promise<T> {
   try {
     return await run(task);
-  } catch (err) {
+  } catch (error) {
     setTimeout(() => {
-      throw err;
+      throw error;
     });
-    throw err;
+    throw error;
   }
 }

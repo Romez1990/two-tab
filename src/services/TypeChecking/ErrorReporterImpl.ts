@@ -9,7 +9,7 @@ import { JsonSerializer } from '../Serializer';
 export class ErrorReporterImpl implements ErrorReporter {
   public constructor(private readonly jsonSerializer: JsonSerializer) {}
 
-  public report = (errs: Errors): ReadonlyArray<string> => pipe(errs, map(this.getMessage.bind(this)), compact);
+  public report = (errors: Errors): ReadonlyArray<string> => pipe(errors, map(this.getMessage.bind(this)), compact);
 
   private getMessage({ context, value }: ValidationError): Option<string> {
     const path = this.getPath(context);
