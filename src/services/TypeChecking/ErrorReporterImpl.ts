@@ -11,8 +11,7 @@ export class ErrorReporterImpl implements ErrorReporter {
 
   public report = (errs: Errors): ReadonlyArray<string> => pipe(errs, map(this.getMessage.bind(this)), compact);
 
-  private getMessage(err: ValidationError): Option<string> {
-    const { context } = err;
+  private getMessage({ context, value }: ValidationError): Option<string> {
     const path = this.getPath(context);
     return pipe(
       context,
@@ -20,8 +19,8 @@ export class ErrorReporterImpl implements ErrorReporter {
       mapO(errorContext => {
         const expectedType = errorContext.type.name;
         const atPath = path === '' ? '' : ` at ${path}`;
-        const value = this.jsonSerializer.serialize(err.value, true);
-        return `Expecting ${expectedType}${atPath} but instead got: ${value}`;
+        const valueJson = this.jsonSerializer.serialize(value, true);
+        return `Expecting ${expectedType}${atPath} but instead got: ${valueJson}`;
       }),
     );
   }
