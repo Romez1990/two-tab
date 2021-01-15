@@ -16,7 +16,7 @@ export class TabListRepositoryImpl implements TabListRepository {
     return this.storage.getTable(this.tableName);
   }
 
-  public getAll = (): Task<ReadonlyArray<TabList>> => () => this.table.toArray();
+  public getAll = (): Task<ReadonlyArray<TabList>> => () => this.table.reverse().sortBy('key');
 
   public save = (tabList: TabList): Task<TabList> =>
     pipe(
