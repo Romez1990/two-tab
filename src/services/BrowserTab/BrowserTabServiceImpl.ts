@@ -4,7 +4,7 @@ import { filter } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task, map } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
-import { BrowserTabInteractions, BrowserTab, BrowserWindow } from './BrowserTab';
+import { BrowserTabInteractions, BrowserTab, BrowserWindow, OpenProperties } from './BrowserTab';
 import { BrowserTabService } from './BrowserTabService';
 
 export class BrowserTabServiceImpl implements BrowserTabService {
@@ -41,6 +41,8 @@ export class BrowserTabServiceImpl implements BrowserTabService {
   private isNewTab = (tab: BrowserTab): boolean => tab.url === 'chrome://newtab/';
 
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabInteractions.getWindows();
+
+  public open = (openProperties: OpenProperties): Task<BrowserTab> => this.browserTabInteractions.open(openProperties);
 
   public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> => this.browserTabInteractions.close(tabs);
 }
