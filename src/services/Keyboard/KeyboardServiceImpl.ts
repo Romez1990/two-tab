@@ -1,11 +1,11 @@
 import { ReadonlyRecord } from 'fp-ts/ReadonlyRecord';
 import { hasOwnProperty } from 'fp-ts/Record';
 import { pipe } from 'fp-ts/function';
-import { map } from 'fp-ts/es6/ReadonlyArray';
-import { KeyPressingService } from './KeyPressingService';
+import { map } from 'fp-ts/ReadonlyArray';
+import { KeyboardService } from './KeyboardService';
 import { Key } from './Key';
 
-export class KeyPressingServiceImpl implements KeyPressingService {
+export class KeyboardServiceImpl implements KeyboardService {
   public constructor(window: Window) {
     this.isPressed = this.createIsPressedRecord();
     window.addEventListener('keydown', this.onKeyDown.bind(this));

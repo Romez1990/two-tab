@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FC, useEffect } from 'react';
 import { List } from '@material-ui/core';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
-import { Key } from '../../services/KeyPressingService';
+import { Key } from '../../services/Keyboard';
 import { useService } from '../ServiceContainer';
 import { TabItem } from './TabItem';
 import { BrowserTabElement } from './BrowserTabElement';
@@ -17,7 +17,7 @@ interface Props {
 let lastCheckIndex: number;
 
 export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabled }) => {
-  const keyPressing = useService('keyPressingService');
+  const keyboard = useService('keyboardService');
 
   useEffect((): void => {
     lastCheckIndex = 0;
@@ -26,7 +26,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabl
   const rangeKey: Key = 'shift';
 
   const change = (currentCheckIndex: number) => (e: ChangeEvent<HTMLInputElement>): void => {
-    const rangeKeyPressed = keyPressing.isPressed[rangeKey];
+    const rangeKeyPressed = keyboard.isPressed[rangeKey];
     if (rangeKeyPressed) {
       const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
       const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);

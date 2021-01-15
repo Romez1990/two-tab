@@ -1,6 +1,6 @@
 import { ReadonlyRecord } from 'fp-ts/ReadonlyRecord';
 import { Key } from './Key';
 
-export interface KeyPressingService {
+export interface KeyboardService {
   readonly isPressed: ReadonlyRecord<Key, boolean>;
 }

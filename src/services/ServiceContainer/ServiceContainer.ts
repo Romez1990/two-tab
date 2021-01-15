@@ -4,7 +4,7 @@ import { TabListService, TabListRepository } from '../TabList';
 import { StorageService, StorageStateFactory } from '../Storage';
 import { BrowserTabService, BrowserTabInteractions } from '../BrowserTab';
 import { ExtensionService } from '../Extension';
-import { KeyPressingService } from '../KeyPressingService';
+import { KeyboardService } from '../Keyboard';
 import { LoggerService, LoggerStateFactory, LoggerHandler } from '../Logger';
 import { MessageService, MessageSender } from '../MessageService';
 import { ErrorReportingService } from '../ErrorReporting';
@@ -34,7 +34,7 @@ export interface ServiceContainer {
 
   readonly extensionService?: ExtensionService;
 
-  readonly keyPressingService?: KeyPressingService;
+  readonly keyboardService?: KeyboardService;
 
   readonly loggerService?: LoggerService;
   readonly loggerStateFactory?: LoggerStateFactory;

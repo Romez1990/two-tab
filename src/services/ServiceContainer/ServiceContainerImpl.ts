@@ -4,7 +4,7 @@ import { TabListService, TabListServiceImpl, TabListRepository, TabListRepositor
 import { StorageService, StorageServiceImpl, StorageStateFactory, StorageStateFactoryImpl } from '../Storage';
 import { BrowserTabService, BrowserTabServiceImpl, BrowserTabInteractions, ChromeTabInteractions } from '../BrowserTab';
 import { ExtensionService, ChromeExtensionService } from '../Extension';
-import { KeyPressingService, KeyPressingServiceImpl } from '../KeyPressingService';
+import { KeyboardService, KeyboardServiceImpl } from '../Keyboard';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
 import { ErrorProcessingService, ErrorProcessingServiceImpl } from '../Error';
 import {
@@ -57,7 +57,7 @@ class ServiceContainerImpl implements ServiceContainer {
       this.loggerService,
     );
 
-    this.keyPressingService = new KeyPressingServiceImpl(window);
+    this.keyboardService = new KeyboardServiceImpl(window);
 
     this.extensionService = new ChromeExtensionService();
 
@@ -90,7 +90,7 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly extensionService: ExtensionService;
 
-  public readonly keyPressingService: KeyPressingService;
+  public readonly keyboardService: KeyboardService;
 
   public readonly errorProcessingService: ErrorProcessingService;
 
