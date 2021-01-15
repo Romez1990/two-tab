@@ -1,7 +1,6 @@
 import React, { ChangeEvent, FC, useEffect } from 'react';
 import { List } from '@material-ui/core';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
-import { Key } from '../../services/Keyboard';
 import { useService } from '../ServiceContainer';
 import { TabItem } from './TabItem';
 import { BrowserTabElement } from './BrowserTabElement';
@@ -23,10 +22,8 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabl
     lastCheckIndex = 0;
   }, []);
 
-  const rangeKey: Key = 'shift';
-
   const change = (currentCheckIndex: number) => (e: ChangeEvent<HTMLInputElement>): void => {
-    const rangeKeyPressed = keyboard.isPressed[rangeKey];
+    const rangeKeyPressed = keyboard.isPressed.shift;
     if (rangeKeyPressed) {
       const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
       const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);
