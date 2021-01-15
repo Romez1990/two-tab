@@ -1,13 +1,14 @@
 import { pipe } from 'fp-ts/function';
-import { isNonEmpty, toArray } from 'fp-ts/ReadonlyArray';
+import { toArray } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map } from 'fp-ts/ReadonlyNonEmptyArray';
+import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
 import { BrowserTabInteractions } from './BrowserTabInteractions';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWindow } from './BrowserWindow';
 import { OpenProperties } from './OpenProperties';
 import { ChromeTab } from './ChromeTab';
 import { ChromeWindow } from './ChromeWindow';
-import { ArrayIsEmptyError, InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
+import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
 
 export class ChromeTabInteractions implements BrowserTabInteractions {
   public getTabsInCurrentWindow = () => (): Promise<ReadonlyNonEmptyArray<BrowserTab>> =>
@@ -31,13 +32,10 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
     );
 
   private mapTabs = (tabs: ReadonlyArray<ChromeTab>): ReadonlyNonEmptyArray<BrowserTab> =>
-    pipe(tabs, this.checkNonEmpty<ChromeTab>('tabs'), map(this.mapTab.bind(this)));
+    pipe(tabs, checkNonEmpty<ChromeTab>('tabs'), map(this.mapTab.bind(this)));
 
   private mapWindows = (windows: ReadonlyArray<ChromeWindow>): ReadonlyNonEmptyArray<BrowserWindow> =>
-    pipe(windows, this.checkNonEmpty<ChromeWindow>('windows'), map(this.mapWindow));
-
-  private checkNonEmpty = <T>(arrayName: string) => (array: ReadonlyArray<T>): ReadonlyNonEmptyArray<T> =>
-    isNonEmpty(array) ? array : new ArrayIsEmptyError(arrayName).throw();
+    pipe(windows, checkNonEmpty<ChromeWindow>('windows'), map(this.mapWindow));
 
   private mapTab(tab: ChromeTab): BrowserTab {
     const { id, windowId, title, url, favIconUrl, pinned } = tab;
