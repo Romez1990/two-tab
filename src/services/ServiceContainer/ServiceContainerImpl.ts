@@ -20,7 +20,7 @@ import { Config, ConfigImpl } from '../Config';
 import { EnvService, EnvServiceImpl } from '../Env';
 import { TypeCheckingService, TypeCheckingServiceImpl, ErrorReporter, ErrorReporterImpl } from '../TypeChecking';
 import { getService, ServiceContainer } from './ServiceContainer';
-import { DateService, DateServiceImpl } from '../Date';
+import { DatetimeService, DatetimeServiceImpl } from '../Datetime';
 import { UrlProcessingService, UrlProcessingServiceImpl } from '../UrlProcessing';
 import { JsonSerializer, JsonSerializerImpl } from '../Serializer';
 import { StringProcessingService, StringProcessingServiceImpl } from '../StringProcessing';
@@ -33,7 +33,7 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.urlProcessingService = new UrlProcessingServiceImpl(this.stringProcessingService);
 
-    this.dateService = new DateServiceImpl();
+    this.datetimeService = new DatetimeServiceImpl();
 
     this.errorReporter = new ErrorReporterImpl(this.jsonSerializer);
     this.typeCheckingService = new TypeCheckingServiceImpl(this.errorReporter);
@@ -68,7 +68,7 @@ class ServiceContainerImpl implements ServiceContainer {
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
 
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
-    this.tabListService = new TabListServiceImpl(this.tabListRepository, this.dateService);
+    this.tabListService = new TabListServiceImpl(this.tabListRepository, this.datetimeService);
 
     this.popupService = new PopupServiceImpl(this.tabListService, this.browserTabService, this.extensionService);
 
@@ -110,7 +110,7 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly typeCheckingService: TypeCheckingService;
   public readonly errorReporter: ErrorReporter;
 
-  public readonly dateService: DateService;
+  public readonly datetimeService: DatetimeService;
 
   public readonly urlProcessingService: UrlProcessingService;
 

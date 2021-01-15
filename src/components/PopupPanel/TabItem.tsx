@@ -18,6 +18,7 @@ interface Props {
   readonly disabled: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = makeStyles(({ spacing }: Theme) =>
   createStyles({
     itemText: {

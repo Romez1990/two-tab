@@ -12,7 +12,7 @@ import { ErrorProcessingService } from '../Error';
 import { Config } from '../Config';
 import { EnvService } from '../Env';
 import { TypeCheckingService, ErrorReporter } from '../TypeChecking';
-import { DateService } from '../Date';
+import { DatetimeService } from '../Datetime';
 import { UrlProcessingService } from '../UrlProcessing';
 import { JsonSerializer } from '../Serializer';
 import { StringProcessingService } from '../StringProcessing';
@@ -54,7 +54,7 @@ export interface ServiceContainer {
   readonly typeCheckingService?: TypeCheckingService;
   readonly errorReporter?: ErrorReporter;
 
-  readonly dateService?: DateService;
+  readonly datetimeService?: DatetimeService;
 
   readonly urlProcessingService?: UrlProcessingService;
 
