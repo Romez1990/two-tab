@@ -8,8 +8,7 @@ export class LoggerReceiver implements LoggerState {
     messageService.addHandler<LogMessage>()('log', this.messageHandler.bind(this));
   }
 
-  private messageHandler(data: LogData): void {
-    const { type, args } = data;
+  private messageHandler({ type, args }: LogData): void {
     const method = this[type].bind(this);
     method(args);
   }
