@@ -1,1 +1,1 @@
-export type Key = 'shift';
+export type Key = 'control' | 'shift';
