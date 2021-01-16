@@ -9,5 +9,5 @@ export class MainPageServiceImpl implements MainPageService {
     private readonly browserTabService: BrowserTabService,
   ) {}
 
-  public getTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListService.getAll();
+  public getTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListService.getAllTabLists();
 }

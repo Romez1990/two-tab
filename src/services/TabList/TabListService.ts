@@ -4,6 +4,8 @@ import { TabList } from './TabList';
 import { Tab } from './Tab';
 
 export interface TabListService {
-  getAll(): Task<ReadonlyArray<TabList>>;
-  save(listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList>;
+  getAllTabLists(): Task<ReadonlyArray<TabList>>;
+  saveTabList(listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList>;
+  removeTab(tab: Tab): Task<void>;
+  removeTabList(tabList: TabList): Task<void>;
 }

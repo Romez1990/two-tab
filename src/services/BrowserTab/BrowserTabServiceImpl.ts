@@ -1,17 +1,12 @@
-import { pipe } from 'fp-ts/function';
+import { pipe, constVoid } from 'fp-ts/function';
 import { fold } from 'fp-ts/boolean';
 import { filter } from 'fp-ts/ReadonlyArray';
-import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
-import { Task, map } from 'fp-ts/Task';
+import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
+import { Task, map, chain, sequenceArray } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
-import {
-  BrowserTabInteractions,
-  BrowserTab,
-  BrowserWindow,
-  OpenProperties,
-  OpenInNewWindowProperties,
-} from './BrowserTab';
+import { BrowserTabInteractions, BrowserTab, BrowserWindow, TabOpenProperties } from './BrowserTab';
 import { BrowserTabService } from './BrowserTabService';
+import { Tab, TabList } from '../TabList';
 
 export class BrowserTabServiceImpl implements BrowserTabService {
   public constructor(private readonly browserTabInteractions: BrowserTabInteractions, extension: ExtensionService) {
@@ -48,10 +43,45 @@ export class BrowserTabServiceImpl implements BrowserTabService {
 
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabInteractions.getWindows();
 
-  public open = (openProperties: OpenProperties): Task<BrowserTab> => this.browserTabInteractions.open(openProperties);
+  public openTabList = ({ tabs }: TabList): Task<void> =>
+    pipe(
+      tabs,
+      mapN(this.tabToOpenProperties(false)),
+      mapN(this.browserTabInteractions.openTab.bind(this.browserTabInteractions)),
+      sequenceArray,
+      map(constVoid),
+    );
 
-  public openInNewWindow = (openInNewWindowProperties: OpenInNewWindowProperties): Task<BrowserWindow> =>
-    this.browserTabInteractions.openInNewWindow(openInNewWindowProperties);
+  public openTabListInNewWindow = ({ tabs }: TabList, focused: boolean): Task<void> =>
+    pipe(
+      this.browserTabInteractions.openWindow({ focused }),
+      chain(window =>
+        pipe(
+          tabs,
+          mapN(this.tabToOpenProperties(false, window.id)),
+          mapN(this.browserTabInteractions.openTab.bind(this.browserTabInteractions)),
+          sequenceArray,
+        ),
+      ),
+      map(constVoid),
+    );
 
-  public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> => this.browserTabInteractions.close(tabs);
+  private tabToOpenProperties = (active: boolean, windowId?: number) => ({ url, pinned }: Tab): TabOpenProperties => ({
+    url,
+    pinned,
+    active,
+    windowId,
+  });
+
+  public openTab = ({ url, pinned }: Tab, active: boolean): Task<void> =>
+    pipe(this.browserTabInteractions.openTab({ url, pinned, active }), map(constVoid));
+
+  public openTabInNewWindow = ({ url }: Tab): Task<void> =>
+    pipe(
+      this.browserTabInteractions.openWindow({ focused: true }),
+      map(window => this.browserTabInteractions.openTab({ url, pinned: false, active: true, windowId: window.id })),
+      map(constVoid),
+    );
+
+  public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> => this.browserTabInteractions.closeTabs(tabs);
 }

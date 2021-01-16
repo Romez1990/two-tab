@@ -2,5 +2,5 @@ export * from './BrowserTabInteractions';
 export * from './ChromeTabInteractions';
 export * from './BrowserTab';
 export * from './BrowserWindow';
-export * from './OpenProperties';
-export * from './OpenInNewWindowProperties';
+export * from './TabOpenProperties';
+export * from './WindowOpenProperties';

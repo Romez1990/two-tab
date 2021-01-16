@@ -2,14 +2,14 @@ import { pipe } from 'fp-ts/function';
 import { toArray } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map } from 'fp-ts/ReadonlyNonEmptyArray';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
+import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
 import { BrowserTabInteractions } from './BrowserTabInteractions';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWindow } from './BrowserWindow';
-import { OpenProperties } from './OpenProperties';
 import { ChromeTab } from './ChromeTab';
 import { ChromeWindow } from './ChromeWindow';
-import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
-import { OpenInNewWindowProperties } from './OpenInNewWindowProperties';
+import { TabOpenProperties } from './TabOpenProperties';
+import { WindowOpenProperties } from './WindowOpenProperties';
 
 export class ChromeTabInteractions implements BrowserTabInteractions {
   public getTabsInCurrentWindow = () => (): Promise<ReadonlyNonEmptyArray<BrowserTab>> =>
@@ -32,13 +32,13 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       ),
     );
 
-  public open = (openProperties: OpenProperties) => (): Promise<BrowserTab> =>
-    new Promise(resolve => chrome.tabs.create(openProperties, tab => resolve(this.mapTab(tab))));
+  public openTab = (properties: TabOpenProperties) => (): Promise<BrowserTab> =>
+    new Promise(resolve => chrome.tabs.create(properties, tab => resolve(this.mapTab(tab))));
 
-  public openInNewWindow = (openInNewWindowProperties: OpenInNewWindowProperties) => (): Promise<BrowserWindow> =>
-    new Promise(resolve => chrome.windows.create(openInNewWindowProperties, window => resolve(this.mapWindow(window))));
+  public openWindow = (properties: WindowOpenProperties) => (): Promise<BrowserWindow> =>
+    new Promise(resolve => chrome.windows.create(properties, window => resolve(this.mapWindow(window))));
 
-  public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>) => (): Promise<void> =>
+  public closeTabs = (tabs: ReadonlyNonEmptyArray<BrowserTab>) => (): Promise<void> =>
     new Promise(resolve =>
       chrome.tabs.remove(
         pipe(

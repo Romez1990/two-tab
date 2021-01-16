@@ -13,14 +13,18 @@ export class TabListServiceImpl implements TabListService {
     private readonly datetimeService: DatetimeService,
   ) {}
 
-  public getAll = (): Task<ReadonlyArray<TabList>> => this.tabListRepository.getAll();
+  public getAllTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListRepository.getAllTabLists();
 
-  public save = (listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList> =>
-    pipe(this.createTabList(listName, tabs), this.tabListRepository.save.bind(this.tabListRepository));
+  public saveTabList = (listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList> =>
+    pipe(this.createTabList(listName, tabs), this.tabListRepository.saveTabList.bind(this.tabListRepository));
 
   private createTabList = (name: string, tabs: ReadonlyNonEmptyArray<Tab>): TabList => ({
     name,
     date: this.datetimeService.getCurrent(),
     tabs,
   });
+
+  public removeTab = (tab: Tab): Task<void> => null as any;
+
+  public removeTabList = (tabList: TabList): Task<void> => null as any;
 }
