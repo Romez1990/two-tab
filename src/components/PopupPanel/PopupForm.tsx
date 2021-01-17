@@ -3,7 +3,7 @@ import { Formik, Form, Field, FormikHelpers } from 'formik';
 import { Button } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { object, string } from 'yup';
-import { pipe, constant } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import { map, mapWithIndex, filter, difference, isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task } from 'fp-ts/Task';
@@ -46,9 +46,8 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
 
   function validate({ tabs }: Values): void {
     const areAnyTabsChecked = tabs.some(tab => tab.checked);
-    const tabsErrorMessage = constant(areAnyTabsChecked ? undefined : 'No tabs checked');
-
-    setFormErrors(tabsErrorsLens.modify(tabsErrorMessage));
+    const tabsErrorMessage = areAnyTabsChecked ? undefined : 'No tabs checked';
+    setFormErrors(tabsErrorsLens.set(tabsErrorMessage));
   }
 
   async function submit(

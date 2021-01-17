@@ -1,5 +1,5 @@
 import { Table } from 'dexie';
-import { pipe, constant } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import { findIndex, unsafeDeleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Option, fromNullable, some, none, map as mapO, getOrElseW } from 'fp-ts/Option';
@@ -27,7 +27,7 @@ export class TabListRepositoryImpl implements TabListRepository {
   public saveTabList = (tabList: TabList): Task<TabList> =>
     pipe(
       () => this.table.add(tabList),
-      map(id => idLens.modify(constant(id))(tabList)),
+      map(id => idLens.set(id)(tabList)),
     );
 
   public removeTabList = (tabList: TabList): Task<void> => () =>
@@ -63,7 +63,7 @@ export class TabListRepositoryImpl implements TabListRepository {
   private modifyTabsInTabList = (tabList: TabList) => (tabs: ReadonlyArray<Tab>): Option<TabList> =>
     pipe(
       isNonEmpty(tabs) ? some(tabs) : none,
-      mapO(nonEmptyTabs => tabsLens.modify(constant(nonEmptyTabs))(tabList)),
+      mapO(nonEmptyTabs => tabsLens.set(nonEmptyTabs)(tabList)),
     );
 
   private getTabListId(tabList: TabList): number {
