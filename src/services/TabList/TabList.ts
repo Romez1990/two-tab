@@ -10,3 +10,4 @@ export interface TabList {
 }
 
 export const idLens = Lens.fromProp<TabList>()('id');
+export const tabsLens = Lens.fromProp<TabList>()('tabs');

@@ -9,20 +9,29 @@ import {
   Button,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { pipe } from 'fp-ts/function';
-import { Tab, TabList } from '../../services/TabList';
+import { Task } from 'fp-ts/Task';
+import { TabList, Tab } from '../../services/TabList';
+import { run } from '../../services/Utils/fp-ts/Task';
 import { useService } from '../ServiceContainer';
 import { TabItem } from './TabItem';
-import { run } from '../../services/Utils/fp-ts/Task';
 
 interface Props {
   readonly tabList: TabList;
+  onTabListOpen(): Task<void>;
+  onTabListOpenInNewWindow(focused: boolean): Task<void>;
+  onTabListRemove(): Task<void>;
+  onTabRemove(tab: Tab): Task<void>;
 }
 
-export const TabListItem: FC<Props> = ({ tabList }) => {
+export const TabListItem: FC<Props> = ({
+  tabList,
+  onTabListOpen,
+  onTabListOpenInNewWindow,
+  onTabListRemove,
+  onTabRemove,
+}) => {
   const { name, date, tabs } = tabList;
 
-  const browserTabService = useService('browserTabService');
   const keyboard = useService('keyboardService');
   const datetimeService = useService('datetimeService');
 
@@ -35,24 +44,18 @@ export const TabListItem: FC<Props> = ({ tabList }) => {
     return `${tabCount} ${tabWord}`;
   }
 
-  const removeTab = (tab: Tab) => (): void => {
-    //
-  };
-
-  const removeTabList = (): void => {
-    //
-  };
-
-  const openTabList = (): Promise<void> => pipe(browserTabService.openTabList(tabList), run);
+  const openTabList = (): Promise<void> => run(onTabListOpen());
 
   const openTabListInNewWindow = (): Promise<void> =>
-    pipe(
-      browserTabService.openTabListInNewWindow(
-        tabList,
+    run(
+      onTabListOpenInNewWindow(
         keyboard.isPressed.control && keyboard.isPressed.shift ? true : !keyboard.isPressed.control,
       ),
-      run,
     );
+
+  const removeTabList = (): Promise<void> => run(onTabListRemove());
+
+  const removeTab = (tab: Tab) => (): Promise<void> => run(onTabRemove(tab));
 
   return (
     <Accordion>

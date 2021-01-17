@@ -1,6 +1,7 @@
 import { pipe } from 'fp-ts/function';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task } from 'fp-ts/Task';
+import { TaskOption } from 'fp-ts-contrib/TaskOption';
 import { DatetimeService } from '../Datetime';
 import { TabList } from './TabList';
 import { TabListService } from './TabListService';
@@ -24,7 +25,8 @@ export class TabListServiceImpl implements TabListService {
     tabs,
   });
 
-  public removeTab = (tab: Tab): Task<void> => null as any;
+  public removeTabList = (tabList: TabList): Task<void> => this.tabListRepository.removeTabList(tabList);
 
-  public removeTabList = (tabList: TabList): Task<void> => null as any;
+  public removeTab = (tabList: TabList, tab: Tab): TaskOption<TabList> =>
+    this.tabListRepository.removeTab(tabList, tab);
 }
