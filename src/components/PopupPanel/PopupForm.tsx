@@ -4,14 +4,14 @@ import { Button } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { object, string } from 'yup';
 import { pipe } from 'fp-ts/function';
-import { map, mapWithIndex, filter, difference, isNonEmpty } from 'fp-ts/ReadonlyArray';
+import { map as mapR, mapWithIndex, filter, difference, isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
-import { Task } from 'fp-ts/Task';
+import { Task, map } from 'fp-ts/Task';
 import { Lens } from 'monocle-ts';
 import { TabList } from './TabList';
 import { BrowserTab } from '../../services/BrowserTab';
 import { inRange } from '../../services/Utils/Math';
-import { runWithErrorThrowing } from '../../services/Utils/fp-ts/Task';
+import { run } from '../../services/Utils/fp-ts/Task';
 import { BrowserTabElement, toBrowserTabElement, toBrowserTab, eqBrowserTab, checkedLens } from './BrowserTabElement';
 
 interface Props {
@@ -39,7 +39,7 @@ const tabsLens = Lens.fromProp<Values>()('tabs');
 export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
   const initialValues: Values = {
     listName: '',
-    tabs: map(toBrowserTabElement)(initTabs),
+    tabs: mapR(toBrowserTabElement)(initTabs),
   };
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -50,25 +50,30 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
     setFormErrors(tabsErrorsLens.set(tabsErrorMessage));
   }
 
-  async function submit(
-    { listName, tabs }: Values,
-    { resetForm, setSubmitting }: FormikHelpers<Values>,
-  ): Promise<void> {
-    const checkedTabs = pipe(
-      tabs,
-      filter(tab => tab.checked),
+  function submit({ listName, tabs }: Values, { resetForm, setSubmitting }: FormikHelpers<Values>): Promise<void> {
+    const checkedTabs = filterCheckedTabs(tabs);
+    const newTabs = removeCheckedTabs(tabs, checkedTabs);
+    return pipe(
+      checkedTabs,
+      mapN(toBrowserTab),
+      browserTabs => onSave(listName, browserTabs),
+      map(() => {
+        resetForm({
+          values: {
+            ...initialValues,
+            tabs: newTabs,
+          },
+        });
+        setSubmitting(false);
+      }),
+      run,
     );
-    if (!isNonEmpty(checkedTabs)) return;
+  }
 
-    const browserTabs = mapN(toBrowserTab)(checkedTabs);
-    await runWithErrorThrowing(onSave(listName, browserTabs));
-    resetForm({
-      values: {
-        ...initialValues,
-        tabs: removeCheckedTabs(tabs, checkedTabs),
-      },
-    });
-    setSubmitting(false);
+  function filterCheckedTabs(tabs: ReadonlyArray<BrowserTabElement>): ReadonlyNonEmptyArray<BrowserTabElement> {
+    const checkedTabs = pipe(tabs, filter(checkedLens.get));
+    if (!isNonEmpty(checkedTabs)) throw new Error();
+    return checkedTabs;
   }
 
   const removeCheckedTabs = (
