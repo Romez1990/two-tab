@@ -9,7 +9,7 @@ export const ThemeChanger: FC = () => {
     darkMode: true,
   };
 
-  async function changeTheme(): Promise<void> {
+  function changeTheme(): void {
     // await profileStore.saveDarkTheme(!profileStore.darkMode)();
   }
 
