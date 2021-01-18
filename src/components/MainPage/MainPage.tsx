@@ -1,15 +1,15 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Container, CircularProgress } from '@material-ui/core';
-import { pipe, constVoid } from 'fp-ts/function';
-import { updateAt, findIndex, isEmpty } from 'fp-ts/ReadonlyArray';
+import { pipe } from 'fp-ts/function';
+import { findIndex, updateAt, deleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { fold, getOrElseW } from 'fp-ts/Option';
-import { Task, map } from 'fp-ts/Task';
+import { Task, map, of } from 'fp-ts/Task';
 import { MainLayout } from '../Layout';
 import { TabListsList } from './TabListsList';
-import { Tab, TabList } from '../../services/TabList';
+import { Tab, TabList, tabListsAreEquals } from '../../services/TabList';
 import { useService } from '../ServiceContainer';
 import { run } from '../../services/Utils/fp-ts/Task';
-import { TabListNotFoundInTabListsError } from './Errors';
+import { TabListNotFoundInTabListsError, TabListsNotInitializedError } from './Errors';
 
 export const MainPage: FC = () => {
   const mainPageService = useService('mainPageService');
@@ -22,46 +22,86 @@ export const MainPage: FC = () => {
 
   const getTabLists = (): Task<void> => pipe(mainPageService.getTabLists(), map(setTabLists));
 
-  const openTabList = (tabList: TabList): Task<void> => mainPageService.openTabList(tabList);
-
-  const openTabListInNewWindow = (tabList: TabList, focused: boolean): Task<void> =>
-    mainPageService.openTabListInNewWindow(tabList, focused);
-
-  const removeTabList = (tabList: TabList): Task<void> => mainPageService.removeTabList(tabList);
-
-  const removeTab = (tabList: TabList, tab: Tab): Task<void> =>
+  const openTabList = (tabList: TabList): Task<void> =>
     pipe(
-      mainPageService.removeTab(tabList, tab),
-      map(newTabList => setTabLists(updateTabLists(newTabList))),
-      map(constVoid),
+      mainPageService.openTabList(tabList),
+      map(() => pipe(removeTabListFromTabLists(tabList), setTabListsState)),
     );
 
-  const updateTabLists = (newTabList: TabList) => (oldTabLists: ReadonlyArray<TabList>): ReadonlyArray<TabList> =>
+  const openTabListInNewWindow = (tabList: TabList, focused: boolean): Task<void> =>
+    pipe(
+      mainPageService.openTabListInNewWindow(tabList, focused),
+      map(() => pipe(removeTabListFromTabLists(tabList), setTabListsState)),
+    );
+
+  const removeTabList = (tabList: TabList): Task<void> =>
+    pipe(
+      mainPageService.removeTabList(tabList),
+      map(() => pipe(removeTabListFromTabLists(tabList), setTabListsState)),
+    );
+
+  const openTab = (tabList: TabList, tab: Tab, shouldBeRemoved: boolean): Task<void> =>
+    shouldBeRemoved
+      ? pipe(
+          mainPageService.removeTab(tabList, tab),
+          map(newTabListOption =>
+            pipe(
+              newTabListOption,
+              fold(
+                () => pipe(removeTabListFromTabLists(tabList), setTabListsState),
+                newTabList => pipe(updateTabListsWithNewTabList(newTabList), setTabListsState),
+              ),
+            ),
+          ),
+        )
+      : of(undefined);
+
+  const updateTabListsWithNewTabList = (newTabList: TabList) => (
+    oldTabLists: ReadonlyArray<TabList>,
+  ): ReadonlyArray<TabList> =>
     pipe(
       oldTabLists,
-      findIndex(currentTabList => currentTabList.id === newTabList.id),
+      findIndex(tabListsAreEquals(newTabList)),
       fold(throwTabListNotFound(newTabList), index => updateAt(index, newTabList)(oldTabLists)),
       getOrElseW(throwTabListNotFound(newTabList)),
     );
 
+  const removeTabListFromTabLists = (tabList: TabList) => (
+    oldTabLists: ReadonlyArray<TabList>,
+  ): ReadonlyArray<TabList> =>
+    pipe(
+      oldTabLists,
+      findIndex(tabListsAreEquals(tabList)),
+      fold(throwTabListNotFound(tabList), index => deleteAt(index)(oldTabLists)),
+      getOrElseW(throwTabListNotFound(tabList)),
+    );
+
   const throwTabListNotFound = (tabList: TabList) => (): never => new TabListNotFoundInTabListsError(tabList).throw();
+
+  const setTabListsState = (updateTabLists: (oldTabLists: ReadonlyArray<TabList>) => ReadonlyArray<TabList>): void =>
+    setTabLists(oldTabLists =>
+      oldTabLists === null ? new TabListsNotInitializedError().throw() : updateTabLists(oldTabLists),
+    );
 
   return (
     <MainLayout>
       <Container>
-        {/* eslint-disable-next-line no-nested-ternary */}
         {tabLists === null ? (
           <CircularProgress />
-        ) : isEmpty(tabLists) ? (
-          'No tabs'
         ) : (
-          <TabListsList
-            tabLists={tabLists}
-            onTabListOpen={openTabList}
-            onTabListOpenInNewWindow={openTabListInNewWindow}
-            onTabListRemove={removeTabList}
-            onTabRemove={removeTab}
-          />
+          <>
+            {!isNonEmpty(tabLists) ? (
+              'No tabs'
+            ) : (
+              <TabListsList
+                tabLists={tabLists}
+                onTabListOpen={openTabList}
+                onTabListOpenInNewWindow={openTabListInNewWindow}
+                onTabListRemove={removeTabList}
+                onTabOpen={openTab}
+              />
+            )}
+          </>
         )}
       </Container>
     </MainLayout>

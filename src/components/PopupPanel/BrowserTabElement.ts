@@ -11,17 +11,11 @@ export const toBrowserTabElement = (tab: BrowserTab): BrowserTabElement => ({
   checked: false,
 });
 
-export const toBrowserTab = (tabElement: BrowserTabElement): BrowserTab => ({
-  id: tabElement.id,
-  windowId: tabElement.windowId,
-  title: tabElement.title,
-  url: tabElement.url,
-  favIconUrl: tabElement.favIconUrl,
-  pinned: tabElement.pinned,
-});
+export const toBrowserTab = (tabElement: BrowserTabElement): BrowserTab => {
+  const { checked, ...tab } = tabElement;
+  return tab;
+};
 
-export const eqBrowserTab = fromEquals(
-  (tab1: BrowserTabElement, tab2: BrowserTabElement): boolean => tab1.id === tab2.id,
-);
+export const eqBrowserTab = fromEquals((x: BrowserTabElement, y: BrowserTabElement): boolean => x.id === y.id);
 
 export const checkedLens = Lens.fromProp<BrowserTabElement>()('checked');

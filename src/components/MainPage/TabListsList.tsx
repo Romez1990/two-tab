@@ -1,14 +1,15 @@
 import React, { FC } from 'react';
+import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task } from 'fp-ts/Task';
 import { TabListItem } from './TabListItem';
 import { Tab, TabList } from '../../services/TabList';
 
 interface Props {
-  readonly tabLists: ReadonlyArray<TabList>;
+  readonly tabLists: ReadonlyNonEmptyArray<TabList>;
   onTabListOpen(tabList: TabList): Task<void>;
   onTabListOpenInNewWindow(tabList: TabList, focused: boolean): Task<void>;
   onTabListRemove(tabList: TabList): Task<void>;
-  onTabRemove(tabList: TabList, tab: Tab): Task<void>;
+  onTabOpen(tabList: TabList, tab: Tab, shouldBeRemoved: boolean): Task<void>;
 }
 
 export const TabListsList: FC<Props> = ({
@@ -16,7 +17,7 @@ export const TabListsList: FC<Props> = ({
   onTabListOpen,
   onTabListOpenInNewWindow,
   onTabListRemove,
-  onTabRemove,
+  onTabOpen,
 }) => {
   const openTabList = (tabList: TabList) => (): Task<void> => onTabListOpen(tabList);
 
@@ -25,7 +26,8 @@ export const TabListsList: FC<Props> = ({
 
   const removeTabList = (tabList: TabList) => (): Task<void> => onTabListRemove(tabList);
 
-  const removeTab = (tabList: TabList) => (tab: Tab): Task<void> => onTabRemove(tabList, tab);
+  const openTab = (tabList: TabList) => (tab: Tab, shouldBeRemoved: boolean): Task<void> =>
+    onTabOpen(tabList, tab, shouldBeRemoved);
 
   return (
     <>
@@ -36,7 +38,7 @@ export const TabListsList: FC<Props> = ({
           onTabListOpen={openTabList(tabList)}
           onTabListOpenInNewWindow={openTabListInNewWindow(tabList)}
           onTabListRemove={removeTabList(tabList)}
-          onTabRemove={removeTab(tabList)}
+          onTabOpen={openTab(tabList)}
         />
       ))}
     </>

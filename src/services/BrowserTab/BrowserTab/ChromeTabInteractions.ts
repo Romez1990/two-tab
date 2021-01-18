@@ -4,7 +4,7 @@ import { ReadonlyNonEmptyArray, map } from 'fp-ts/ReadonlyNonEmptyArray';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
 import { InvalidChromeTabError, InvalidChromeWindowError } from './Errors';
 import { BrowserTabInteractions } from './BrowserTabInteractions';
-import { BrowserTab } from './BrowserTab';
+import { BrowserTab, idLens } from './BrowserTab';
 import { BrowserWindow } from './BrowserWindow';
 import { ChromeTab } from './ChromeTab';
 import { ChromeWindow } from './ChromeWindow';
@@ -39,16 +39,7 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
     new Promise(resolve => chrome.windows.create(properties, window => resolve(this.mapWindow(window))));
 
   public closeTabs = (tabs: ReadonlyNonEmptyArray<BrowserTab>) => (): Promise<void> =>
-    new Promise(resolve =>
-      chrome.tabs.remove(
-        pipe(
-          tabs,
-          map(tab => tab.id),
-          toArray,
-        ),
-        resolve,
-      ),
-    );
+    new Promise(resolve => chrome.tabs.remove(pipe(tabs, map(idLens.get), toArray), resolve));
 
   private mapTabs = (tabs: ReadonlyArray<ChromeTab>): ReadonlyNonEmptyArray<BrowserTab> =>
     pipe(tabs, checkNonEmpty<ChromeTab>('tabs'), map(this.mapTab.bind(this)));

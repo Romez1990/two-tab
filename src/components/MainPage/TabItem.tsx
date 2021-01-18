@@ -5,7 +5,7 @@ import { useService } from '../ServiceContainer';
 
 interface Props {
   readonly tab: Tab;
-  onOpen(): void;
+  onOpen(shouldBeRemoved: boolean): void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -28,6 +28,10 @@ export const TabItem: FC<Props> = ({ tab: { title, url, favIconUrl }, onOpen }) 
   const select = (): void => setSelected(true);
   const unSelect = (): void => setSelected(false);
 
+  const onClick = (): void => onOpen(true);
+
+  const onAuxClick = (): void => onOpen(false);
+
   const classes = useStyles();
 
   return (
@@ -37,8 +41,8 @@ export const TabItem: FC<Props> = ({ tab: { title, url, favIconUrl }, onOpen }) 
       href={url}
       target="_blank"
       rel="noreferrer"
-      onClick={onOpen}
-      onAuxClick={onOpen}
+      onClick={onClick}
+      onAuxClick={onAuxClick}
     >
       <ListItem selected={isSelected} onMouseEnter={select} onMouseLeave={unSelect}>
         <Avatar src={favIconUrl} />

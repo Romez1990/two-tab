@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { Task } from 'fp-ts/Task';
+import { pipe } from 'fp-ts/function';
 import { TabList, Tab } from '../../services/TabList';
 import { run } from '../../services/Utils/fp-ts/Task';
 import { useService } from '../ServiceContainer';
@@ -20,7 +21,7 @@ interface Props {
   onTabListOpen(): Task<void>;
   onTabListOpenInNewWindow(focused: boolean): Task<void>;
   onTabListRemove(): Task<void>;
-  onTabRemove(tab: Tab): Task<void>;
+  onTabOpen(tab: Tab, shouldBeRemoved: boolean): Task<void>;
 }
 
 export const TabListItem: FC<Props> = ({
@@ -28,7 +29,7 @@ export const TabListItem: FC<Props> = ({
   onTabListOpen,
   onTabListOpenInNewWindow,
   onTabListRemove,
-  onTabRemove,
+  onTabOpen,
 }) => {
   const { name, date, tabs } = tabList;
 
@@ -44,18 +45,21 @@ export const TabListItem: FC<Props> = ({
     return `${tabCount} ${tabWord}`;
   }
 
-  const openTabList = (): Promise<void> => run(onTabListOpen());
+  const openTabList = (): Promise<void> => pipe(onTabListOpen(), run);
 
-  const openTabListInNewWindow = (): Promise<void> =>
-    run(
-      onTabListOpenInNewWindow(
-        keyboard.isPressed.control && keyboard.isPressed.shift ? true : !keyboard.isPressed.control,
-      ),
-    );
+  const openTabListInNewWindow = (): Promise<void> => pipe(shouldWindowBeFocused(), onTabListOpenInNewWindow, run);
 
-  const removeTabList = (): Promise<void> => run(onTabListRemove());
+  function shouldWindowBeFocused(): boolean {
+    const { control, shift } = keyboard.isPressed;
+    if (control && shift) return true;
+    if (control) return false;
+    if (shift) return true;
+    return true;
+  }
 
-  const removeTab = (tab: Tab) => (): Promise<void> => run(onTabRemove(tab));
+  const removeTabList = (): Promise<void> => pipe(onTabListRemove(), run);
+
+  const openTab = (tab: Tab) => (shouldBeRemoved: boolean): Promise<void> => pipe(onTabOpen(tab, shouldBeRemoved), run);
 
   return (
     <Accordion>
@@ -78,7 +82,7 @@ export const TabListItem: FC<Props> = ({
       <AccordionDetails>
         <List>
           {tabs.map(tab => (
-            <TabItem key={tab.id} tab={tab} onOpen={removeTab(tab)} />
+            <TabItem key={tab.id} tab={tab} onOpen={openTab(tab)} />
           ))}
         </List>
       </AccordionDetails>
