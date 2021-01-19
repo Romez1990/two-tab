@@ -46,14 +46,14 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 
-  function validate({ tabs }: Values): void {
-    const tabsErrorMessage = pipe(
+  const validate = ({ tabs }: Values): void =>
+    pipe(
       tabs,
       mapO(someR(checkedLens.get)),
       fold(constUndefined, someTabsAreChecked => (someTabsAreChecked ? undefined : 'No tabs checked')),
+      tabsErrorsLens.set,
+      setFormErrors,
     );
-    setFormErrors(tabsErrorsLens.set(tabsErrorMessage));
-  }
 
   const submit = (
     { listName, tabs: tabsOption }: Values,
