@@ -15,7 +15,7 @@ export class KeyboardServiceImpl implements KeyboardService {
   public readonly isPressed: Record<Key, boolean>;
 
   private createIsPressedRecord(): ReadonlyRecord<Key, boolean> {
-    const keys: ReadonlyArray<Key> = ['shift'];
+    const keys: ReadonlyArray<Key> = ['control', 'shift'];
     const initValues = false;
     return pipe(
       keys,
