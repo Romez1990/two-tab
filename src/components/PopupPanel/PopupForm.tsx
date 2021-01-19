@@ -1,27 +1,29 @@
 import React, { FC, useState, Dispatch, SetStateAction } from 'react';
 import { Formik, Form, Field, FormikHelpers } from 'formik';
-import { Button } from '@material-ui/core';
+import { CircularProgress, Button } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { object, string } from 'yup';
-import { pipe } from 'fp-ts/function';
-import { map as mapR, mapWithIndex, filter, difference, isNonEmpty } from 'fp-ts/ReadonlyArray';
+import { pipe, constUndefined } from 'fp-ts/function';
+import { map as mapR, mapWithIndex, filter, difference, isNonEmpty, some as someR } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
+import { Option, some, map as mapO, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map } from 'fp-ts/Task';
 import { Lens } from 'monocle-ts';
 import { TabList } from './TabList';
 import { BrowserTab } from '../../services/BrowserTab';
 import { inRange } from '../../services/Utils/Math';
 import { run } from '../../services/Utils/fp-ts/Task';
+import { TabsNotInitializedError } from './Errors';
 import { BrowserTabElement, toBrowserTabElement, toBrowserTab, eqBrowserTab, checkedLens } from './BrowserTabElement';
 
 interface Props {
-  readonly tabs: ReadonlyArray<BrowserTab>;
+  readonly tabs: Option<ReadonlyArray<BrowserTab>>;
   onSave(listName: string, tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void>;
 }
 
 interface Values {
   readonly listName: string;
-  readonly tabs: ReadonlyArray<BrowserTabElement>;
+  readonly tabs: Option<ReadonlyArray<BrowserTabElement>>;
 }
 
 interface FormErrors {
@@ -39,36 +41,47 @@ const tabsLens = Lens.fromProp<Values>()('tabs');
 export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
   const initialValues: Values = {
     listName: '',
-    tabs: mapR(toBrowserTabElement)(initTabs),
+    tabs: pipe(initTabs, mapO(mapR(toBrowserTabElement))),
   };
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   function validate({ tabs }: Values): void {
-    const areAnyTabsChecked = tabs.some(tab => tab.checked);
-    const tabsErrorMessage = areAnyTabsChecked ? undefined : 'No tabs checked';
+    const tabsErrorMessage = pipe(
+      tabs,
+      mapO(someR(checkedLens.get)),
+      fold(constUndefined, someTabsAreChecked => (someTabsAreChecked ? undefined : 'No tabs checked')),
+    );
     setFormErrors(tabsErrorsLens.set(tabsErrorMessage));
   }
 
-  function submit({ listName, tabs }: Values, { resetForm, setSubmitting }: FormikHelpers<Values>): Promise<void> {
-    const checkedTabs = filterCheckedTabs(tabs);
-    const newTabs = removeCheckedTabs(tabs, checkedTabs);
-    return pipe(
-      checkedTabs,
-      mapN(toBrowserTab),
-      browserTabs => onSave(listName, browserTabs),
-      map(() => {
-        resetForm({
-          values: {
-            ...initialValues,
-            tabs: newTabs,
-          },
-        });
-        setSubmitting(false);
-      }),
-      run,
+  const submit = (
+    { listName, tabs: tabsOption }: Values,
+    { resetForm, setSubmitting }: FormikHelpers<Values>,
+  ): Promise<void> =>
+    pipe(
+      tabsOption,
+      getOrElseW(() => new TabsNotInitializedError().throw()),
+      tabs => {
+        const checkedTabs = filterCheckedTabs(tabs);
+        const newTabs = removeCheckedTabs(tabs, checkedTabs);
+        return pipe(
+          checkedTabs,
+          mapN(toBrowserTab),
+          browserTabs => onSave(listName, browserTabs),
+          map(() => {
+            resetForm({
+              values: {
+                ...initialValues,
+                tabs: some(newTabs),
+              },
+            });
+            setSubmitting(false);
+          }),
+          run,
+        );
+      },
     );
-  }
 
   function filterCheckedTabs(tabs: ReadonlyArray<BrowserTabElement>): ReadonlyNonEmptyArray<BrowserTabElement> {
     const checkedTabs = pipe(tabs, filter(checkedLens.get));
@@ -83,7 +96,9 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
 
   const changeRange = (setValues: Dispatch<SetStateAction<Values>>) => (start: number, end: number): void =>
     setValues(
-      tabsLens.modify(mapWithIndex((i, tab) => checkedLens.modify(checked => checked || inRange(i, start, end))(tab))),
+      tabsLens.modify(
+        mapO(mapWithIndex((i, tab) => checkedLens.modify(checked => checked || inRange(i, start, end))(tab))),
+      ),
     );
 
   return (
@@ -92,19 +107,26 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
       validationSchema={validationSchema}
       validate={validate}
       onSubmit={submit}
+      enableReinitialize
     >
       {({ values: { tabs }, setValues, handleChange, isSubmitting }) => (
         <Form>
-          {!isNonEmpty(tabs) ? (
-            'No tabs to save. Try to remove filtering'
+          {isNone(tabs) ? (
+            <CircularProgress />
           ) : (
-            <TabList
-              name="tabs"
-              tabs={tabs}
-              onChange={handleChange}
-              onChangeRange={changeRange(setValues)}
-              disabled={isSubmitting}
-            />
+            <>
+              {!isNonEmpty(tabs.value) ? (
+                'No tabs to save. Try to remove filtering'
+              ) : (
+                <TabList
+                  name="tabs.value"
+                  tabs={tabs.value}
+                  onChange={handleChange}
+                  onChangeRange={changeRange(setValues)}
+                  disabled={isSubmitting}
+                />
+              )}
+            </>
           )}
           {typeof formErrors.tabs !== 'undefined' && <div>{formErrors.tabs}</div>}
           <Field name="listName" component={TextField} placeholder="List name" disabled={isSubmitting} />

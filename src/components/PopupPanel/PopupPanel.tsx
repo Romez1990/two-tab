@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
-import { CircularProgress, Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { pipe } from 'fp-ts/function';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
-import { Option, some, none, isNone } from 'fp-ts/Option';
+import { Option, some, none } from 'fp-ts/Option';
 import { Task, map } from 'fp-ts/Task';
 import { PopupForm } from './PopupForm';
 import { BrowserTab } from '../../services/BrowserTab';
@@ -30,7 +30,7 @@ export const PopupPanel: FC = () => {
       <Button variant="contained" color="primary" href={appUrl} target="_blank" rel="noreferrer">
         Open in full screen
       </Button>
-      {isNone(tabs) ? <CircularProgress /> : <PopupForm tabs={tabs.value} onSave={save} />}
+      <PopupForm tabs={tabs} onSave={save} />
     </>
   );
 };
