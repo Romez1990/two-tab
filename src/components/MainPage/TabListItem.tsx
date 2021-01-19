@@ -61,7 +61,8 @@ export const TabListItem: FC<Props> = ({
     );
 
   function shouldWindowBeFocused(): boolean {
-    const { control, shift } = keyboard.isPressed;
+    const control = keyboard.isPressed('control');
+    const shift = keyboard.isPressed('shift');
     if (control && shift) return true;
     if (control) return false;
     if (shift) return true;
