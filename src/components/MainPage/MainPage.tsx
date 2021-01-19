@@ -20,24 +20,48 @@ export const MainPage: FC = () => {
 
   const [tabLists, setTabLists] = useState<Option<ReadonlyArray<TabList>>>(none);
 
-  const getTabLists = (): Task<void> => pipe(mainPageService.getTabLists(), map(some), map(setTabLists));
+  const getTabLists = (): Task<void> =>
+    pipe(
+      mainPageService.getTabLists(),
+      map(some),
+      map(setTabLists),
+      //
+    );
 
   const openTabList = (tabList: TabList): Task<void> =>
     pipe(
       mainPageService.openTabList(tabList),
-      map(() => pipe(removeTabListFromTabLists(tabList), setTabListsState)),
+      map(() =>
+        pipe(
+          removeTabListFromTabLists(tabList),
+          setTabListsState,
+          //
+        ),
+      ),
     );
 
   const openTabListInNewWindow = (tabList: TabList, focused: boolean): Task<void> =>
     pipe(
       mainPageService.openTabListInNewWindow(tabList, focused),
-      map(() => pipe(removeTabListFromTabLists(tabList), setTabListsState)),
+      map(() =>
+        pipe(
+          removeTabListFromTabLists(tabList),
+          setTabListsState,
+          //
+        ),
+      ),
     );
 
   const removeTabList = (tabList: TabList): Task<void> =>
     pipe(
       mainPageService.removeTabList(tabList),
-      map(() => pipe(removeTabListFromTabLists(tabList), setTabListsState)),
+      map(() =>
+        pipe(
+          removeTabListFromTabLists(tabList),
+          setTabListsState,
+          //
+        ),
+      ),
     );
 
   const openTab = (tabList: TabList, tab: Tab, shouldBeRemoved: boolean): Task<void> =>
@@ -48,8 +72,18 @@ export const MainPage: FC = () => {
             pipe(
               newTabListOption,
               fold(
-                () => pipe(removeTabListFromTabLists(tabList), setTabListsState),
-                newTabList => pipe(updateTabListsWithNewTabList(newTabList), setTabListsState),
+                () =>
+                  pipe(
+                    removeTabListFromTabLists(tabList),
+                    setTabListsState,
+                    //
+                  ),
+                newTabList =>
+                  pipe(
+                    updateTabListsWithNewTabList(newTabList),
+                    setTabListsState,
+                    //
+                  ),
               ),
             ),
           ),
@@ -80,7 +114,14 @@ export const MainPage: FC = () => {
 
   const setTabListsState = (updateTabLists: (oldTabLists: ReadonlyArray<TabList>) => ReadonlyArray<TabList>): void =>
     setTabLists(oldTabLists =>
-      isNone(oldTabLists) ? new TabListsNotInitializedError().throw() : pipe(oldTabLists.value, updateTabLists, some),
+      isNone(oldTabLists)
+        ? new TabListsNotInitializedError().throw()
+        : pipe(
+            oldTabLists.value,
+            updateTabLists,
+            some,
+            //
+          ),
     );
 
   return (

@@ -18,7 +18,13 @@ export const PopupPanel: FC = () => {
 
   const [tabs, setTabs] = useState<Option<ReadonlyArray<BrowserTab>>>(none);
 
-  const getTabs = (): Task<void> => pipe(popupService.getTabsInCurrentWindow(false), map(some), map(setTabs));
+  const getTabs = (): Task<void> =>
+    pipe(
+      popupService.getTabsInCurrentWindow(false),
+      map(some),
+      map(setTabs),
+      //
+    );
 
   const save = (listName: string, checkedTabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> =>
     popupService.saveTabs(listName, checkedTabs);

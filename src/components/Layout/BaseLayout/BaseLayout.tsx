@@ -14,7 +14,13 @@ export const BaseLayout: FC<LayoutProps> = ({ title: inputTitle, children }) => 
   const appTitle = 'Two Tab';
 
   const processTitle = (): void =>
-    pipe(fromNullable(inputTitle), map(addAppTitle), getOrElse(constant(appTitle)), setTitle);
+    pipe(
+      fromNullable(inputTitle),
+      map(addAppTitle),
+      getOrElse(constant(appTitle)),
+      setTitle,
+      //
+    );
 
   const addAppTitle = (pageTitle: string) => `${pageTitle} | ${appTitle}`;
 

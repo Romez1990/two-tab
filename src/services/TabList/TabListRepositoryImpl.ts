@@ -31,7 +31,11 @@ export class TabListRepositoryImpl implements TabListRepository {
     );
 
   public removeTabList = (tabList: TabList): Task<void> => () =>
-    pipe(this.getTabListId(tabList), id => this.table.delete(id));
+    pipe(
+      this.getTabListId(tabList),
+      id => this.table.delete(id),
+      //
+    );
 
   public removeTab = (tabList: TabList, tab: Tab): TaskOption<TabList> =>
     pipe(
@@ -47,8 +51,18 @@ export class TabListRepositoryImpl implements TabListRepository {
         pipe(
           newTabListOption,
           fold(
-            () => pipe(this.removeTabList(tabList), map(constant(none))),
-            newTabList => pipe(this.updateTabList(newTabList), map(some)),
+            () =>
+              pipe(
+                this.removeTabList(tabList),
+                map(constant(none)),
+                //
+              ),
+            newTabList =>
+              pipe(
+                this.updateTabList(newTabList),
+                map(some),
+                //
+              ),
           ),
         ),
       ),
@@ -63,7 +77,12 @@ export class TabListRepositoryImpl implements TabListRepository {
     );
 
   private updateTabList = (tabList: TabList): Task<TabList> =>
-    pipe(this.getTabListId(tabList), id => () => this.table.update(id, tabList), map(constant(tabList)));
+    pipe(
+      this.getTabListId(tabList),
+      id => () => this.table.update(id, tabList),
+      map(constant(tabList)),
+      //
+    );
 
   private removeTabFromArray = (tab: Tab, tabs: ReadonlyNonEmptyArray<Tab>): Option<ReadonlyArray<Tab>> =>
     pipe(

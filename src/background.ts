@@ -5,4 +5,9 @@ import { run } from './services/Utils/fp-ts/Task';
 const loggerService = serviceContainer.get('loggerService');
 const storageService = serviceContainer.get('storageService');
 
-pipe(loggerService.registerReceiver(), storageService.connect.bind(storageService), run);
+pipe(
+  loggerService.registerReceiver(),
+  storageService.connect.bind(storageService),
+  run,
+  //
+);

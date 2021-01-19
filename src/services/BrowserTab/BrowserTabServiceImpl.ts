@@ -74,7 +74,11 @@ export class BrowserTabServiceImpl implements BrowserTabService {
   });
 
   public openTab = ({ url, pinned }: Tab, active: boolean): Task<void> =>
-    pipe(this.browserTabInteractions.openTab({ url, pinned, active }), map(constVoid));
+    pipe(
+      this.browserTabInteractions.openTab({ url, pinned, active }),
+      map(constVoid),
+      //
+    );
 
   public openTabInNewWindow = ({ url }: Tab): Task<void> =>
     pipe(

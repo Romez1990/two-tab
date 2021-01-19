@@ -20,7 +20,12 @@ export class ConnectedStorage extends Dexie implements StorageState {
   }
 
   public connect = (): Task<void> =>
-    pipe(this.version(1).stores(this._schema), constant(this.open.bind(this)), map(constVoid));
+    pipe(
+      this.version(1).stores(this._schema),
+      constant(this.open.bind(this)),
+      map(constVoid),
+      //
+    );
 
   public getTable = <T, TKey = IndexableType>(name: string): Table<T, TKey> => this.table(name);
 }

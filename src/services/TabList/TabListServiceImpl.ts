@@ -17,7 +17,11 @@ export class TabListServiceImpl implements TabListService {
   public getAllTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListRepository.getAllTabLists();
 
   public saveTabList = (listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList> =>
-    pipe(this.createTabList(listName, tabs), this.tabListRepository.saveTabList.bind(this.tabListRepository));
+    pipe(
+      this.createTabList(listName, tabs),
+      this.tabListRepository.saveTabList.bind(this.tabListRepository),
+      //
+    );
 
   private createTabList = (name: string, tabs: ReadonlyNonEmptyArray<Tab>): TabList => ({
     name,

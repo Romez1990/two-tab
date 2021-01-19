@@ -17,5 +17,9 @@ export class TypeCheckingServiceImpl implements TypeCheckingService {
     );
 
   public checkAndThrow = <T>(type: Type<T>) => (data: unknown): T =>
-    pipe(this.check(type)(data), getOrElseW(throwError));
+    pipe(
+      this.check(type)(data),
+      getOrElseW(throwError),
+      //
+    );
 }

@@ -45,9 +45,20 @@ export const TabListItem: FC<Props> = ({
     return `${tabCount} ${tabWord}`;
   }
 
-  const openTabList = (): Promise<void> => pipe(onTabListOpen(), run);
+  const openTabList = (): Promise<void> =>
+    pipe(
+      onTabListOpen(),
+      run,
+      //
+    );
 
-  const openTabListInNewWindow = (): Promise<void> => pipe(shouldWindowBeFocused(), onTabListOpenInNewWindow, run);
+  const openTabListInNewWindow = (): Promise<void> =>
+    pipe(
+      shouldWindowBeFocused(),
+      onTabListOpenInNewWindow,
+      run,
+      //
+    );
 
   function shouldWindowBeFocused(): boolean {
     const { control, shift } = keyboard.isPressed;
@@ -57,9 +68,19 @@ export const TabListItem: FC<Props> = ({
     return true;
   }
 
-  const removeTabList = (): Promise<void> => pipe(onTabListRemove(), run);
+  const removeTabList = (): Promise<void> =>
+    pipe(
+      onTabListRemove(),
+      run,
+      //
+    );
 
-  const openTab = (tab: Tab) => (shouldBeRemoved: boolean): Promise<void> => pipe(onTabOpen(tab, shouldBeRemoved), run);
+  const openTab = (tab: Tab) => (shouldBeRemoved: boolean): Promise<void> =>
+    pipe(
+      onTabOpen(tab, shouldBeRemoved),
+      run,
+      //
+    );
 
   return (
     <Accordion>

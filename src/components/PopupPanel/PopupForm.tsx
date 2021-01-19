@@ -41,7 +41,11 @@ const tabsLens = Lens.fromProp<Values>()('tabs');
 export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
   const initialValues: Values = {
     listName: '',
-    tabs: pipe(initTabs, mapO(mapR(toBrowserTabElement))),
+    tabs: pipe(
+      initTabs,
+      mapO(mapR(toBrowserTabElement)),
+      //
+    ),
   };
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -84,7 +88,11 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
     );
 
   function filterCheckedTabs(tabs: ReadonlyArray<BrowserTabElement>): ReadonlyNonEmptyArray<BrowserTabElement> {
-    const checkedTabs = pipe(tabs, filter(checkedLens.get));
+    const checkedTabs = pipe(
+      tabs,
+      filter(checkedLens.get),
+      //
+    );
     if (!isNonEmpty(checkedTabs)) throw new Error();
     return checkedTabs;
   }

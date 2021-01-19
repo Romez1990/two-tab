@@ -6,7 +6,12 @@ export class UrlProcessingServiceImpl implements UrlProcessingService {
   public constructor(private readonly stringProcessingService: StringProcessingService) {}
 
   public getHostName = (url: string): string =>
-    pipe(this.createUrlObject(url), ({ hostname }) => hostname, this.stringProcessingService.trimStart('www.'));
+    pipe(
+      this.createUrlObject(url),
+      ({ hostname }) => hostname,
+      this.stringProcessingService.trimStart('www.'),
+      //
+    );
 
   private createUrlObject = (url: string): URL => new URL(url);
 }

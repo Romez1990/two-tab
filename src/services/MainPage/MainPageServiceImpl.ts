@@ -14,7 +14,11 @@ export class MainPageServiceImpl implements MainPageService {
   public getTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListService.getAllTabLists();
 
   public openTabList = (tabList: TabList): Task<void> =>
-    pipe(this.browserTabService.openTabList(tabList), chain(constant(this.tabListService.removeTabList(tabList))));
+    pipe(
+      this.browserTabService.openTabList(tabList),
+      chain(constant(this.tabListService.removeTabList(tabList))),
+      //
+    );
 
   public openTabListInNewWindow = (tabList: TabList, focused: boolean): Task<void> =>
     pipe(

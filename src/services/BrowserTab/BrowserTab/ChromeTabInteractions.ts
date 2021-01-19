@@ -39,13 +39,31 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
     new Promise(resolve => chrome.windows.create(properties, window => resolve(this.mapWindow(window))));
 
   public closeTabs = (tabs: ReadonlyNonEmptyArray<BrowserTab>) => (): Promise<void> =>
-    new Promise(resolve => chrome.tabs.remove(pipe(tabs, map(idLens.get), toArray), resolve));
+    new Promise(resolve =>
+      pipe(
+        tabs,
+        map(idLens.get),
+        toArray,
+        tabIds => chrome.tabs.remove(tabIds, resolve),
+        //
+      ),
+    );
 
   private mapTabs = (tabs: ReadonlyArray<ChromeTab>): ReadonlyNonEmptyArray<BrowserTab> =>
-    pipe(tabs, checkNonEmpty<ChromeTab>('tabs'), map(this.mapTab.bind(this)));
+    pipe(
+      tabs,
+      checkNonEmpty<ChromeTab>('tabs'),
+      map(this.mapTab.bind(this)),
+      //
+    );
 
   private mapWindows = (windows: ReadonlyArray<ChromeWindow>): ReadonlyNonEmptyArray<BrowserWindow> =>
-    pipe(windows, checkNonEmpty<ChromeWindow>('windows'), map(this.mapWindow));
+    pipe(
+      windows,
+      checkNonEmpty<ChromeWindow>('windows'),
+      map(this.mapWindow),
+      //
+    );
 
   private mapTab(tab: ChromeTab): BrowserTab {
     const { id, windowId, title, url, favIconUrl, pinned } = tab;
