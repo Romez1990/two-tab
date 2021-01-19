@@ -73,19 +73,5 @@ export class BrowserTabServiceImpl implements BrowserTabService {
     windowId,
   });
 
-  public openTab = ({ url, pinned }: Tab, active: boolean): Task<void> =>
-    pipe(
-      this.browserTabInteractions.openTab({ url, pinned, active }),
-      map(constVoid),
-      //
-    );
-
-  public openTabInNewWindow = ({ url }: Tab): Task<void> =>
-    pipe(
-      this.browserTabInteractions.openWindow({ focused: true }),
-      chain(window => this.browserTabInteractions.openTab({ url, pinned: false, active: true, windowId: window.id })),
-      map(constVoid),
-    );
-
   public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> => this.browserTabInteractions.closeTabs(tabs);
 }
