@@ -6,6 +6,6 @@ export interface MainPageService {
   getTabLists(): Task<ReadonlyArray<TabList>>;
   openTabList(tabList: TabList): Task<void>;
   openTabListInNewWindow(tabList: TabList, focused: boolean): Task<void>;
-  removeTabList(tabList: TabList): Task<void>;
-  removeTab(tabList: TabList, tab: Tab): TaskOption<TabList>;
+  deleteTabList(tabList: TabList): Task<void>;
+  deleteTab(tabList: TabList, tab: Tab): TaskOption<TabList>;
 }

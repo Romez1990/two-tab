@@ -68,7 +68,7 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
       getOrElseW(() => new TabsNotInitializedError().throw()),
       tabs => {
         const checkedTabs = filterCheckedTabs(tabs);
-        const newTabs = removeCheckedTabs(tabs, checkedTabs);
+        const newTabs = deleteCheckedTabs(tabs, checkedTabs);
         return pipe(
           checkedTabs,
           mapN(toBrowserTab),
@@ -97,7 +97,7 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
     return checkedTabs;
   }
 
-  const removeCheckedTabs = (
+  const deleteCheckedTabs = (
     oldTabs: ReadonlyArray<BrowserTabElement>,
     checkedTabs: ReadonlyArray<BrowserTabElement>,
   ): ReadonlyArray<BrowserTabElement> => difference(eqBrowserTab)(oldTabs, checkedTabs);

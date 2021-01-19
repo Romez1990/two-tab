@@ -5,7 +5,7 @@ import { useService } from '../ServiceContainer';
 
 interface Props {
   readonly tab: Tab;
-  onOpen(shouldBeRemoved: boolean): void;
+  onOpen(shouldBeDeleted: boolean): void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

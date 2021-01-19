@@ -30,19 +30,19 @@ export class TabListRepositoryImpl implements TabListRepository {
       map(id => idLens.set(id)(tabList)),
     );
 
-  public removeTabList = (tabList: TabList): Task<void> => () =>
+  public deleteTabList = (tabList: TabList): Task<void> => () =>
     pipe(
       this.getTabListId(tabList),
       id => this.table.delete(id),
       //
     );
 
-  public removeTab = (tabList: TabList, tab: Tab): TaskOption<TabList> =>
+  public deleteTab = (tabList: TabList, tab: Tab): TaskOption<TabList> =>
     pipe(
       this.findTabList(tabList),
       map(foundTabList =>
         pipe(
-          this.removeTabFromArray(tab, foundTabList.tabs),
+          this.deleteTabFromArray(tab, foundTabList.tabs),
           getOrElseW(() => new TabNotFoundInTabListError(tabList).throw()),
           this.modifyTabsInTabList(foundTabList),
         ),
@@ -53,7 +53,7 @@ export class TabListRepositoryImpl implements TabListRepository {
           fold(
             () =>
               pipe(
-                this.removeTabList(tabList),
+                this.deleteTabList(tabList),
                 map(constant(none)),
                 //
               ),
@@ -84,7 +84,7 @@ export class TabListRepositoryImpl implements TabListRepository {
       //
     );
 
-  private removeTabFromArray = (tab: Tab, tabs: ReadonlyNonEmptyArray<Tab>): Option<ReadonlyArray<Tab>> =>
+  private deleteTabFromArray = (tab: Tab, tabs: ReadonlyNonEmptyArray<Tab>): Option<ReadonlyArray<Tab>> =>
     pipe(
       tabs,
       findIndex(tabsAreEquals(tab)),

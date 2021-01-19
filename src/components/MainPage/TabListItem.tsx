@@ -20,15 +20,15 @@ interface Props {
   readonly tabList: TabList;
   onTabListOpen(): Task<void>;
   onTabListOpenInNewWindow(focused: boolean): Task<void>;
-  onTabListRemove(): Task<void>;
-  onTabOpen(tab: Tab, shouldBeRemoved: boolean): Task<void>;
+  onTabListDelete(): Task<void>;
+  onTabOpen(tab: Tab, shouldBeDeleted: boolean): Task<void>;
 }
 
 export const TabListItem: FC<Props> = ({
   tabList,
   onTabListOpen,
   onTabListOpenInNewWindow,
-  onTabListRemove,
+  onTabListDelete,
   onTabOpen,
 }) => {
   const { name, date, tabs } = tabList;
@@ -69,16 +69,16 @@ export const TabListItem: FC<Props> = ({
     return true;
   }
 
-  const removeTabList = (): Promise<void> =>
+  const deleteTabList = (): Promise<void> =>
     pipe(
-      onTabListRemove(),
+      onTabListDelete(),
       run,
       //
     );
 
-  const openTab = (tab: Tab) => (shouldBeRemoved: boolean): Promise<void> =>
+  const openTab = (tab: Tab) => (shouldBeDeleted: boolean): Promise<void> =>
     pipe(
-      onTabOpen(tab, shouldBeRemoved),
+      onTabOpen(tab, shouldBeDeleted),
       run,
       //
     );
@@ -97,8 +97,8 @@ export const TabListItem: FC<Props> = ({
         <Button type="button" onClick={openTabListInNewWindow}>
           Open list in new window
         </Button>
-        <Button type="button" onClick={removeTabList}>
-          Remove list
+        <Button type="button" onClick={deleteTabList}>
+          Delete list
         </Button>
       </AccordionActions>
       <AccordionDetails>

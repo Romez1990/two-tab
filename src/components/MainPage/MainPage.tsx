@@ -33,7 +33,7 @@ export const MainPage: FC = () => {
       mainPageService.openTabList(tabList),
       map(() =>
         pipe(
-          removeTabListFromTabLists(tabList),
+          deleteTabListFromTabLists(tabList),
           setTabListsState,
           //
         ),
@@ -45,36 +45,36 @@ export const MainPage: FC = () => {
       mainPageService.openTabListInNewWindow(tabList, focused),
       map(() =>
         pipe(
-          removeTabListFromTabLists(tabList),
+          deleteTabListFromTabLists(tabList),
           setTabListsState,
           //
         ),
       ),
     );
 
-  const removeTabList = (tabList: TabList): Task<void> =>
+  const deleteTabList = (tabList: TabList): Task<void> =>
     pipe(
-      mainPageService.removeTabList(tabList),
+      mainPageService.deleteTabList(tabList),
       map(() =>
         pipe(
-          removeTabListFromTabLists(tabList),
+          deleteTabListFromTabLists(tabList),
           setTabListsState,
           //
         ),
       ),
     );
 
-  const openTab = (tabList: TabList, tab: Tab, shouldBeRemoved: boolean): Task<void> =>
-    shouldBeRemoved
+  const openTab = (tabList: TabList, tab: Tab, shouldBeDeleted: boolean): Task<void> =>
+    shouldBeDeleted
       ? pipe(
-          mainPageService.removeTab(tabList, tab),
+          mainPageService.deleteTab(tabList, tab),
           map(newTabListOption =>
             pipe(
               newTabListOption,
               fold(
                 () =>
                   pipe(
-                    removeTabListFromTabLists(tabList),
+                    deleteTabListFromTabLists(tabList),
                     setTabListsState,
                     //
                   ),
@@ -100,7 +100,7 @@ export const MainPage: FC = () => {
       getOrElseW(throwTabListNotFound(newTabList)),
     );
 
-  const removeTabListFromTabLists = (tabList: TabList) => (
+  const deleteTabListFromTabLists = (tabList: TabList) => (
     oldTabLists: ReadonlyArray<TabList>,
   ): ReadonlyArray<TabList> =>
     pipe(
@@ -138,7 +138,7 @@ export const MainPage: FC = () => {
                 tabLists={tabLists.value}
                 onTabListOpen={openTabList}
                 onTabListOpenInNewWindow={openTabListInNewWindow}
-                onTabListRemove={removeTabList}
+                onTabListDelete={deleteTabList}
                 onTabOpen={openTab}
               />
             )}

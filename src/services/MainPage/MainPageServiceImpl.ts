@@ -16,17 +16,17 @@ export class MainPageServiceImpl implements MainPageService {
   public openTabList = (tabList: TabList): Task<void> =>
     pipe(
       this.browserTabService.openTabList(tabList),
-      chain(constant(this.tabListService.removeTabList(tabList))),
+      chain(constant(this.tabListService.deleteTabList(tabList))),
       //
     );
 
   public openTabListInNewWindow = (tabList: TabList, focused: boolean): Task<void> =>
     pipe(
       this.browserTabService.openTabListInNewWindow(tabList, focused),
-      chain(constant(this.tabListService.removeTabList(tabList))),
+      chain(constant(this.tabListService.deleteTabList(tabList))),
     );
 
-  public removeTabList = (tabList: TabList): Task<void> => this.tabListService.removeTabList(tabList);
+  public deleteTabList = (tabList: TabList): Task<void> => this.tabListService.deleteTabList(tabList);
 
-  public removeTab = (tabList: TabList, tab: Tab): TaskOption<TabList> => this.tabListService.removeTab(tabList, tab);
+  public deleteTab = (tabList: TabList, tab: Tab): TaskOption<TabList> => this.tabListService.deleteTab(tabList, tab);
 }

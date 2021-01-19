@@ -29,8 +29,8 @@ export class TabListServiceImpl implements TabListService {
     tabs,
   });
 
-  public removeTabList = (tabList: TabList): Task<void> => this.tabListRepository.removeTabList(tabList);
+  public deleteTabList = (tabList: TabList): Task<void> => this.tabListRepository.deleteTabList(tabList);
 
-  public removeTab = (tabList: TabList, tab: Tab): TaskOption<TabList> =>
-    this.tabListRepository.removeTab(tabList, tab);
+  public deleteTab = (tabList: TabList, tab: Tab): TaskOption<TabList> =>
+    this.tabListRepository.deleteTab(tabList, tab);
 }
