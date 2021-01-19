@@ -1,7 +1,7 @@
 import { pipe, constVoid } from 'fp-ts/function';
 import { fold } from 'fp-ts/boolean';
-import { filter } from 'fp-ts/ReadonlyArray';
-import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
+import { map as mapR, filter } from 'fp-ts/ReadonlyArray';
+import { ReadonlyNonEmptyArray, map as mapN, head, tail } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task, map, chain, sequenceArray } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
 import { BrowserTabInteractions, BrowserTab, BrowserWindow, TabOpenProperties } from './BrowserTab';
@@ -52,19 +52,22 @@ export class BrowserTabServiceImpl implements BrowserTabService {
       map(constVoid),
     );
 
-  public openTabListInNewWindow = ({ tabs }: TabList, focused: boolean): Task<void> =>
-    pipe(
-      this.browserTabInteractions.openWindow({ focused }),
+  public openTabListInNewWindow = ({ tabs }: TabList, focused: boolean): Task<void> => {
+    const tabsHead = head(tabs);
+    const tabsTail = tail(tabs);
+    return pipe(
+      this.browserTabInteractions.openWindow({ url: tabsHead.url, focused }),
       chain(window =>
         pipe(
-          tabs,
-          mapN(this.tabToOpenProperties(false, window.id)),
-          mapN(this.browserTabInteractions.openTab.bind(this.browserTabInteractions)),
+          tabsTail,
+          mapR(this.tabToOpenProperties(false, window.id)),
+          mapR(this.browserTabInteractions.openTab.bind(this.browserTabInteractions)),
           sequenceArray,
         ),
       ),
       map(constVoid),
     );
+  };
 
   private tabToOpenProperties = (active: boolean, windowId?: number) => ({ url, pinned }: Tab): TabOpenProperties => ({
     url,
