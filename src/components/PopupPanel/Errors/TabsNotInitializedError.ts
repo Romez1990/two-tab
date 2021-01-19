@@ -1,7 +1,7 @@
 import { DataNotInitializedError } from '../../../services/Error';
 
-export class TabListsNotInitializedError extends DataNotInitializedError {
+export class TabsNotInitializedError extends DataNotInitializedError {
   public constructor() {
-    super('tab lists');
+    super('tabs');
   }
 }
