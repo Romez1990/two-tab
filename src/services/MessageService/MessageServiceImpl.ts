@@ -3,7 +3,7 @@ import { MessageService } from './MessageService';
 import { MessageT, Message } from './Message';
 import { MessageType } from './MessageType';
 import { TypeCheckingService } from '../TypeChecking';
-import { HandlerAlreadyAddedError, HandlerNotFoundError } from './Errors';
+import { HandlerAlreadyAddedError } from './Errors';
 
 type Handler<T> = (data: T) => void;
 
@@ -38,9 +38,7 @@ export class MessageServiceImpl implements MessageService {
 
   private handleMessage({ type, data }: Message<MessageType, unknown>): void {
     const handler = this.handlers.get(type);
-    if (typeof handler === 'undefined') {
-      throw new HandlerNotFoundError(type);
-    } else {
+    if (typeof handler !== 'undefined') {
       handler(data);
     }
   }
