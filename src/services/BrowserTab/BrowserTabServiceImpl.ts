@@ -6,7 +6,7 @@ import { Task, map, chain, sequenceArray } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
 import { BrowserTabInteractions, BrowserTab, BrowserWindow, TabOpenProperties } from './BrowserTab';
 import { BrowserTabService } from './BrowserTabService';
-import { Tab, TabList } from '../TabList';
+import { TabList, Tab } from '../TabList';
 
 export class BrowserTabServiceImpl implements BrowserTabService {
   public constructor(private readonly browserTabInteractions: BrowserTabInteractions, extension: ExtensionService) {
