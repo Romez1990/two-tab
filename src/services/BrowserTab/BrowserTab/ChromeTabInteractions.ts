@@ -1,4 +1,4 @@
-import { pipe } from 'fp-ts/function';
+import { pipe, flow } from 'fp-ts/function';
 import { toArray } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map } from 'fp-ts/ReadonlyNonEmptyArray';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
@@ -18,7 +18,11 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
         {
           currentWindow: true,
         },
-        tabs => resolve(this.mapTabs(tabs)),
+        flow(
+          this.mapTabs.bind(this),
+          resolve,
+          //
+        ),
       ),
     );
 
@@ -28,15 +32,37 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
         {
           populate: true,
         },
-        windows => resolve(this.mapWindows(windows)),
+        flow(
+          this.mapWindows.bind(this),
+          resolve,
+          //
+        ),
       ),
     );
 
   public openTab = (properties: TabOpenProperties) => (): Promise<BrowserTab> =>
-    new Promise(resolve => chrome.tabs.create(properties, tab => resolve(this.mapTab(tab))));
+    new Promise(resolve =>
+      chrome.tabs.create(
+        properties,
+        flow(
+          this.mapTab.bind(this),
+          resolve,
+          //
+        ),
+      ),
+    );
 
   public openWindow = (properties: WindowOpenProperties) => (): Promise<BrowserWindow> =>
-    new Promise(resolve => chrome.windows.create(properties, window => resolve(this.mapWindow(window))));
+    new Promise(resolve =>
+      chrome.windows.create(
+        properties,
+        flow(
+          this.mapWindow.bind(this),
+          resolve,
+          //
+        ),
+      ),
+    );
 
   public closeTabs = (tabs: ReadonlyNonEmptyArray<BrowserTab>) => (): Promise<void> =>
     new Promise(resolve =>
