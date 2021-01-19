@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { CircularProgress, Button } from '@material-ui/core';
 import { pipe } from 'fp-ts/function';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
+import { Option, some, none, isNone } from 'fp-ts/Option';
 import { Task, map } from 'fp-ts/Task';
 import { PopupForm } from './PopupForm';
 import { BrowserTab } from '../../services/BrowserTab';
@@ -15,9 +16,9 @@ export const PopupPanel: FC = () => {
     run(getTabs());
   }, []);
 
-  const [tabs, setTabs] = useState<ReadonlyArray<BrowserTab> | null>(null);
+  const [tabs, setTabs] = useState<Option<ReadonlyArray<BrowserTab>>>(none);
 
-  const getTabs = (): Task<void> => pipe(popupService.getTabsInCurrentWindow(false), map(setTabs));
+  const getTabs = (): Task<void> => pipe(popupService.getTabsInCurrentWindow(false), map(some), map(setTabs));
 
   const save = (listName: string, checkedTabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> =>
     popupService.saveTabs(listName, checkedTabs);
@@ -29,7 +30,7 @@ export const PopupPanel: FC = () => {
       <Button variant="contained" color="primary" href={appUrl} target="_blank" rel="noreferrer">
         Open in full screen
       </Button>
-      {tabs === null ? <CircularProgress /> : <PopupForm tabs={tabs} onSave={save} />}
+      {isNone(tabs) ? <CircularProgress /> : <PopupForm tabs={tabs.value} onSave={save} />}
     </>
   );
 };

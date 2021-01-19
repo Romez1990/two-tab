@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Container, CircularProgress } from '@material-ui/core';
 import { pipe } from 'fp-ts/function';
 import { findIndex, updateAt, deleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
-import { fold, getOrElseW } from 'fp-ts/Option';
+import { Option, some, none, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map, of } from 'fp-ts/Task';
 import { MainLayout } from '../Layout';
 import { TabListsList } from './TabListsList';
@@ -18,9 +18,9 @@ export const MainPage: FC = () => {
     run(getTabLists());
   }, []);
 
-  const [tabLists, setTabLists] = useState<ReadonlyArray<TabList> | null>(null);
+  const [tabLists, setTabLists] = useState<Option<ReadonlyArray<TabList>>>(none);
 
-  const getTabLists = (): Task<void> => pipe(mainPageService.getTabLists(), map(setTabLists));
+  const getTabLists = (): Task<void> => pipe(mainPageService.getTabLists(), map(some), map(setTabLists));
 
   const openTabList = (tabList: TabList): Task<void> =>
     pipe(
@@ -80,21 +80,21 @@ export const MainPage: FC = () => {
 
   const setTabListsState = (updateTabLists: (oldTabLists: ReadonlyArray<TabList>) => ReadonlyArray<TabList>): void =>
     setTabLists(oldTabLists =>
-      oldTabLists === null ? new TabListsNotInitializedError().throw() : updateTabLists(oldTabLists),
+      isNone(oldTabLists) ? new TabListsNotInitializedError().throw() : pipe(oldTabLists.value, updateTabLists, some),
     );
 
   return (
     <MainLayout>
       <Container>
-        {tabLists === null ? (
+        {isNone(tabLists) ? (
           <CircularProgress />
         ) : (
           <>
-            {!isNonEmpty(tabLists) ? (
+            {!isNonEmpty(tabLists.value) ? (
               'No tabs'
             ) : (
               <TabListsList
-                tabLists={tabLists}
+                tabLists={tabLists.value}
                 onTabListOpen={openTabList}
                 onTabListOpenInNewWindow={openTabListInNewWindow}
                 onTabListRemove={removeTabList}
