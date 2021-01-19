@@ -1,6 +1,6 @@
-import { ReadonlyRecord } from 'fp-ts/ReadonlyRecord';
-import { hasOwnProperty } from 'fp-ts/Record';
 import { pipe } from 'fp-ts/function';
+import { hasOwnProperty } from 'fp-ts/Record';
+import { ReadonlyRecord } from 'fp-ts/ReadonlyRecord';
 import { map } from 'fp-ts/ReadonlyArray';
 import { KeyboardService } from './KeyboardService';
 import { Key } from './Key';
