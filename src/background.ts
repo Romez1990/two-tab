@@ -6,7 +6,7 @@ const logger = serviceContainer.get('loggerService');
 const storage = serviceContainer.get('storageService');
 
 pipe(
-  logger.registerReceiver(),
+  logger.registerAsReceiver(),
   storage.connect.bind(storage),
   run,
   //

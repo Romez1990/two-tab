@@ -10,7 +10,7 @@ export class LoggerServiceImpl implements LoggerService {
   private state: LoggerState;
   private isReceiver = false;
 
-  public registerReceiver(): void {
+  public registerAsReceiver(): void {
     if (this.isReceiver) {
       throw new ReceiverAlreadyRegisteredError();
     }

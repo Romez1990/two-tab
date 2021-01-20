@@ -1,5 +1,5 @@
 export interface LoggerService {
-  registerReceiver(): void;
+  registerAsReceiver(): void;
   debug(...args: ReadonlyArray<unknown>): void;
   info(...args: ReadonlyArray<unknown>): void;
   warning(...args: ReadonlyArray<unknown>): void;
