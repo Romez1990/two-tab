@@ -27,9 +27,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onRangeChange, disabl
 
     const rangeKeyPressed = keyboard.isPressed('shift');
     if (rangeKeyPressed) {
-      const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
-      const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);
-      onRangeChange(rangeStart, rangeEnd);
+      changeRange(currentCheckIndex);
       return;
     }
 
@@ -38,6 +36,12 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onRangeChange, disabl
     }
     onChange(e);
   };
+
+  function changeRange(currentCheckIndex: number): void {
+    const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
+    const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);
+    onRangeChange(rangeStart, rangeEnd);
+  }
 
   return (
     <List>
