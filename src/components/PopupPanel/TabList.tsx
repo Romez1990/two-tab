@@ -23,6 +23,8 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onRangeChange, disabl
   }, []);
 
   const change = (currentCheckIndex: number) => (e: ChangeEvent<HTMLInputElement>): void => {
+    const { checked } = e.target;
+
     const rangeKeyPressed = keyboard.isPressed('shift');
     if (rangeKeyPressed) {
       const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
@@ -31,7 +33,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onRangeChange, disabl
       return;
     }
 
-    if (e.target.checked && !rangeKeyPressed) {
+    if (checked && !rangeKeyPressed) {
       lastCheckIndex = currentCheckIndex;
     }
     onChange(e);
