@@ -28,6 +28,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onRangeChange, disabl
       const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
       const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);
       onRangeChange(rangeStart, rangeEnd);
+      return;
     }
 
     if (e.target.checked && !rangeKeyPressed) {
