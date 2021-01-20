@@ -1,6 +1,6 @@
 import { AppError } from '../../Error';
 
-export class ReceiverAlreadyRegisteredError extends AppError {
+export class LoggerReceiverAlreadyRegisteredError extends AppError {
   public constructor() {
     super('Logger is already registered as receiver');
   }

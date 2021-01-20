@@ -1,4 +1,4 @@
-import { ReceiverAlreadyRegisteredError } from './Errors';
+import { LoggerReceiverAlreadyRegisteredError } from './Errors';
 import { LoggerService } from './LoggerService';
 import { LoggerState, LoggerStateFactory } from './LoggerState';
 
@@ -12,7 +12,7 @@ export class LoggerServiceImpl implements LoggerService {
 
   public registerAsReceiver(): void {
     if (this.isReceiver) {
-      throw new ReceiverAlreadyRegisteredError();
+      throw new LoggerReceiverAlreadyRegisteredError();
     }
     this.isReceiver = true;
     this.state = this.loggerStateFactory.createReceiver();

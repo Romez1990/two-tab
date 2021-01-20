@@ -1,1 +1,1 @@
-export * from './ReceiverAlreadyRegisteredError';
+export * from './LoggerReceiverAlreadyRegisteredError';
