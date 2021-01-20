@@ -8,13 +8,20 @@ import { map as mapR, mapWithIndex, filter, difference, isNonEmpty, some as some
 import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Option, some, map as mapO, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map } from 'fp-ts/Task';
-import { Lens } from 'monocle-ts';
+import { Lens, Optional } from 'monocle-ts';
 import { TabList } from './TabList';
 import { BrowserTab } from '../../services/BrowserTab';
 import { inRange } from '../../services/Utils/Math';
 import { run } from '../../services/Utils/fp-ts/Task';
 import { TabsNotInitializedError } from './Errors';
-import { BrowserTabElement, toBrowserTabElement, toBrowserTab, eqBrowserTab, checkedLens } from './BrowserTabElement';
+import {
+  BrowserTabElement,
+  toBrowserTabElement,
+  toBrowserTab,
+  eqBrowserTab,
+  checkedLens,
+  tabsTraversal,
+} from './BrowserTabElement';
 
 interface Props {
   readonly tabs: Option<ReadonlyArray<BrowserTab>>;
@@ -36,7 +43,8 @@ const validationSchema = object().shape({
   listName: string().required(),
 });
 
-const tabsLens = Lens.fromProp<Values>()('tabs');
+const tabsLens = Optional.fromOptionProp<Values>()('tabs');
+const tabsCheckedTraversal = tabsLens.composeTraversal(tabsTraversal).composeLens(checkedLens);
 
 export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
   const initialValues: Values = {
@@ -104,9 +112,15 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
 
   const changeRange = (setValues: Dispatch<SetStateAction<Values>>) => (start: number, end: number): void =>
     setValues(
-      tabsLens.modify(
-        mapO(mapWithIndex((i, tab) => checkedLens.modify(checked => checked || inRange(i, start, end))(tab))),
-      ),
+      tabsLens.modify(mapWithIndex((i, tab) => checkedLens.modify(checked => checked || inRange(i, start, end))(tab))),
+    );
+
+  const changeAll = (setValues: Dispatch<SetStateAction<Values>>) => (checked: boolean): void =>
+    pipe(
+      checked,
+      tabsCheckedTraversal.set.bind(tabsCheckedTraversal),
+      setValues,
+      //
     );
 
   return (
@@ -131,6 +145,7 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
                   tabs={tabs.value}
                   onChange={handleChange}
                   onRangeChange={changeRange(setValues)}
+                  onAllChange={changeAll(setValues)}
                   disabled={isSubmitting}
                 />
               )}
