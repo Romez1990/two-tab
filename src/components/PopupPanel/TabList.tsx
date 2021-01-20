@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { FC, ChangeEvent, useEffect, useState } from 'react';
 import { Checkbox, List } from '@material-ui/core';
 import { Predicate, not } from 'fp-ts/function';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
