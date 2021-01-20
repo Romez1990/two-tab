@@ -9,13 +9,13 @@ interface Props {
   readonly name: string;
   readonly tabs: ReadonlyNonEmptyArray<BrowserTabElement>;
   onChange(e: ChangeEvent<HTMLInputElement>): void;
-  onChangeRange(start: number, end: number): void;
+  onRangeChange(start: number, end: number): void;
   readonly disabled: boolean;
 }
 
 let lastCheckIndex: number;
 
-export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabled }) => {
+export const TabList: FC<Props> = ({ name, tabs, onChange, onRangeChange, disabled }) => {
   const keyboard = useService('keyboardService');
 
   useEffect((): void => {
@@ -27,7 +27,7 @@ export const TabList: FC<Props> = ({ name, tabs, onChange, onChangeRange, disabl
     if (rangeKeyPressed) {
       const rangeStart = Math.min(currentCheckIndex, lastCheckIndex);
       const rangeEnd = Math.max(currentCheckIndex, lastCheckIndex);
-      onChangeRange(rangeStart, rangeEnd);
+      onRangeChange(rangeStart, rangeEnd);
     }
 
     if (e.target.checked && !rangeKeyPressed) {

@@ -130,7 +130,7 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
                   name="tabs.value"
                   tabs={tabs.value}
                   onChange={handleChange}
-                  onChangeRange={changeRange(setValues)}
+                  onRangeChange={changeRange(setValues)}
                   disabled={isSubmitting}
                 />
               )}
