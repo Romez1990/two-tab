@@ -24,7 +24,7 @@ export class PopupServiceImpl implements PopupService {
 
   public saveTabs = (listName: string, tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> =>
     pipe(
-      this.tabListService.saveTabList(listName, tabs),
+      this.tabListService.addTabList(listName, tabs),
       chain(() => this.browserTabService.close(tabs)),
     );
 }

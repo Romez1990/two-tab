@@ -5,7 +5,7 @@ import { Tab } from './Tab';
 
 export interface TabListRepository {
   getAllTabLists(): Task<ReadonlyArray<TabList>>;
-  saveTabList(tabList: TabList): Task<TabList>;
+  addTabList(tabList: TabList): Task<TabList>;
   deleteTabList(tabList: TabList): Task<void>;
   deleteTab(tabList: TabList, tab: Tab): TaskOption<TabList>;
 }
