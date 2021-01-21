@@ -31,83 +31,47 @@ export const MainPage: FC = () => {
   const openTabList = (tabList: TabList): Task<void> =>
     pipe(
       mainPageService.openTabList(tabList),
-      map(() =>
-        pipe(
-          deleteTabListFromTabLists(tabList),
-          setTabListsState,
-          //
-        ),
-      ),
+      map(() => deleteTabListFromTabLists(tabList)),
     );
 
   const openTabListInNewWindow = (tabList: TabList, focused: boolean): Task<void> =>
     pipe(
       mainPageService.openTabListInNewWindow(tabList, focused),
-      map(() =>
-        pipe(
-          deleteTabListFromTabLists(tabList),
-          setTabListsState,
-          //
-        ),
-      ),
+      map(() => deleteTabListFromTabLists(tabList)),
     );
 
   const deleteTabList = (tabList: TabList): Task<void> =>
     pipe(
       mainPageService.deleteTabList(tabList),
-      map(() =>
-        pipe(
-          deleteTabListFromTabLists(tabList),
-          setTabListsState,
-          //
-        ),
-      ),
+      map(() => deleteTabListFromTabLists(tabList)),
     );
 
-  const openTab = (tabList: TabList, tab: Tab, shouldBeDeleted: boolean): Task<void> =>
+  const deleteTab = (tabList: TabList, tab: Tab, shouldBeDeleted: boolean): Task<void> =>
     shouldBeDeleted
       ? pipe(
           mainPageService.deleteTab(tabList, tab),
-          map(newTabListOption =>
-            pipe(
-              newTabListOption,
-              fold(
-                () =>
-                  pipe(
-                    deleteTabListFromTabLists(tabList),
-                    setTabListsState,
-                    //
-                  ),
-                newTabList =>
-                  pipe(
-                    updateTabListsWithNewTabList(newTabList),
-                    setTabListsState,
-                    //
-                  ),
-              ),
-            ),
-          ),
+          map(fold(() => deleteTabListFromTabLists(tabList), updateTabListsWithNewTabList)),
         )
       : of(undefined);
 
-  const updateTabListsWithNewTabList = (newTabList: TabList) => (
-    oldTabLists: ReadonlyArray<TabList>,
-  ): ReadonlyArray<TabList> =>
-    pipe(
-      oldTabLists,
-      findIndex(tabListsAreEquals(newTabList)),
-      fold(throwTabListNotFound(newTabList), index => updateAt(index, newTabList)(oldTabLists)),
-      getOrElseW(throwTabListNotFound(newTabList)),
+  const updateTabListsWithNewTabList = (newTabList: TabList): void =>
+    setTabListsState(oldTabLists =>
+      pipe(
+        oldTabLists,
+        findIndex(tabListsAreEquals(newTabList)),
+        fold(throwTabListNotFound(newTabList), index => updateAt(index, newTabList)(oldTabLists)),
+        getOrElseW(throwTabListNotFound(newTabList)),
+      ),
     );
 
-  const deleteTabListFromTabLists = (tabList: TabList) => (
-    oldTabLists: ReadonlyArray<TabList>,
-  ): ReadonlyArray<TabList> =>
-    pipe(
-      oldTabLists,
-      findIndex(tabListsAreEquals(tabList)),
-      fold(throwTabListNotFound(tabList), index => deleteAt(index)(oldTabLists)),
-      getOrElseW(throwTabListNotFound(tabList)),
+  const deleteTabListFromTabLists = (tabList: TabList): void =>
+    setTabListsState(oldTabLists =>
+      pipe(
+        oldTabLists,
+        findIndex(tabListsAreEquals(tabList)),
+        fold(throwTabListNotFound(tabList), index => deleteAt(index)(oldTabLists)),
+        getOrElseW(throwTabListNotFound(tabList)),
+      ),
     );
 
   const throwTabListNotFound = (tabList: TabList) => (): never => new TabListNotFoundInTabListsError(tabList).throw();
@@ -139,7 +103,7 @@ export const MainPage: FC = () => {
                 onTabListOpen={openTabList}
                 onTabListOpenInNewWindow={openTabListInNewWindow}
                 onTabListDelete={deleteTabList}
-                onTabOpen={openTab}
+                onTabOpen={deleteTab}
               />
             )}
           </>
