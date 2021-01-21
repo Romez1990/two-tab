@@ -31,13 +31,13 @@ export const TabListItem: FC<Props> = ({
   onTabListDelete,
   onTabOpen,
 }) => {
-  const { name, date, tabs } = tabList;
+  const { name, createdAt, tabs } = tabList;
 
   const keyboard = useService('keyboardService');
   const datetimeService = useService('datetimeService');
 
   const tabsCount = getTabCount();
-  const datetime = datetimeService.toLocaleString(date);
+  const datetime = datetimeService.toLocaleString(createdAt);
 
   function getTabCount() {
     const tabCount = tabs.length;

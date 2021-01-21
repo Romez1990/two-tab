@@ -6,7 +6,7 @@ import { Tab } from './Tab';
 export interface TabList {
   readonly id?: number;
   readonly name: string;
-  readonly date: Date;
+  readonly createdAt: Date;
   readonly tabs: ReadonlyNonEmptyArray<Tab>;
 }
 

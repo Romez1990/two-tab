@@ -25,7 +25,7 @@ export class TabListServiceImpl implements TabListService {
 
   private createTabList = (name: string, tabs: ReadonlyNonEmptyArray<Tab>): TabList => ({
     name,
-    date: this.datetimeService.getCurrent(),
+    createdAt: this.datetimeService.getCurrent(),
     tabs,
   });
 
