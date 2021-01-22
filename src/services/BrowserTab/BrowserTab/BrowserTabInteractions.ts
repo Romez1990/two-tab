@@ -9,6 +9,6 @@ export interface BrowserTabInteractions {
   getTabsInCurrentWindow(): Task<ReadonlyNonEmptyArray<BrowserTab>>;
   getWindows(): Task<ReadonlyNonEmptyArray<BrowserWindow>>;
   openTab(properties: TabOpenProperties): Task<BrowserTab>;
-  openWindow(properties: WindowOpenProperties): Task<BrowserWindow>;
   closeTabs(tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void>;
+  openWindow(properties: WindowOpenProperties): Task<BrowserWindow>;
 }

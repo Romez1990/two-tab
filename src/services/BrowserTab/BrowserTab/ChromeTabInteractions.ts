@@ -52,6 +52,17 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       ),
     );
 
+  public closeTabs = (tabs: ReadonlyNonEmptyArray<BrowserTab>) => (): Promise<void> =>
+    new Promise(resolve =>
+      pipe(
+        tabs,
+        map(idLens.get),
+        toArray,
+        tabIds => chrome.tabs.remove(tabIds, resolve),
+        //
+      ),
+    );
+
   public openWindow = (properties: WindowOpenProperties) => (): Promise<BrowserWindow> =>
     new Promise(resolve =>
       chrome.windows.create(
@@ -61,17 +72,6 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
           resolve,
           //
         ),
-      ),
-    );
-
-  public closeTabs = (tabs: ReadonlyNonEmptyArray<BrowserTab>) => (): Promise<void> =>
-    new Promise(resolve =>
-      pipe(
-        tabs,
-        map(idLens.get),
-        toArray,
-        tabIds => chrome.tabs.remove(tabIds, resolve),
-        //
       ),
     );
 
