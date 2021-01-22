@@ -4,7 +4,7 @@ import { CircularProgress, Button } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { object, string } from 'yup';
 import { pipe, constUndefined } from 'fp-ts/function';
-import { map as mapR, mapWithIndex, filter, difference, isNonEmpty, some as someR } from 'fp-ts/ReadonlyArray';
+import { map as mapA, mapWithIndex, filter, difference, isNonEmpty, some as someR } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapN } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Option, some, map as mapO, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map } from 'fp-ts/Task';
@@ -51,7 +51,7 @@ export const PopupForm: FC<Props> = ({ tabs: initTabs, onSave }) => {
     listName: '',
     tabs: pipe(
       initTabs,
-      mapO(mapR(toBrowserTabElement)),
+      mapO(mapA(toBrowserTabElement)),
       //
     ),
   };

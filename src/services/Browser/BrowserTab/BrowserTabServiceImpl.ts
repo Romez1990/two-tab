@@ -1,5 +1,5 @@
 import { pipe, constVoid } from 'fp-ts/function';
-import { map as mapR, filter } from 'fp-ts/ReadonlyArray';
+import { map as mapA, filter } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapN, head, tail } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task, map, chain, sequenceArray } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
@@ -53,8 +53,8 @@ export class BrowserTabServiceImpl implements BrowserTabService {
       chain(window =>
         pipe(
           tabsTail,
-          mapR(this.tabToOpenProperties(false, window.id)),
-          mapR(this.browserTabInteractions.openTab.bind(this.browserTabInteractions)),
+          mapA(this.tabToOpenProperties(false, window.id)),
+          mapA(this.browserTabInteractions.openTab.bind(this.browserTabInteractions)),
           sequenceArray,
         ),
       ),
