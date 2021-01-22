@@ -1,7 +1,7 @@
 import { pipe, constant } from 'fp-ts/function';
 import { Task, chain } from 'fp-ts/Task';
 import { TaskOption } from 'fp-ts-contrib/TaskOption';
-import { TabListService, TabList, Tab } from '../TabList';
+import { TabListService, TabList, Tab, TabListsUpdateHandlers } from '../TabList';
 import { BrowserTabService } from '../BrowserTab';
 import { MainPageService } from './MainPageService';
 
@@ -10,6 +10,10 @@ export class MainPageServiceImpl implements MainPageService {
     private readonly tabListService: TabListService,
     private readonly browserTabService: BrowserTabService,
   ) {}
+
+  public addUpdateHandlers(handlers: TabListsUpdateHandlers): void {
+    this.tabListService.addUpdateHandlers(handlers);
+  }
 
   public getTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListService.getAllTabLists();
 

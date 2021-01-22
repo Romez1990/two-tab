@@ -1,4 +1,4 @@
-import { BaseMessage } from '../../MessageService/BaseMessage';
+import { BaseMessage } from '../../MessageService';
 import { LogData } from './LogData';
 import { LogType } from './LogType';
 

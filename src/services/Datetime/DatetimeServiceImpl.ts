@@ -18,4 +18,8 @@ export class DatetimeServiceImpl implements DatetimeService {
   public getCurrent = (): Date => new Date();
 
   public toLocaleString = (datetime: Date): string => this.dateTimeFormat.format(datetime);
+
+  public fromTimeStamp = (timestamp: number): Date => new Date(timestamp);
+
+  public toTimeStamp = (datetime: Date): number => datetime.getTime();
 }

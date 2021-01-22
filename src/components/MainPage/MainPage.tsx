@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Container, CircularProgress } from '@material-ui/core';
 import { pipe } from 'fp-ts/function';
-import { findIndex, updateAt, deleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
+import { findIndex, unsafeInsertAt, updateAt, deleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { Option, some, none, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map, of } from 'fp-ts/Task';
 import { MainLayout } from '../Layout';
@@ -15,6 +15,11 @@ export const MainPage: FC = () => {
   const mainPageService = useService('mainPageService');
 
   useEffect((): void => {
+    mainPageService.addUpdateHandlers({
+      add: addTabListToTabLists,
+      update: updateTabListsWithNewTabList,
+      delete: deleteTabListFromTabLists,
+    });
     run(getTabLists());
   }, []);
 
@@ -53,6 +58,9 @@ export const MainPage: FC = () => {
           map(fold(() => deleteTabListFromTabLists(tabList), updateTabListsWithNewTabList)),
         )
       : of(undefined);
+
+  const addTabListToTabLists = (newTabList: TabList): void =>
+    setTabListsState(oldTabLists => unsafeInsertAt(0, newTabList, oldTabLists));
 
   const updateTabListsWithNewTabList = (newTabList: TabList): void =>
     setTabListsState(oldTabLists =>

@@ -1,6 +1,15 @@
 import { MainPageService, MainPageServiceImpl } from '../MainPage';
 import { PopupService, PopupServiceImpl } from '../Popup';
-import { TabListService, TabListServiceImpl, TabListRepository, TabListRepositoryImpl } from '../TabList';
+import {
+  TabListService,
+  TabListServiceImpl,
+  TabListRepository,
+  TabListRepositoryImpl,
+  TabListsUpdatingService,
+  TabListsUpdatingServiceImpl,
+  TabListSerializer,
+  TabListSerializerImpl,
+} from '../TabList';
 import { StorageService, StorageServiceImpl, StorageStateFactory, StorageStateFactoryImpl } from '../Storage';
 import { BrowserTabService, BrowserTabServiceImpl, BrowserTabInteractions, ChromeTabInteractions } from '../BrowserTab';
 import { ExtensionService, ChromeExtensionService } from '../Extension';
@@ -67,8 +76,14 @@ class ServiceContainerImpl implements ServiceContainer {
     this.storageStateFactory = new StorageStateFactoryImpl();
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
 
+    this.tabListSerializer = new TabListSerializerImpl(this.datetimeService);
+    this.tabListsUpdatingService = new TabListsUpdatingServiceImpl(this.messageService, this.tabListSerializer);
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
-    this.tabListService = new TabListServiceImpl(this.tabListRepository, this.datetimeService);
+    this.tabListService = new TabListServiceImpl(
+      this.tabListRepository,
+      this.tabListsUpdatingService,
+      this.datetimeService,
+    );
 
     this.popupService = new PopupServiceImpl(this.tabListService, this.browserTabService, this.extensionService);
 
@@ -81,6 +96,8 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly tabListService: TabListService;
   public readonly tabListRepository: TabListRepository;
+  public readonly tabListsUpdatingService: TabListsUpdatingService;
+  public readonly tabListSerializer: TabListSerializer;
 
   public readonly storageService: StorageService;
   public readonly storageStateFactory: StorageStateFactory;

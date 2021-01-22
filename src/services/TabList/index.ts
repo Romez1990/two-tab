@@ -1,3 +1,5 @@
+export * from './Updating';
+export * from './TabListSerializer';
 export * from './TabListService';
 export * from './TabListServiceImpl';
 export * from './TabListRepository';
