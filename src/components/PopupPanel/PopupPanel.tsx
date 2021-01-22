@@ -16,6 +16,13 @@ export const PopupPanel: FC = () => {
     run(getTabs());
   }, []);
 
+  const openApp = (): Promise<void> =>
+    pipe(
+      popupService.openApp(),
+      run,
+      //
+    );
+
   const [tabs, setTabs] = useState<Option<ReadonlyArray<BrowserTab>>>(none);
 
   const getTabs = (): Task<void> =>
@@ -29,11 +36,9 @@ export const PopupPanel: FC = () => {
   const save = (listName: string, checkedTabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> =>
     popupService.saveTabs(listName, checkedTabs);
 
-  const { appUrl } = popupService;
-
   return (
     <>
-      <Button variant="contained" color="primary" href={appUrl} target="_blank" rel="noreferrer">
+      <Button variant="contained" color="primary" onClick={openApp}>
         Open in full screen
       </Button>
       <PopupForm tabs={tabs} onSave={save} />

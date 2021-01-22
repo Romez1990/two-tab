@@ -3,7 +3,7 @@ import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { BrowserTab, BrowserWindow } from '../BrowserTab';
 
 export interface PopupService {
-  readonly appUrl: string;
+  openApp(): Task<void>;
   getTabsInCurrentWindow(all: boolean): Task<ReadonlyArray<BrowserTab>>;
   getWindows(): Task<ReadonlyArray<BrowserWindow>>;
   saveTabs(listName: string, tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void>;

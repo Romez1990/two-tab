@@ -4,7 +4,13 @@ import { map as mapR, filter } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapN, head, tail } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task, map, chain, sequenceArray } from 'fp-ts/Task';
 import { ExtensionService } from '../Extension';
-import { BrowserTabInteractions, BrowserTab, BrowserWindow, TabOpenProperties } from './BrowserTab';
+import {
+  BrowserTabInteractions,
+  BrowserTab,
+  BrowserWindow,
+  TabOpenProperties,
+  TabUpdateProperties,
+} from './BrowserTab';
 import { BrowserTabService } from './BrowserTabService';
 import { TabList, Tab } from '../TabList';
 
@@ -75,6 +81,11 @@ export class BrowserTabServiceImpl implements BrowserTabService {
     active,
     windowId,
   });
+
+  public openTab = (properties: TabOpenProperties): Task<BrowserTab> => this.browserTabInteractions.openTab(properties);
+
+  public updateTab = (tab: BrowserTab, properties: TabUpdateProperties): Task<BrowserTab> =>
+    this.browserTabInteractions.updateTab(tab, properties);
 
   public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> => this.browserTabInteractions.closeTabs(tabs);
 }

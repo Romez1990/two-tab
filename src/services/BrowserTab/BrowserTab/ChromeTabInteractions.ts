@@ -9,6 +9,7 @@ import { BrowserWindow } from './BrowserWindow';
 import { ChromeTab } from './ChromeTab';
 import { ChromeWindow } from './ChromeWindow';
 import { TabOpenProperties } from './TabOpenProperties';
+import { TabUpdateProperties } from './TabUpdateProperties';
 import { WindowOpenProperties } from './WindowOpenProperties';
 
 export class ChromeTabInteractions implements BrowserTabInteractions {
@@ -43,6 +44,19 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
   public openTab = (properties: TabOpenProperties) => (): Promise<BrowserTab> =>
     new Promise(resolve =>
       chrome.tabs.create(
+        properties,
+        flow(
+          this.mapTab.bind(this),
+          resolve,
+          //
+        ),
+      ),
+    );
+
+  public updateTab = (tab: BrowserTab, properties: TabUpdateProperties) => (): Promise<BrowserTab> =>
+    new Promise(resolve =>
+      chrome.tabs.update(
+        tab.id,
         properties,
         flow(
           this.mapTab.bind(this),
@@ -91,7 +105,10 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       //
     );
 
-  private mapTab(tab: ChromeTab): BrowserTab {
+  private mapTab(tab: ChromeTab | undefined): BrowserTab {
+    if (typeof tab === 'undefined') {
+      throw new InvalidChromeTabError(tab);
+    }
     const { id, windowId, title, url, favIconUrl, pinned } = tab;
     if (typeof id === 'undefined' || typeof title === 'undefined' || typeof url === 'undefined') {
       throw new InvalidChromeTabError(tab);
