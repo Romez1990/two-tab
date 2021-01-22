@@ -11,4 +11,6 @@ export interface BrowserTabService {
   openTab(properties: TabOpenProperties): Task<BrowserTab>;
   updateTab(tab: BrowserTab, properties: TabUpdateProperties): Task<BrowserTab>;
   close(tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void>;
+  isNewTab(tab: BrowserTab): boolean;
+  isExtensionTab(tab: BrowserTab): boolean;
 }

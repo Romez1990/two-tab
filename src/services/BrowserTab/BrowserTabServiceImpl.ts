@@ -29,14 +29,10 @@ export class BrowserTabServiceImpl implements BrowserTabService {
   private filterTabs = (tabs: ReadonlyArray<BrowserTab>): ReadonlyArray<BrowserTab> =>
     pipe(
       tabs,
-      filter(tab => !this.isTabPinned(tab) && !this.isTabOfExtension(tab) && !this.isNewTab(tab)),
+      filter(tab => !this.isTabPinned(tab) && !this.isExtensionTab(tab) && !this.isNewTab(tab)),
     );
 
-  private isTabPinned = (tab: BrowserTab): boolean => tab.pinned;
-
-  private isTabOfExtension = (tab: BrowserTab): boolean => tab.url.startsWith(this.extensionURL);
-
-  private isNewTab = (tab: BrowserTab): boolean => tab.url === 'chrome://newtab/';
+  private isTabPinned = ({ pinned }: BrowserTab): boolean => pinned;
 
   public getWindows = (): Task<ReadonlyArray<BrowserWindow>> => this.browserTabInteractions.getWindows();
 
@@ -79,4 +75,8 @@ export class BrowserTabServiceImpl implements BrowserTabService {
     this.browserTabInteractions.updateTab(tab, properties);
 
   public close = (tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> => this.browserTabInteractions.closeTabs(tabs);
+
+  public isExtensionTab = ({ url }: BrowserTab): boolean => url.startsWith(this.extensionURL);
+
+  public isNewTab = (tab: BrowserTab): boolean => this.browserTabInteractions.isNewTab(tab);
 }

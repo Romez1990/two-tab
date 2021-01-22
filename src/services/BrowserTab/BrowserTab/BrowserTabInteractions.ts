@@ -13,4 +13,5 @@ export interface BrowserTabInteractions {
   updateTab(tab: BrowserTab, properties: TabUpdateProperties): Task<BrowserTab>;
   closeTabs(tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void>;
   openWindow(properties: WindowOpenProperties): Task<BrowserWindow>;
+  isNewTab(tab: BrowserTab): boolean;
 }

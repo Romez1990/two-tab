@@ -138,4 +138,6 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       tabs: this.mapTabs(tabs),
     };
   }
+
+  public isNewTab = ({ url }: BrowserTab): boolean => url === 'chrome://newtab/';
 }
