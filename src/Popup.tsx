@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import { AppWrapper } from './components/AppWrapper';
+import { Providers } from './components/Providers';
 import { PopupPanel } from './components/PopupPanel';
 
 export const Popup: FC = () => (
-  <AppWrapper>
+  <Providers>
     <PopupPanel />
-  </AppWrapper>
+  </Providers>
 );

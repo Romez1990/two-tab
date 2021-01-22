@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
-import { AppWrapper } from './components/AppWrapper';
+import { Providers } from './components/Providers';
 import { Router, RouterView } from './components/Router';
 import { MainLayout } from './components/Layout';
 
 export const App: FC = () => (
-  <AppWrapper>
+  <Providers>
     <Router>
       <MainLayout>
         <RouterView />
       </MainLayout>
     </Router>
-  </AppWrapper>
+  </Providers>
 );

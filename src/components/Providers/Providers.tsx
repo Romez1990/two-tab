@@ -4,7 +4,7 @@ import { ServiceContainerProvider } from '../ServiceContainer';
 import { ThemeProvider } from '../ThemeProvider';
 import { StorageConnector } from '../Storage';
 
-export const AppWrapper: FC = ({ children }) => (
+export const Providers: FC = ({ children }) => (
   <ServiceContainerProvider>
     <ErrorBoundary>
       <ThemeProvider>
