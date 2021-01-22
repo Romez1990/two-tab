@@ -4,7 +4,6 @@ import { pipe } from 'fp-ts/function';
 import { findIndex, unsafeInsertAt, updateAt, deleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { Option, some, none, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map, of } from 'fp-ts/Task';
-import { MainLayout } from '../Layout';
 import { TabListsList } from './TabListsList';
 import { Tab, TabList, tabListsAreEquals } from '../../services/TabList';
 import { useService } from '../ServiceContainer';
@@ -97,26 +96,24 @@ export const MainPage: FC = () => {
     );
 
   return (
-    <MainLayout>
-      <Container>
-        {isNone(tabLists) ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {!isNonEmpty(tabLists.value) ? (
-              'No tabs'
-            ) : (
-              <TabListsList
-                tabLists={tabLists.value}
-                onTabListOpen={openTabList}
-                onTabListOpenInNewWindow={openTabListInNewWindow}
-                onTabListDelete={deleteTabList}
-                onTabOpen={deleteTab}
-              />
-            )}
-          </>
-        )}
-      </Container>
-    </MainLayout>
+    <Container>
+      {isNone(tabLists) ? (
+        <CircularProgress />
+      ) : (
+        <>
+          {!isNonEmpty(tabLists.value) ? (
+            'No tabs'
+          ) : (
+            <TabListsList
+              tabLists={tabLists.value}
+              onTabListOpen={openTabList}
+              onTabListOpenInNewWindow={openTabListInNewWindow}
+              onTabListDelete={deleteTabList}
+              onTabOpen={deleteTab}
+            />
+          )}
+        </>
+      )}
+    </Container>
   );
 };

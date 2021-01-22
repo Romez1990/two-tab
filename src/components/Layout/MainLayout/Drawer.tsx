@@ -1,5 +1,16 @@
 import React, { FC } from 'react';
-import { makeStyles, createStyles, Theme, Drawer as MuiDrawer } from '@material-ui/core';
+import {
+  makeStyles,
+  createStyles,
+  Theme,
+  Drawer as MuiDrawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import { routes } from '../../Router';
 
 interface StyleProps {
   width: number;
@@ -35,6 +46,17 @@ export const Drawer: FC<Props> = ({ width, open }) => {
       }}
     >
       <div className={classes.toolbar} />
+      <List component="nav">
+        {Object.values(routes).map(route => {
+          const { name, path, icon } = route;
+          return (
+            <ListItem key={name} button selected={route.isActive()} component={Link} to={path}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText>{name}</ListItemText>
+            </ListItem>
+          );
+        })}
+      </List>
     </MuiDrawer>
   );
 };
