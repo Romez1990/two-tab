@@ -1,5 +1,5 @@
-import { AppError } from '../../../services/Error';
-import { TabList } from '../../../services/TabList';
+import { AppError } from '../../../../services/Error';
+import { TabList } from '../../../../services/TabList';
 
 export class TabListNotFoundInTabListsError extends AppError {
   public constructor(public readonly tabList: TabList) {

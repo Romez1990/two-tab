@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task } from 'fp-ts/Task';
 import { TabListItem } from './TabListItem';
-import { Tab, TabList } from '../../services/TabList';
+import { Tab, TabList } from '../../../services/TabList';
 
 interface Props {
   readonly tabLists: ReadonlyNonEmptyArray<TabList>;

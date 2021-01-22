@@ -5,9 +5,9 @@ import { findIndex, unsafeInsertAt, updateAt, deleteAt, isNonEmpty } from 'fp-ts
 import { Option, some, none, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map, of } from 'fp-ts/Task';
 import { TabListsList } from './TabListsList';
-import { Tab, TabList, tabListsAreEquals } from '../../services/TabList';
-import { useService } from '../Providers/ServiceContainer';
-import { run } from '../../services/Utils/fp-ts/Task';
+import { Tab, TabList, tabListsAreEquals } from '../../../services/TabList';
+import { useService } from '../../Providers/ServiceContainer';
+import { run } from '../../../services/Utils/fp-ts/Task';
 import { TabListNotFoundInTabListsError, TabListsNotInitializedError } from './Errors';
 
 export const MainPage: FC = () => {
