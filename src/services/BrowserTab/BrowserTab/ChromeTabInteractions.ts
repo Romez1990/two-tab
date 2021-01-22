@@ -53,10 +53,10 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       ),
     );
 
-  public updateTab = (tab: BrowserTab, properties: TabUpdateProperties) => (): Promise<BrowserTab> =>
+  public updateTab = ({ id }: BrowserTab, properties: TabUpdateProperties) => (): Promise<BrowserTab> =>
     new Promise(resolve =>
       chrome.tabs.update(
-        tab.id,
+        id,
         properties,
         flow(
           this.mapTab.bind(this),
