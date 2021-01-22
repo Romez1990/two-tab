@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ServiceContainer, serviceContainer as serviceContainerDefault } from '../../services/ServiceContainer';
+import { ServiceContainer, serviceContainer as serviceContainerDefault } from '../../../services/ServiceContainer';
 import { ServiceContainerContext } from './ServiceContainerContext';
 
 interface Props {

@@ -13,7 +13,7 @@ import { Task } from 'fp-ts/Task';
 import { pipe } from 'fp-ts/function';
 import { TabList, Tab } from '../../services/TabList';
 import { run } from '../../services/Utils/fp-ts/Task';
-import { useService } from '../ServiceContainer';
+import { useService } from '../Providers/ServiceContainer';
 import { TabItem } from './TabItem';
 
 interface Props {

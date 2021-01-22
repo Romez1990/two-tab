@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { pipe } from 'fp-ts/function';
 import { Task, map } from 'fp-ts/Task';
 import { useService } from '../ServiceContainer';
-import { run } from '../../services/Utils/fp-ts/Task';
+import { run } from '../../../services/Utils/fp-ts/Task';
 
 export const StorageConnector: FC = ({ children }) => {
   const storage = useService('storageService');

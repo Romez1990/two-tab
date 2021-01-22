@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { getService, ServiceContainer } from '../../services/ServiceContainer';
+import { getService, ServiceContainer } from '../../../services/ServiceContainer';
 import { ServiceContainerContext } from './ServiceContainerContext';
 import { ServiceContainerNotProvidedError } from './Errors';
 

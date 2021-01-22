@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
-import { ErrorBoundary } from '../ErrorBoundary';
-import { ServiceContainerProvider } from '../ServiceContainer';
-import { ThemeProvider } from '../ThemeProvider';
-import { StorageConnector } from '../Storage';
+import { ErrorBoundary } from './ErrorBoundary';
+import { ServiceContainerProvider } from './ServiceContainer';
+import { ThemeProvider } from './ThemeProvider';
+import { StorageConnector } from './Storage';
 
 export const Providers: FC = ({ children }) => (
   <ServiceContainerProvider>

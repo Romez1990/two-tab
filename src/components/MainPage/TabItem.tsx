@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { makeStyles, createStyles, Theme, ListItem, Typography, Avatar, Link } from '@material-ui/core';
 import { Tab } from '../../services/TabList';
-import { useService } from '../ServiceContainer';
+import { useService } from '../Providers/ServiceContainer';
 
 interface Props {
   readonly tab: Tab;

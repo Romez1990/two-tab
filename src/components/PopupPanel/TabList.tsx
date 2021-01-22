@@ -2,7 +2,7 @@ import React, { FC, ChangeEvent, useEffect, useState } from 'react';
 import { Checkbox, List } from '@material-ui/core';
 import { Predicate, not } from 'fp-ts/function';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
-import { useService } from '../ServiceContainer';
+import { useService } from '../Providers/ServiceContainer';
 import { TabItem } from './TabItem';
 import { BrowserTabElement, checkedLens } from './BrowserTabElement';
 import { AllChecked } from './AllChecked';
