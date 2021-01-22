@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { makeStyles, createStyles, Theme, ListItem, Typography, Avatar, Link } from '@material-ui/core';
-import { Tab } from '../../../services/TabList';
+import { Tab } from '../../../services/Storage/TabList';
 import { useService } from '../../Providers/ServiceContainer';
 
 interface Props {

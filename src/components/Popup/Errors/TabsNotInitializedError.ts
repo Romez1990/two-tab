@@ -1,4 +1,4 @@
-import { DataNotInitializedError } from '../../../services/Error';
+import { DataNotInitializedError } from '../../../services/Infrastructure/Error';
 
 export class TabsNotInitializedError extends DataNotInitializedError {
   public constructor() {

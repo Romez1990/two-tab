@@ -10,7 +10,7 @@ import { Option, some, map as mapO, fold, getOrElseW, isNone } from 'fp-ts/Optio
 import { Task, map } from 'fp-ts/Task';
 import { Lens, Optional } from 'monocle-ts';
 import { TabList } from './TabList';
-import { BrowserTab } from '../../services/BrowserTab';
+import { BrowserTab } from '../../services/Browser/BrowserTab';
 import { inRange } from '../../services/Utils/Math';
 import { run } from '../../services/Utils/fp-ts/Task';
 import { TabsNotInitializedError } from './Errors';

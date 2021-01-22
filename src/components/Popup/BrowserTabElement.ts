@@ -1,7 +1,7 @@
 import { fromEquals } from 'fp-ts/Eq';
 import { readonlyArray } from 'fp-ts/ReadonlyArray';
 import { Lens, fromTraversable } from 'monocle-ts';
-import { BrowserTab } from '../../services/BrowserTab';
+import { BrowserTab } from '../../services/Browser/BrowserTab';
 
 export interface BrowserTabElement extends BrowserTab {
   readonly checked: boolean;

@@ -1,5 +1,5 @@
 import { pipe } from 'fp-ts/function';
-import { serviceContainer } from './services/ServiceContainer';
+import { serviceContainer } from './services/Infrastructure/ServiceContainer';
 import { run } from './services/Utils/fp-ts/Task';
 
 const logger = serviceContainer.get('loggerService');

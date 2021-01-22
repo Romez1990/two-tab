@@ -11,7 +11,7 @@ import {
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { Task } from 'fp-ts/Task';
 import { pipe } from 'fp-ts/function';
-import { TabList, Tab } from '../../../services/TabList';
+import { TabList, Tab } from '../../../services/Storage/TabList';
 import { run } from '../../../services/Utils/fp-ts/Task';
 import { useService } from '../../Providers/ServiceContainer';
 import { TabItem } from './TabItem';
