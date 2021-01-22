@@ -1,5 +1,4 @@
 import { pipe, constVoid } from 'fp-ts/function';
-import { fold } from 'fp-ts/boolean';
 import { map as mapR, filter } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapN, head, tail } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task, map, chain, sequenceArray } from 'fp-ts/Task';
@@ -24,15 +23,7 @@ export class BrowserTabServiceImpl implements BrowserTabService {
   public getTabsInCurrentWindow = (all: boolean): Task<ReadonlyArray<BrowserTab>> =>
     pipe(
       this.browserTabInteractions.getTabsInCurrentWindow(),
-      map(tabs =>
-        pipe(
-          all,
-          fold(
-            () => this.filterTabs(tabs),
-            () => tabs,
-          ),
-        ),
-      ),
+      map(tabs => (all ? tabs : this.filterTabs(tabs))),
     );
 
   private filterTabs = (tabs: ReadonlyArray<BrowserTab>): ReadonlyArray<BrowserTab> =>
