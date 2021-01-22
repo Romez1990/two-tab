@@ -1,6 +1,6 @@
 import { Table } from 'dexie';
 import { pipe, constant } from 'fp-ts/function';
-import { findIndex, unsafeDeleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
+import { findIndex, unsafeDeleteAt, isNonEmpty, zipWith } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Option, fromNullable, some, none, map as mapO, fold, getOrElseW } from 'fp-ts/Option';
 import { Task, map, chain } from 'fp-ts/Task';
@@ -28,6 +28,12 @@ export class TabListRepositoryImpl implements TabListRepository {
     pipe(
       () => this.table.add(tabList),
       map(id => idLens.set(id)(tabList)),
+    );
+
+  public addTabLists = (tabLists: ReadonlyArray<TabList>): Task<ReadonlyArray<TabList>> =>
+    pipe(
+      () => this.table.bulkAdd(tabLists, { allKeys: true }),
+      map(ids => zipWith(ids, tabLists, (id, tabList) => idLens.set(id)(tabList))),
     );
 
   public deleteTabList = (tabList: TabList): Task<void> => () =>

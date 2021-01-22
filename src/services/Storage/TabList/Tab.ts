@@ -1,12 +1,15 @@
 import { fromEquals } from 'fp-ts/Eq';
+import { type, boolean, number, string, undefined, union, TypeOf } from 'io-ts';
 
-export interface Tab {
-  readonly id?: number;
-  readonly title: string;
-  readonly url: string;
-  readonly favIconUrl?: string;
-  readonly pinned: boolean;
-}
+export const TabT = type({
+  id: union([number, undefined]),
+  title: string,
+  url: string,
+  favIconUrl: union([string, undefined]),
+  pinned: boolean,
+});
+
+export type Tab = TypeOf<typeof TabT>;
 
 export const eqTab = fromEquals((x: Tab, y: Tab): boolean => {
   if (typeof x.id === 'undefined' || typeof y.id === 'undefined') {

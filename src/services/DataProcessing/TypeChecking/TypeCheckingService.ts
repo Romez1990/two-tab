@@ -3,6 +3,6 @@ import { Either } from 'fp-ts/Either';
 import { TypeCheckingError } from './TypeCheckingError';
 
 export interface TypeCheckingService {
-  check<T>(type: Type<T>): (data: unknown) => Either<TypeCheckingError, T>;
-  checkAndThrow<T>(type: Type<T>): (data: unknown) => T;
+  check<A, O = A, I = unknown>(type: Type<A, O, I>): (data: I) => Either<TypeCheckingError, A>;
+  checkAndThrow<A, O = A, I = unknown>(type: Type<A, O, I>): (data: I) => A;
 }

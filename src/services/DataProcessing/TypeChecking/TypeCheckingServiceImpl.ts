@@ -9,14 +9,14 @@ import { throwError } from '../../Infrastructure/Error';
 export class TypeCheckingServiceImpl implements TypeCheckingService {
   public constructor(private readonly errorReporter: ErrorReporter) {}
 
-  public check = <T>(type: Type<T>) => (data: unknown): Either<TypeCheckingError, T> =>
+  public check = <A, O = A, I = unknown>(type: Type<A, O, I>) => (data: I): Either<TypeCheckingError, A> =>
     pipe(
       type.decode(data),
       mapLeft(this.errorReporter.report.bind(this.errorReporter)),
       mapLeft(messages => new TypeCheckingError(data, messages)),
     );
 
-  public checkAndThrow = <T>(type: Type<T>) => (data: unknown): T =>
+  public checkAndThrow = <A, O = A, I = unknown>(type: Type<A, O, I>) => (data: I): A =>
     pipe(
       this.check(type)(data),
       getOrElseW(throwError),
