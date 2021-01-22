@@ -10,7 +10,7 @@ import { useService } from '../../Providers/ServiceContainer';
 import { run } from '../../../services/Utils/fp-ts/Task';
 import { TabListNotFoundInTabListsError, TabListsNotInitializedError } from './Errors';
 
-export const MainPage: FC = () => {
+export const TabListsPage: FC = () => {
   const mainPageService = useService('mainPageService');
 
   useEffect(() => {
