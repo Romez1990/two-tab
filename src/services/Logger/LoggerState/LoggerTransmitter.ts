@@ -1,4 +1,3 @@
-import { pipe } from 'fp-ts/function';
 import { MessageService } from '../../MessageService';
 import { LogMessage, LogType } from '../Message';
 import { LoggerState } from './LoggerState';
