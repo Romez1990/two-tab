@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function';
 import { findIndex, unsafeInsertAt, updateAt, deleteAt, isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { Option, some, none, fold, getOrElseW, isNone } from 'fp-ts/Option';
 import { Task, map, of } from 'fp-ts/Task';
-import { TabListsList } from './TabListsList';
+import { TabLists } from './TabLists';
 import { Tab, TabList, tabListsAreEquals } from '../../../services/TabList';
 import { useService } from '../../Providers/ServiceContainer';
 import { run } from '../../../services/Utils/fp-ts/Task';
@@ -112,7 +112,7 @@ export const TabListsPage: FC = () => {
           {!isNonEmpty(tabLists.value) ? (
             'No tabs'
           ) : (
-            <TabListsList
+            <TabLists
               tabLists={tabLists.value}
               onTabListOpen={openTabList}
               onTabListOpenInNewWindow={openTabListInNewWindow}

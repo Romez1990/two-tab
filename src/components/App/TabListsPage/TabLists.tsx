@@ -12,7 +12,7 @@ interface Props {
   onTabOpen(tabList: TabList, tab: Tab, shouldBeDeleted: boolean): Task<void>;
 }
 
-export const TabListsList: FC<Props> = ({
+export const TabLists: FC<Props> = ({
   tabLists,
   onTabListOpen,
   onTabListOpenInNewWindow,
