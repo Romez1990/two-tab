@@ -9,7 +9,7 @@ import { BrowserTab } from '../../services/BrowserTab';
 import { useService } from '../Providers/ServiceContainer';
 import { run } from '../../services/Utils/fp-ts/Task';
 
-export const PopupPanel: FC = () => {
+export const PopupView: FC = () => {
   const popupService = useService('popupService');
 
   useEffect(() => {

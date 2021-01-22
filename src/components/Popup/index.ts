@@ -1,1 +1,1 @@
-export * from './PopupPanel';
+export * from './PopupView';
