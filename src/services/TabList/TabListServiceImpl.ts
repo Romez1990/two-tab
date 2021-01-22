@@ -21,6 +21,10 @@ export class TabListServiceImpl implements TabListService {
     this.tabListsUpdatingService.addHandlers(handlers);
   }
 
+  public removeUpdateHandlers(): void {
+    this.tabListsUpdatingService.removeHandlers();
+  }
+
   public getAllTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListRepository.getAllTabLists();
 
   public addTabList = (listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList> =>

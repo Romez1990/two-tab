@@ -25,6 +25,10 @@ export class TabListsUpdatingServiceImpl implements TabListsUpdatingService {
     this.handlers = some(handlers);
   }
 
+  public removeHandlers(): void {
+    this.handlers = none;
+  }
+
   private messageHandler = ({ type, tabList }: TabListsUpdateData): void =>
     pipe(
       this.handlers,

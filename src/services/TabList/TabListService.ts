@@ -7,6 +7,7 @@ import { Tab } from './Tab';
 
 export interface TabListService {
   addUpdateHandlers(handlers: TabListsUpdateHandlers): void;
+  removeUpdateHandlers(): void;
   getAllTabLists(): Task<ReadonlyArray<TabList>>;
   addTabList(listName: string, tabs: ReadonlyNonEmptyArray<Tab>): Task<TabList>;
   deleteTabList(tabList: TabList): Task<void>;

@@ -15,6 +15,10 @@ export class MainPageServiceImpl implements MainPageService {
     this.tabListService.addUpdateHandlers(handlers);
   }
 
+  public removeUpdateHandlers(): void {
+    this.tabListService.removeUpdateHandlers();
+  }
+
   public getTabLists = (): Task<ReadonlyArray<TabList>> => this.tabListService.getAllTabLists();
 
   public openTabList = (tabList: TabList): Task<void> =>

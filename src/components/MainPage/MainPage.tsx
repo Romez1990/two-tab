@@ -13,14 +13,22 @@ import { TabListNotFoundInTabListsError, TabListsNotInitializedError } from './E
 export const MainPage: FC = () => {
   const mainPageService = useService('mainPageService');
 
-  useEffect((): void => {
+  useEffect(() => {
+    addUpdateHandlers();
+    run(getTabLists());
+    return (): void => {
+      removeUpdateHandlers();
+    };
+  }, []);
+
+  const addUpdateHandlers = (): void =>
     mainPageService.addUpdateHandlers({
       add: addTabListToTabLists,
       update: updateTabListsWithNewTabList,
       delete: deleteTabListFromTabLists,
     });
-    run(getTabLists());
-  }, []);
+
+  const removeUpdateHandlers = (): void => mainPageService.removeUpdateHandlers();
 
   const [tabLists, setTabLists] = useState<Option<ReadonlyArray<TabList>>>(none);
 
