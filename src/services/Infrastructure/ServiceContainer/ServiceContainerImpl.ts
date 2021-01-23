@@ -22,6 +22,7 @@ import {
   BrowserTabInteractions,
   ChromeTabInteractions,
 } from '../../Browser/BrowserTab';
+import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../../Browser/MessageService';
 import { ExtensionService, ChromeExtensionService } from '../../Browser/Extension';
 import { KeyboardService, KeyboardServiceImpl } from '../../DOM/Keyboard';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
@@ -34,7 +35,6 @@ import {
   LoggerStateFactory,
   LoggerStateFactoryImpl,
 } from '../Logger';
-import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../../Browser/MessageService';
 import { Config, ConfigImpl } from '../Config';
 import { EnvService, EnvServiceImpl } from '../Env';
 import {
@@ -66,9 +66,6 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.config = new ConfigImpl(this.envService);
 
-    this.messageSender = new ChromeMessageSender();
-    this.messageService = new MessageServiceImpl(this.messageSender, this.typeCheckingService);
-
     this.loggerHandler = new ConsoleLoggerHandler(console);
     this.loggerStateFactory = new LoggerStateFactoryImpl(this.messageService, this.loggerHandler);
     this.loggerService = new LoggerServiceImpl(this.loggerStateFactory);
@@ -84,6 +81,9 @@ class ServiceContainerImpl implements ServiceContainer {
     this.keyboardService = new KeyboardServiceImpl(window);
 
     this.extensionService = new ChromeExtensionService();
+
+    this.messageSender = new ChromeMessageSender();
+    this.messageService = new MessageServiceImpl(this.messageSender, this.typeCheckingService);
 
     this.browserTabInteractions = new ChromeTabInteractions();
     this.browserTabService = new BrowserTabServiceImpl(this.browserTabInteractions, this.extensionService);
@@ -120,6 +120,9 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly browserTabService: BrowserTabService;
   public readonly browserTabInteractions: BrowserTabInteractions;
 
+  public readonly messageService: MessageService;
+  public readonly messageSender: MessageSender;
+
   public readonly extensionService: ExtensionService;
 
   public readonly keyboardService: KeyboardService;
@@ -131,9 +134,6 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly loggerService: LoggerService;
   public readonly loggerStateFactory: LoggerStateFactory;
   public readonly loggerHandler: LoggerHandler;
-
-  public readonly messageService: MessageService;
-  public readonly messageSender: MessageSender;
 
   public readonly config: Config;
 

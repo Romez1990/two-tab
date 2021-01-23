@@ -3,10 +3,10 @@ import { PopupService } from '../../Components/Popup';
 import { TabListService, TabListRepository, TabListsUpdatingService, TabListSerializer } from '../../Storage/TabList';
 import { StorageService, StorageStateFactory } from '../../Storage/Storage';
 import { BrowserTabService, BrowserTabInteractions } from '../../Browser/BrowserTab';
+import { MessageService, MessageSender } from '../../Browser/MessageService';
 import { ExtensionService } from '../../Browser/Extension';
 import { KeyboardService } from '../../DOM/Keyboard';
 import { LoggerService, LoggerStateFactory, LoggerHandler } from '../Logger';
-import { MessageService, MessageSender } from '../../Browser/MessageService';
 import { ErrorReportingService } from '../ErrorReporting';
 import { ErrorProcessingService } from '../Error';
 import { Config } from '../Config';
@@ -34,6 +34,9 @@ export interface ServiceContainer {
   readonly browserTabService?: BrowserTabService;
   readonly browserTabInteractions?: BrowserTabInteractions;
 
+  readonly messageService?: MessageService;
+  readonly messageSender?: MessageSender;
+
   readonly extensionService?: ExtensionService;
 
   readonly keyboardService?: KeyboardService;
@@ -41,9 +44,6 @@ export interface ServiceContainer {
   readonly loggerService?: LoggerService;
   readonly loggerStateFactory?: LoggerStateFactory;
   readonly loggerHandler?: LoggerHandler;
-
-  readonly messageService?: MessageService;
-  readonly messageSender?: MessageSender;
 
   readonly errorReportingService?: ErrorReportingService;
 
