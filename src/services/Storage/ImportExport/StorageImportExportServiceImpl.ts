@@ -6,10 +6,10 @@ import { TaskEither } from 'fp-ts/TaskEither';
 import { TabListRepository, TabListSerializer } from '../TabList';
 import { JsonSerializer } from '../../DataProcessing/Serializer';
 import { TypeCheckingService, TypeCheckingError } from '../../DataProcessing/TypeChecking';
-import { ImportExportService } from './ImportExportService';
+import { StorageImportExportService } from './StorageImportExportService';
 import { DataT } from './Data';
 
-export class ImportExportServiceImpl implements ImportExportService {
+export class StorageImportExportServiceImpl implements StorageImportExportService {
   public constructor(
     private readonly tabListRepository: TabListRepository,
     private readonly tabListSerializer: TabListSerializer,

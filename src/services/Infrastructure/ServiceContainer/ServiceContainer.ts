@@ -1,6 +1,6 @@
 import { MainPageService } from '../../Components/App/MainPage';
 import { PopupService } from '../../Components/Popup';
-import { ImportExportService } from '../../Storage/ImportExport';
+import { StorageImportExportService } from '../../Storage/ImportExport';
 import { TabListService, TabListRepository, TabListsUpdatingService, TabListSerializer } from '../../Storage/TabList';
 import { StorageService, StorageStateFactory } from '../../Storage/Storage';
 import { DownloadService } from '../../DOM/Download';
@@ -25,7 +25,7 @@ export interface ServiceContainer {
 
   readonly popupService?: PopupService;
 
-  readonly importExportService?: ImportExportService;
+  readonly storageImportExportService?: StorageImportExportService;
 
   readonly tabListService?: TabListService;
   readonly tabListRepository?: TabListRepository;
