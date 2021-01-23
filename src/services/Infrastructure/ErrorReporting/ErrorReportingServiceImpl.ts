@@ -1,7 +1,7 @@
 import { Task, of } from 'fp-ts/Task';
 import { Config } from '../Config';
 import { ErrorReportingService } from './ErrorReportingService';
-import { LoggerService } from '../../DataProcessing/Logger';
+import { LoggerService } from '../Logger';
 import { ErrorProcessingService } from '../Error';
 
 export class ErrorReportingServiceImpl implements ErrorReportingService {

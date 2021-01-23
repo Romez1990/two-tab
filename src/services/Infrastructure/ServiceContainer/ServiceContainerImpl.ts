@@ -33,7 +33,7 @@ import {
   ConsoleLoggerHandler,
   LoggerStateFactory,
   LoggerStateFactoryImpl,
-} from '../../DataProcessing/Logger';
+} from '../Logger';
 import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../../Browser/MessageService';
 import { Config, ConfigImpl } from '../Config';
 import { EnvService, EnvServiceImpl } from '../Env';

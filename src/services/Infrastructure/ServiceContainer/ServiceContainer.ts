@@ -5,7 +5,7 @@ import { StorageService, StorageStateFactory } from '../../Storage/Storage';
 import { BrowserTabService, BrowserTabInteractions } from '../../Browser/BrowserTab';
 import { ExtensionService } from '../../Browser/Extension';
 import { KeyboardService } from '../../DOM/Keyboard';
-import { LoggerService, LoggerStateFactory, LoggerHandler } from '../../DataProcessing/Logger';
+import { LoggerService, LoggerStateFactory, LoggerHandler } from '../Logger';
 import { MessageService, MessageSender } from '../../Browser/MessageService';
 import { ErrorReportingService } from '../ErrorReporting';
 import { ErrorProcessingService } from '../Error';
