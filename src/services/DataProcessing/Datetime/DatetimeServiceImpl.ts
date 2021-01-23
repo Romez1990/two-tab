@@ -1,3 +1,4 @@
+import { pipe } from 'fp-ts/function';
 import { DatetimeService } from './DatetimeService';
 
 type DateTimeFormat = Intl.DateTimeFormat;
@@ -19,7 +20,18 @@ export class DatetimeServiceImpl implements DatetimeService {
 
   public toLocaleString = (datetime: Date): string => this.dateTimeFormat.format(datetime);
 
-  public fromTimeStamp = (timestamp: number): Date => new Date(timestamp);
+  public fromTimeStamp = (timestamp: number): Date =>
+    pipe(
+      timestamp * 1000,
+      time => new Date(time),
+      //
+    );
 
-  public toTimeStamp = (datetime: Date): number => datetime.getTime();
+  public toTimeStamp = (datetime: Date): number =>
+    pipe(
+      datetime.getTime(),
+      time => time / 1000,
+      Math.round,
+      //
+    );
 }
