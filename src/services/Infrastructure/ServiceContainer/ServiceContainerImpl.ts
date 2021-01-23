@@ -1,5 +1,6 @@
 import { MainPageService, MainPageServiceImpl } from '../../Components/App/MainPage';
 import { PopupService, PopupServiceImpl } from '../../Components/Popup';
+import { ImportExportService, ImportExportServiceImpl } from '../../Storage/ImportExport';
 import {
   TabListService,
   TabListServiceImpl,
@@ -100,6 +101,13 @@ class ServiceContainerImpl implements ServiceContainer {
       this.datetimeService,
     );
 
+    this.importExportService = new ImportExportServiceImpl(
+      this.tabListRepository,
+      this.tabListSerializer,
+      this.jsonSerializer,
+      this.typeCheckingService,
+    );
+
     this.popupService = new PopupServiceImpl(this.tabListService, this.browserTabService, this.extensionService);
 
     this.mainPageService = new MainPageServiceImpl(this.tabListService, this.browserTabService);
@@ -108,6 +116,8 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly mainPageService: MainPageService;
 
   public readonly popupService: PopupService;
+
+  public readonly importExportService: ImportExportService;
 
   public readonly tabListService: TabListService;
   public readonly tabListRepository: TabListRepository;
