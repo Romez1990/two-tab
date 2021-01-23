@@ -17,6 +17,7 @@ import {
   StorageStateFactory,
   StorageStateFactoryImpl,
 } from '../../Storage/Storage';
+import { DownloadService, DownloadServiceImpl } from '../../DOM/Download';
 import { KeyboardService, KeyboardServiceImpl } from '../../DOM/Keyboard';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
 import { ErrorProcessingService, ErrorProcessingServiceImpl } from '../Error';
@@ -89,6 +90,8 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.keyboardService = new KeyboardServiceImpl(window);
 
+    this.downloadService = new DownloadServiceImpl(document);
+
     this.storageStateFactory = new StorageStateFactoryImpl();
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
 
@@ -126,6 +129,8 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly storageService: StorageService;
   public readonly storageStateFactory: StorageStateFactory;
+
+  public readonly downloadService: DownloadService;
 
   public readonly keyboardService: KeyboardService;
 

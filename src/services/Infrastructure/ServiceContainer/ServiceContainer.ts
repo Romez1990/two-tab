@@ -3,6 +3,7 @@ import { PopupService } from '../../Components/Popup';
 import { ImportExportService } from '../../Storage/ImportExport';
 import { TabListService, TabListRepository, TabListsUpdatingService, TabListSerializer } from '../../Storage/TabList';
 import { StorageService, StorageStateFactory } from '../../Storage/Storage';
+import { DownloadService } from '../../DOM/Download';
 import { KeyboardService } from '../../DOM/Keyboard';
 import { LoggerService, LoggerStateFactory, LoggerHandler } from '../Logger';
 import { ErrorReportingService } from '../ErrorReporting';
@@ -33,6 +34,8 @@ export interface ServiceContainer {
 
   readonly storageService?: StorageService;
   readonly storageStateFactory?: StorageStateFactory;
+
+  readonly downloadService?: DownloadService;
 
   readonly keyboardService?: KeyboardService;
 
