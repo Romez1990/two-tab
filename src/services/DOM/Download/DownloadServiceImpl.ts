@@ -4,7 +4,7 @@ import { DownloadService } from './DownloadService';
 export class DownloadServiceImpl implements DownloadService {
   public constructor(private readonly document: Document) {}
 
-  public download = (filename: string, content: string): void =>
+  public download = (filename: string) => (content: string): void =>
     pipe(
       [content],
       blobData => new Blob(blobData, { type: 'application/octet-stream' }),
