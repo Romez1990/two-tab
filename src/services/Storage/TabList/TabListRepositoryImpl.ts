@@ -13,7 +13,7 @@ import { Tab, tabsAreEquals } from './Tab';
 
 export class TabListRepositoryImpl implements TabListRepository {
   public constructor(private readonly storage: StorageService) {
-    storage.addTable(this.tableName, '++id, data');
+    storage.addTable(this.tableName, '++id, createdAt');
   }
 
   private readonly tableName = 'tabLists';
