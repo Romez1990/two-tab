@@ -16,14 +16,6 @@ import {
   StorageStateFactory,
   StorageStateFactoryImpl,
 } from '../../Storage/Storage';
-import {
-  BrowserTabService,
-  BrowserTabServiceImpl,
-  BrowserTabInteractions,
-  ChromeTabInteractions,
-} from '../../Browser/BrowserTab';
-import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../../Browser/MessageService';
-import { ExtensionService, ChromeExtensionService } from '../../Browser/Extension';
 import { KeyboardService, KeyboardServiceImpl } from '../../DOM/Keyboard';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
 import { ErrorProcessingService, ErrorProcessingServiceImpl } from '../Error';
@@ -37,6 +29,14 @@ import {
 } from '../Logger';
 import { Config, ConfigImpl } from '../Config';
 import { EnvService, EnvServiceImpl } from '../Env';
+import {
+  BrowserTabService,
+  BrowserTabServiceImpl,
+  BrowserTabInteractions,
+  ChromeTabInteractions,
+} from '../../Browser/BrowserTab';
+import { MessageService, MessageServiceImpl, MessageSender, ChromeMessageSender } from '../../Browser/MessageService';
+import { ExtensionService, ChromeExtensionService } from '../../Browser/Extension';
 import {
   TypeCheckingService,
   TypeCheckingServiceImpl,
@@ -62,6 +62,14 @@ class ServiceContainerImpl implements ServiceContainer {
     this.errorReporter = new ErrorReporterImpl(this.jsonSerializer);
     this.typeCheckingService = new TypeCheckingServiceImpl(this.errorReporter);
 
+    this.extensionService = new ChromeExtensionService();
+
+    this.messageSender = new ChromeMessageSender();
+    this.messageService = new MessageServiceImpl(this.messageSender, this.typeCheckingService);
+
+    this.browserTabInteractions = new ChromeTabInteractions();
+    this.browserTabService = new BrowserTabServiceImpl(this.browserTabInteractions, this.extensionService);
+
     this.envService = new EnvServiceImpl(process.env, this.typeCheckingService);
 
     this.config = new ConfigImpl(this.envService);
@@ -79,14 +87,6 @@ class ServiceContainerImpl implements ServiceContainer {
     );
 
     this.keyboardService = new KeyboardServiceImpl(window);
-
-    this.extensionService = new ChromeExtensionService();
-
-    this.messageSender = new ChromeMessageSender();
-    this.messageService = new MessageServiceImpl(this.messageSender, this.typeCheckingService);
-
-    this.browserTabInteractions = new ChromeTabInteractions();
-    this.browserTabService = new BrowserTabServiceImpl(this.browserTabInteractions, this.extensionService);
 
     this.storageStateFactory = new StorageStateFactoryImpl();
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
@@ -117,14 +117,6 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly storageService: StorageService;
   public readonly storageStateFactory: StorageStateFactory;
 
-  public readonly browserTabService: BrowserTabService;
-  public readonly browserTabInteractions: BrowserTabInteractions;
-
-  public readonly messageService: MessageService;
-  public readonly messageSender: MessageSender;
-
-  public readonly extensionService: ExtensionService;
-
   public readonly keyboardService: KeyboardService;
 
   public readonly errorProcessingService: ErrorProcessingService;
@@ -138,6 +130,14 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly config: Config;
 
   public readonly envService: EnvService;
+
+  public readonly browserTabService: BrowserTabService;
+  public readonly browserTabInteractions: BrowserTabInteractions;
+
+  public readonly messageService: MessageService;
+  public readonly messageSender: MessageSender;
+
+  public readonly extensionService: ExtensionService;
 
   public readonly typeCheckingService: TypeCheckingService;
   public readonly errorReporter: ErrorReporter;

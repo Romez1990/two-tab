@@ -2,15 +2,15 @@ import { MainPageService } from '../../Components/App/MainPage';
 import { PopupService } from '../../Components/Popup';
 import { TabListService, TabListRepository, TabListsUpdatingService, TabListSerializer } from '../../Storage/TabList';
 import { StorageService, StorageStateFactory } from '../../Storage/Storage';
-import { BrowserTabService, BrowserTabInteractions } from '../../Browser/BrowserTab';
-import { MessageService, MessageSender } from '../../Browser/MessageService';
-import { ExtensionService } from '../../Browser/Extension';
 import { KeyboardService } from '../../DOM/Keyboard';
 import { LoggerService, LoggerStateFactory, LoggerHandler } from '../Logger';
 import { ErrorReportingService } from '../ErrorReporting';
 import { ErrorProcessingService } from '../Error';
 import { Config } from '../Config';
 import { EnvService } from '../Env';
+import { BrowserTabService, BrowserTabInteractions } from '../../Browser/BrowserTab';
+import { MessageService, MessageSender } from '../../Browser/MessageService';
+import { ExtensionService } from '../../Browser/Extension';
 import { TypeCheckingService, ErrorReporter } from '../../DataProcessing/TypeChecking';
 import { DatetimeService } from '../../DataProcessing/Datetime';
 import { UrlProcessingService } from '../../DataProcessing/UrlProcessing';
@@ -31,14 +31,6 @@ export interface ServiceContainer {
   readonly storageService?: StorageService;
   readonly storageStateFactory?: StorageStateFactory;
 
-  readonly browserTabService?: BrowserTabService;
-  readonly browserTabInteractions?: BrowserTabInteractions;
-
-  readonly messageService?: MessageService;
-  readonly messageSender?: MessageSender;
-
-  readonly extensionService?: ExtensionService;
-
   readonly keyboardService?: KeyboardService;
 
   readonly loggerService?: LoggerService;
@@ -52,6 +44,14 @@ export interface ServiceContainer {
   readonly config?: Config;
 
   readonly envService?: EnvService;
+
+  readonly browserTabService?: BrowserTabService;
+  readonly browserTabInteractions?: BrowserTabInteractions;
+
+  readonly messageService?: MessageService;
+  readonly messageSender?: MessageSender;
+
+  readonly extensionService?: ExtensionService;
 
   readonly typeCheckingService?: TypeCheckingService;
   readonly errorReporter?: ErrorReporter;
