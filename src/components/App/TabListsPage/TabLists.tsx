@@ -26,7 +26,7 @@ export const TabLists: FC<Props> = ({
 
   const deleteTabList = (tabList: TabList) => (): Task<void> => onTabListDelete(tabList);
 
-  const openTab = (tabList: TabList) => (tab: Tab, shouldBeDeleted: boolean): Task<void> =>
+  const onTabOpened = (tabList: TabList) => (tab: Tab, shouldBeDeleted: boolean): Task<void> =>
     onTabOpen(tabList, tab, shouldBeDeleted);
 
   return (
@@ -38,7 +38,7 @@ export const TabLists: FC<Props> = ({
           onTabListOpen={openTabList(tabList)}
           onTabListOpenInNewWindow={openTabListInNewWindow(tabList)}
           onTabListDelete={deleteTabList(tabList)}
-          onTabOpen={openTab(tabList)}
+          onTabOpen={onTabOpened(tabList)}
         />
       ))}
     </>

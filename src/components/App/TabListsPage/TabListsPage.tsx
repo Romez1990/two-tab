@@ -58,7 +58,7 @@ export const TabListsPage: FC = () => {
       map(() => deleteTabListFromTabLists(tabList)),
     );
 
-  const deleteTab = (tabList: TabList, tab: Tab, shouldBeDeleted: boolean): Task<void> =>
+  const deleteTabIfShould = (tabList: TabList, tab: Tab, shouldBeDeleted: boolean): Task<void> =>
     shouldBeDeleted
       ? pipe(
           mainPageService.deleteTab(tabList, tab),
@@ -117,7 +117,7 @@ export const TabListsPage: FC = () => {
               onTabListOpen={openTabList}
               onTabListOpenInNewWindow={openTabListInNewWindow}
               onTabListDelete={deleteTabList}
-              onTabOpen={deleteTab}
+              onTabOpen={deleteTabIfShould}
             />
           )}
         </>

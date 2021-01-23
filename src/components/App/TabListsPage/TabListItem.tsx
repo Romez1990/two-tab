@@ -76,7 +76,7 @@ export const TabListItem: FC<Props> = ({
       //
     );
 
-  const openTab = (tab: Tab) => (shouldBeDeleted: boolean): Promise<void> =>
+  const onTabOpened = (tab: Tab) => (shouldBeDeleted: boolean): Promise<void> =>
     pipe(
       onTabOpen(tab, shouldBeDeleted),
       run,
@@ -104,7 +104,7 @@ export const TabListItem: FC<Props> = ({
       <AccordionDetails>
         <List>
           {tabs.map(tab => (
-            <TabItem key={tab.id} tab={tab} onOpen={openTab(tab)} />
+            <TabItem key={tab.id} tab={tab} onOpen={onTabOpened(tab)} />
           ))}
         </List>
       </AccordionDetails>
