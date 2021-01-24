@@ -1,4 +1,5 @@
 import { MainPageService, MainPageServiceImpl } from '../../Components/App/MainPage';
+import { ImportExportService, ImportExportServiceImpl } from '../../Components/App/ImportExport';
 import { PopupService, PopupServiceImpl } from '../../Components/Popup';
 import { StorageImportExportService, StorageImportExportServiceImpl } from '../../Storage/ImportExport';
 import {
@@ -17,6 +18,7 @@ import {
   StorageStateFactory,
   StorageStateFactoryImpl,
 } from '../../Storage/Storage';
+import { FileReadingService, FileReadingServiceImpl } from '../../DOM/FileReading';
 import { DownloadService, DownloadServiceImpl } from '../../DOM/Download';
 import { KeyboardService, KeyboardServiceImpl } from '../../DOM/Keyboard';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
@@ -88,6 +90,8 @@ class ServiceContainerImpl implements ServiceContainer {
       this.loggerService,
     );
 
+    this.fileReadingService = new FileReadingServiceImpl();
+
     this.keyboardService = new KeyboardServiceImpl(window);
 
     this.downloadService = new DownloadServiceImpl(document);
@@ -113,10 +117,16 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.popupService = new PopupServiceImpl(this.tabListService, this.browserTabService, this.extensionService);
 
+    this.importExportService = new ImportExportServiceImpl(
+      this.storageImportExportService,
+      this.fileReadingService,
+      this.downloadService,
+    );
     this.mainPageService = new MainPageServiceImpl(this.tabListService, this.browserTabService);
   }
 
   public readonly mainPageService: MainPageService;
+  public readonly importExportService: ImportExportService;
 
   public readonly popupService: PopupService;
 
@@ -129,6 +139,8 @@ class ServiceContainerImpl implements ServiceContainer {
 
   public readonly storageService: StorageService;
   public readonly storageStateFactory: StorageStateFactory;
+
+  public readonly fileReadingService: FileReadingService;
 
   public readonly downloadService: DownloadService;
 
