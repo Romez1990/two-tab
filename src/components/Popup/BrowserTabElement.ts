@@ -12,10 +12,7 @@ export const toBrowserTabElement = (tab: BrowserTab): BrowserTabElement => ({
   checked: false,
 });
 
-export const toBrowserTab = (tabElement: BrowserTabElement): BrowserTab => {
-  const { checked, ...tab } = tabElement;
-  return tab;
-};
+export const toBrowserTab = ({ checked, ...tab }: BrowserTabElement): BrowserTab => tab;
 
 export const eqBrowserTab = fromEquals((x: BrowserTabElement, y: BrowserTabElement): boolean => x.id === y.id);
 
