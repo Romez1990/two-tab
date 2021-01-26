@@ -20,7 +20,7 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
           currentWindow: true,
         },
         flow(
-          this.mapTabs.bind(this),
+          this.toBrowserTabs.bind(this),
           resolve,
           //
         ),
@@ -34,7 +34,7 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
           populate: true,
         },
         flow(
-          this.mapWindows.bind(this),
+          this.toBrowserWindows.bind(this),
           resolve,
           //
         ),
@@ -46,7 +46,7 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       chrome.tabs.create(
         properties,
         flow(
-          this.mapTab.bind(this),
+          this.toBrowserTab.bind(this),
           resolve,
           //
         ),
@@ -59,7 +59,7 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
         id,
         properties,
         flow(
-          this.mapTab.bind(this),
+          this.toBrowserTab.bind(this),
           resolve,
           //
         ),
@@ -82,30 +82,30 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       chrome.windows.create(
         properties,
         flow(
-          this.mapWindow.bind(this),
+          this.toBrowserWindow.bind(this),
           resolve,
           //
         ),
       ),
     );
 
-  private mapTabs = (tabs: ReadonlyArray<ChromeTab>): ReadonlyNonEmptyArray<BrowserTab> =>
+  private toBrowserTabs = (tabs: ReadonlyArray<ChromeTab>): ReadonlyNonEmptyArray<BrowserTab> =>
     pipe(
       tabs,
       checkNonEmpty<ChromeTab>('tabs'),
-      map(this.mapTab.bind(this)),
+      map(this.toBrowserTab.bind(this)),
       //
     );
 
-  private mapWindows = (windows: ReadonlyArray<ChromeWindow>): ReadonlyNonEmptyArray<BrowserWindow> =>
+  private toBrowserWindows = (windows: ReadonlyArray<ChromeWindow>): ReadonlyNonEmptyArray<BrowserWindow> =>
     pipe(
       windows,
       checkNonEmpty<ChromeWindow>('windows'),
-      map(this.mapWindow),
+      map(this.toBrowserWindow),
       //
     );
 
-  private mapTab(tab: ChromeTab | undefined): BrowserTab {
+  private toBrowserTab(tab: ChromeTab | undefined): BrowserTab {
     if (typeof tab === 'undefined') {
       throw new InvalidChromeTabError(tab);
     }
@@ -123,7 +123,7 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
     };
   }
 
-  private mapWindow(window: ChromeWindow | undefined): BrowserWindow {
+  private toBrowserWindow(window: ChromeWindow | undefined): BrowserWindow {
     if (typeof window === 'undefined') {
       throw new InvalidChromeWindowError(window);
     }
@@ -135,7 +135,7 @@ export class ChromeTabInteractions implements BrowserTabInteractions {
       id,
       incognito,
       focused,
-      tabs: this.mapTabs(tabs),
+      tabs: this.toBrowserTabs(tabs),
     };
   }
 
