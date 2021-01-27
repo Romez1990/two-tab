@@ -4,7 +4,7 @@ import { Lens } from 'monocle-ts';
 import { Tab } from './Tab';
 
 export interface TabList {
-  readonly id?: number;
+  readonly id: number;
   readonly name: string;
   readonly createdAt: Date;
   readonly tabs: ReadonlyNonEmptyArray<Tab>;
@@ -19,5 +19,4 @@ export const eqTabList = fromEquals((x: TabList, y: TabList): boolean => {
 
 export const tabListsAreEquals = (x: TabList) => (y: TabList): boolean => eqTabList.equals(x, y);
 
-export const idLens = Lens.fromProp<TabList>()('id');
 export const tabsLens = Lens.fromProp<TabList>()('tabs');
