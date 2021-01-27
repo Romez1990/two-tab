@@ -7,7 +7,7 @@ import { Task, map, chain } from 'fp-ts/Task';
 import { TaskOption } from 'fp-ts-contrib/TaskOption';
 import { DatetimeService } from '../../DataProcessing/Datetime';
 import { TabListsUpdatingService, TabListsUpdateHandlers } from './Updating';
-import { RepositoryFactory, Repository, Sort } from '../Storage';
+import { Sort } from '../Storage';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
 import { TabList, tabsLens } from './TabList';
 import { TabListService } from './TabListService';
@@ -17,20 +17,17 @@ import { StoredTabToCreate } from './StoredTabToCreate';
 import { StoredTabList } from './StoredTabList';
 import { StoredTabListToCreate } from './StoredTabListToCreate';
 import { TabToCreate } from './TabToCreate';
+import { TabRepository } from './TabRepository';
+import { TabListRepository } from './TabListRepository';
 import { TabNotFoundInTabListError } from './Errors';
 
 export class TabListServiceImpl implements TabListService {
   public constructor(
+    private readonly tabListRepository: TabListRepository,
+    private readonly tabRepository: TabRepository,
     private readonly tabListsUpdatingService: TabListsUpdatingService,
     private readonly datetimeService: DatetimeService,
-    repositoryFactory: RepositoryFactory,
-  ) {
-    this.tabRepository = repositoryFactory.create<StoredTab, StoredTabToCreate>('tabs', ['tabListId']);
-    this.tabListRepository = repositoryFactory.create<StoredTabList, StoredTabListToCreate>('tabLists', ['createdAt']);
-  }
-
-  private readonly tabRepository: Repository<StoredTab, StoredTabToCreate>;
-  private readonly tabListRepository: Repository<StoredTabList, StoredTabListToCreate>;
+  ) {}
 
   public addUpdateHandlers(handlers: TabListsUpdateHandlers): void {
     this.tabListsUpdatingService.addHandlers(handlers);
@@ -57,7 +54,6 @@ export class TabListServiceImpl implements TabListService {
               ),
             ),
           ),
-          //
         ),
       ),
     );
