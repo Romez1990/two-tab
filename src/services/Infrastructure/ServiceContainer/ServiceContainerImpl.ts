@@ -5,8 +5,6 @@ import { StorageImportExportService, StorageImportExportServiceImpl } from '../.
 import {
   TabListService,
   TabListServiceImpl,
-  TabListRepository,
-  TabListRepositoryImpl,
   TabListsUpdatingService,
   TabListsUpdatingServiceImpl,
   TabListSerializer,
@@ -17,6 +15,8 @@ import {
   StorageServiceImpl,
   StorageStateFactory,
   StorageStateFactoryImpl,
+  RepositoryFactory,
+  RepositoryFactoryImpl,
 } from '../../Storage/Storage';
 import { FileReadingService, FileReadingServiceImpl } from '../../DOM/FileReading';
 import { DownloadService, DownloadServiceImpl } from '../../DOM/Download';
@@ -98,14 +98,14 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.storageStateFactory = new StorageStateFactoryImpl();
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
+    this.repositoryFactory = new RepositoryFactoryImpl(this.storageService);
 
     this.tabListSerializer = new TabListSerializerImpl(this.datetimeService);
     this.tabListsUpdatingService = new TabListsUpdatingServiceImpl(this.messageService, this.tabListSerializer);
-    this.tabListRepository = new TabListRepositoryImpl(this.storageService);
     this.tabListService = new TabListServiceImpl(
-      this.tabListRepository,
       this.tabListsUpdatingService,
       this.datetimeService,
+      this.repositoryFactory,
     );
 
     this.storageImportExportService = new StorageImportExportServiceImpl(
@@ -133,12 +133,12 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly storageImportExportService: StorageImportExportService;
 
   public readonly tabListService: TabListService;
-  public readonly tabListRepository: TabListRepository;
   public readonly tabListsUpdatingService: TabListsUpdatingService;
   public readonly tabListSerializer: TabListSerializer;
 
   public readonly storageService: StorageService;
   public readonly storageStateFactory: StorageStateFactory;
+  public readonly repositoryFactory: RepositoryFactory;
 
   public readonly fileReadingService: FileReadingService;
 

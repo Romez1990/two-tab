@@ -2,8 +2,8 @@ import { MainPageService } from '../../Components/App/MainPage';
 import { ImportExportService } from '../../Components/App/ImportExport';
 import { PopupService } from '../../Components/Popup';
 import { StorageImportExportService } from '../../Storage/ImportExport';
-import { TabListService, TabListRepository, TabListsUpdatingService, TabListSerializer } from '../../Storage/TabList';
-import { StorageService, StorageStateFactory } from '../../Storage/Storage';
+import { TabListService, TabListsUpdatingService, TabListSerializer } from '../../Storage/TabList';
+import { StorageService, StorageStateFactory, RepositoryFactory } from '../../Storage/Storage';
 import { FileReadingService } from '../../DOM/FileReading';
 import { DownloadService } from '../../DOM/Download';
 import { KeyboardService } from '../../DOM/Keyboard';
@@ -31,12 +31,12 @@ export interface ServiceContainer {
   readonly storageImportExportService?: StorageImportExportService;
 
   readonly tabListService?: TabListService;
-  readonly tabListRepository?: TabListRepository;
   readonly tabListsUpdatingService?: TabListsUpdatingService;
   readonly tabListSerializer?: TabListSerializer;
 
   readonly storageService?: StorageService;
   readonly storageStateFactory?: StorageStateFactory;
+  readonly repositoryFactory?: RepositoryFactory;
 
   readonly fileReadingService?: FileReadingService;
 
