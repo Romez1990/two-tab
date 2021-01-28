@@ -1,14 +1,16 @@
 import { pipe, constant } from 'fp-ts/function';
 import { right, map as mapE } from 'fp-ts/Either';
 import { Task, map, chain, task } from 'fp-ts/Task';
-import { TaskEither, fromEither, chain as chainTE } from 'fp-ts/TaskEither';
+import { TaskEither, right as rightTE, fromEither, chain as chainTE } from 'fp-ts/TaskEither';
 import { sequenceT } from 'fp-ts/Apply';
+import { isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { TabListRepository, TabRepository, TabListSerializer } from '../TabList';
 import { JsonSerializer } from '../../DataProcessing/Serializer';
 import { TypeCheckingService, TypeCheckingError } from '../../DataProcessing/TypeChecking';
 import { StorageImportExportService } from './StorageImportExportService';
 import { DataT } from './Data';
 import { Sort } from '../Storage';
+import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
 
 export class StorageImportExportServiceImpl implements StorageImportExportService {
   public constructor(
@@ -33,12 +35,15 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
       mapE(this.tabListSerializer.deserialize.bind(this.tabListSerializer)),
       fromEither,
       chainTE(([tabLists, getTabs]) =>
-        pipe(
-          this.tabListRepository.saveAll(tabLists),
-          map(getTabs),
-          chain(this.tabRepository.saveAll.bind(this.tabRepository)),
-          map(constant(right(undefined))),
-        ),
+        isNonEmpty(tabLists)
+          ? pipe(
+              this.tabListRepository.saveAll(tabLists),
+              map(getTabs),
+              map(checkNonEmpty('stored tabs to create')),
+              chain(this.tabRepository.saveAll.bind(this.tabRepository)),
+              map(constant(right(undefined))),
+            )
+          : rightTE(undefined),
       ),
     );
 }
