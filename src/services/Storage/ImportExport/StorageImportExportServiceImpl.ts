@@ -8,7 +8,6 @@ import { JsonSerializer } from '../../DataProcessing/Serializer';
 import { TypeCheckingService, TypeCheckingError } from '../../DataProcessing/TypeChecking';
 import { StorageImportExportService } from './StorageImportExportService';
 import { DataT } from './Data';
-import { TabListNormalizer } from '../TabList/TabListNormalizer';
 import { Sort } from '../Storage';
 
 export class StorageImportExportServiceImpl implements StorageImportExportService {
@@ -16,7 +15,6 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
     private readonly tabListRepository: TabListRepository,
     private readonly tabRepository: TabRepository,
     private readonly tabListSerializer: TabListSerializer,
-    private readonly tabListNormalizer: TabListNormalizer,
     private readonly jsonSerializer: JsonSerializer,
     private readonly typeChecking: TypeCheckingService,
   ) {}

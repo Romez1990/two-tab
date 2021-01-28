@@ -9,10 +9,14 @@ import {
   TabListRepositoryImpl,
   TabRepository,
   TabRepositoryImpl,
+  TabListNormalizer,
+  TabListNormalizerImpl,
   TabListsUpdatingService,
   TabListsUpdatingServiceImpl,
   TabListSerializer,
   TabListSerializerImpl,
+  TabSerializer,
+  TabSerializerImpl,
 } from '../../Storage/TabList';
 import {
   StorageService,
@@ -101,19 +105,23 @@ class ServiceContainerImpl implements ServiceContainer {
     this.storageStateFactory = new StorageStateFactoryImpl();
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
 
-    this.tabListSerializer = new TabListSerializerImpl(this.datetimeService);
+    this.tabSerializer = new TabSerializerImpl();
+    this.tabListSerializer = new TabListSerializerImpl(this.tabSerializer, this.datetimeService);
     this.tabListsUpdatingService = new TabListsUpdatingServiceImpl(this.messageService, this.tabListSerializer);
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
+    this.tabListNormalizer = new TabListNormalizerImpl();
     this.tabRepository = new TabRepositoryImpl(this.storageService);
     this.tabListService = new TabListServiceImpl(
       this.tabListRepository,
       this.tabRepository,
+      this.tabListNormalizer,
       this.tabListsUpdatingService,
       this.datetimeService,
     );
 
     this.storageImportExportService = new StorageImportExportServiceImpl(
       this.tabListRepository,
+      this.tabRepository,
       this.tabListSerializer,
       this.jsonSerializer,
       this.typeCheckingService,
@@ -139,8 +147,10 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly tabListService: TabListService;
   public readonly tabListRepository: TabListRepository;
   public readonly tabRepository: TabRepository;
+  public readonly tabListNormalizer: TabListNormalizer;
   public readonly tabListsUpdatingService: TabListsUpdatingService;
   public readonly tabListSerializer: TabListSerializer;
+  public readonly tabSerializer: TabSerializer;
 
   public readonly storageService: StorageService;
   public readonly storageStateFactory: StorageStateFactory;
