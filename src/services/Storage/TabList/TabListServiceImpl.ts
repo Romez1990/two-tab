@@ -1,9 +1,10 @@
 import { pipe } from 'fp-ts/function';
+import { sequenceT } from 'fp-ts/Apply';
 import { fold as foldB } from 'fp-ts/boolean';
-import { map as mapA, filter, findIndex, unsafeDeleteAt } from 'fp-ts/ReadonlyArray';
+import { findIndex, unsafeDeleteAt } from 'fp-ts/ReadonlyArray';
 import { ReadonlyNonEmptyArray, map as mapAN } from 'fp-ts/ReadonlyNonEmptyArray';
 import { some, none, fold } from 'fp-ts/Option';
-import { Task, map, chain } from 'fp-ts/Task';
+import { Task, task, map, chain } from 'fp-ts/Task';
 import { TaskOption } from 'fp-ts-contrib/TaskOption';
 import { DatetimeService } from '../../DataProcessing/Datetime';
 import { TabListsUpdatingService, TabListsUpdateHandlers } from './Updating';
@@ -14,17 +15,19 @@ import { TabListService } from './TabListService';
 import { Tab, tabsAreEquals } from './Tab';
 import { StoredTab } from './StoredTab';
 import { StoredTabToCreate } from './StoredTabToCreate';
-import { StoredTabList } from './StoredTabList';
+import { StoredTabList, toTabList } from './StoredTabList';
 import { StoredTabListToCreate } from './StoredTabListToCreate';
 import { TabToCreate } from './TabToCreate';
 import { TabRepository } from './TabRepository';
 import { TabListRepository } from './TabListRepository';
 import { TabNotFoundInTabListError } from './Errors';
+import { TabListNormalizer } from './TabListNormalizer';
 
 export class TabListServiceImpl implements TabListService {
   public constructor(
     private readonly tabListRepository: TabListRepository,
     private readonly tabRepository: TabRepository,
+    private readonly tabListNormalizer: TabListNormalizer,
     private readonly tabListsUpdatingService: TabListsUpdatingService,
     private readonly datetimeService: DatetimeService,
   ) {}
@@ -39,38 +42,9 @@ export class TabListServiceImpl implements TabListService {
 
   public getAllTabLists = (): Task<ReadonlyArray<TabList>> =>
     pipe(
-      this.tabRepository.getAll(),
-      chain(storedTabs =>
-        pipe(
-          this.tabListRepository.getAll(Sort.by('createdAt').descending()),
-          map(
-            mapA(storedTabList =>
-              pipe(
-                storedTabs,
-                filter(({ tabListId }) => tabListId === storedTabList.id),
-                checkNonEmpty('tabs'),
-                this.toTabs,
-                tabs => this.toTabList(storedTabList, tabs),
-              ),
-            ),
-          ),
-        ),
-      ),
+      sequenceT(task)(this.tabListRepository.getAll(Sort.by('createdAt').descending()), this.tabRepository.getAll()),
+      map(([storedTabLists, storedTabs]) => this.tabListNormalizer.denormalize(storedTabLists, storedTabs)),
     );
-
-  private toTabList = (storedTabList: StoredTabList, tabs: ReadonlyNonEmptyArray<Tab>): TabList => ({
-    ...storedTabList,
-    tabs,
-  });
-
-  private toTabs = (storedTabs: ReadonlyNonEmptyArray<StoredTab>): ReadonlyNonEmptyArray<Tab> =>
-    pipe(
-      storedTabs,
-      mapAN(this.toTab),
-      //
-    );
-
-  private toTab = ({ tabListId, ...tab }: StoredTab): Tab => tab;
 
   public addTabList = (listName: string, tabs: ReadonlyNonEmptyArray<TabToCreate>): Task<TabList> =>
     pipe(
@@ -81,7 +55,7 @@ export class TabListServiceImpl implements TabListService {
           tabs,
           mapAN(this.toStoredToCreate(storedTabList)),
           this.tabRepository.saveAll.bind(this.tabRepository),
-          map(storedTabs => this.toTabList(storedTabList, storedTabs)),
+          map(toTabList(storedTabList)),
         ),
       ),
       map(tabList => {
