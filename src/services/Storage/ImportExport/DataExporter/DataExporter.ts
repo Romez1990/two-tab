@@ -4,7 +4,7 @@ import { StoredTab } from '../../TabList/StoredTab';
 import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
 import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
 
-export interface DataExporter<A, O = A> {
+export interface DataExporter<A = unknown, O = A> {
   readonly exportedDataType: Type<A, O>;
   serialize(storedTabLists: ReadonlyArray<StoredTabList>, storedTabs: ReadonlyArray<StoredTab>): A;
   deserialize(

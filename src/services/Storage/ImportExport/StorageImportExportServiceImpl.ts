@@ -24,7 +24,7 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
     this.exportSerializer = this.dataExporterFactory.createAppDataExporter();
   }
 
-  public exportSerializer: DataExporter<unknown>;
+  public exportSerializer: DataExporter;
 
   public export = (): Task<string> =>
     pipe(

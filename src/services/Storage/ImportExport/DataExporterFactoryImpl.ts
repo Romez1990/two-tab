@@ -5,6 +5,5 @@ import { AppDataExporter, TabListExportSerializer } from './AppDataExporter';
 export class DataExporterFactoryImpl implements DataExporterFactory {
   public constructor(private readonly tabListExportSerializer: TabListExportSerializer) {}
 
-  public createAppDataExporter = (): DataExporter<unknown> =>
-    new AppDataExporter(this.tabListExportSerializer) as DataExporter<unknown>;
+  public createAppDataExporter = (): DataExporter => new AppDataExporter(this.tabListExportSerializer) as DataExporter;
 }
