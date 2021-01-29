@@ -8,32 +8,36 @@ import { TabListRepository, TabRepository } from '../TabList';
 import { JsonSerializer } from '../../DataProcessing/Serializer';
 import { TypeCheckingService, TypeCheckingError } from '../../DataProcessing/TypeChecking';
 import { StorageImportExportService } from './StorageImportExportService';
-import { ExportedDataT } from './TabListSerializer/Data';
 import { Sort } from '../Storage';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
-import { TabListExportSerializer } from './TabListSerializer';
+import { DataExporter } from './DataExporter';
+import { DataExporterFactory } from './DataExporterFactory';
 
 export class StorageImportExportServiceImpl implements StorageImportExportService {
   public constructor(
     private readonly tabListRepository: TabListRepository,
     private readonly tabRepository: TabRepository,
-    private readonly tabListExportSerializer: TabListExportSerializer,
+    private readonly dataExporterFactory: DataExporterFactory,
     private readonly jsonSerializer: JsonSerializer,
     private readonly typeChecking: TypeCheckingService,
-  ) {}
+  ) {
+    this.exportSerializer = this.dataExporterFactory.createAppDataExporter();
+  }
+
+  public exportSerializer: DataExporter<unknown>;
 
   public export = (): Task<string> =>
     pipe(
       sequenceT(task)(this.tabListRepository.getAll(Sort.by('createdAt').descending()), this.tabRepository.getAll()),
-      map(([storedTabLists, storedTabs]) => this.tabListExportSerializer.serialize(storedTabLists, storedTabs)),
+      map(([storedTabLists, storedTabs]) => this.exportSerializer.serialize(storedTabLists, storedTabs)),
       map(this.jsonSerializer.serialize.bind(this.jsonSerializer)),
     );
 
   public import = (json: string): TaskEither<TypeCheckingError, void> =>
     pipe(
       this.jsonSerializer.deserialize(json),
-      this.typeChecking.check(ExportedDataT),
-      mapE(this.tabListExportSerializer.deserialize.bind(this.tabListExportSerializer)),
+      this.typeChecking.check(this.exportSerializer.exportedDataType),
+      mapE(this.exportSerializer.deserialize.bind(this.exportSerializer)),
       fromEither,
       chainTE(([tabLists, getTabs]) =>
         isNonEmpty(tabLists)
