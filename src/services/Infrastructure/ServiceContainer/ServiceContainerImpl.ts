@@ -1,7 +1,14 @@
 import { MainPageService, MainPageServiceImpl } from '../../Components/App/MainPage';
 import { ImportExportService, ImportExportServiceImpl } from '../../Components/App/ImportExport';
 import { PopupService, PopupServiceImpl } from '../../Components/Popup';
-import { StorageImportExportService, StorageImportExportServiceImpl } from '../../Storage/ImportExport';
+import {
+  StorageImportExportService,
+  StorageImportExportServiceImpl,
+  TabListExportSerializer,
+  TabListExportSerializerImpl,
+  TabExportSerializer,
+  TabExportSerializerImpl,
+} from '../../Storage/ImportExport';
 import {
   TabListService,
   TabListServiceImpl,
@@ -15,8 +22,6 @@ import {
   TabListsUpdatingServiceImpl,
   TabListSerializer,
   TabListSerializerImpl,
-  TabSerializer,
-  TabSerializerImpl,
 } from '../../Storage/TabList';
 import {
   StorageService,
@@ -105,8 +110,7 @@ class ServiceContainerImpl implements ServiceContainer {
     this.storageStateFactory = new StorageStateFactoryImpl();
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
 
-    this.tabSerializer = new TabSerializerImpl();
-    this.tabListSerializer = new TabListSerializerImpl(this.tabSerializer, this.datetimeService);
+    this.tabListSerializer = new TabListSerializerImpl(this.datetimeService);
     this.tabListsUpdatingService = new TabListsUpdatingServiceImpl(this.messageService, this.tabListSerializer);
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
     this.tabListNormalizer = new TabListNormalizerImpl();
@@ -119,10 +123,12 @@ class ServiceContainerImpl implements ServiceContainer {
       this.datetimeService,
     );
 
+    this.tabExportSerializer = new TabExportSerializerImpl();
+    this.tabListExportSerializer = new TabListExportSerializerImpl(this.tabExportSerializer, this.datetimeService);
     this.storageImportExportService = new StorageImportExportServiceImpl(
       this.tabListRepository,
       this.tabRepository,
-      this.tabListSerializer,
+      this.tabListExportSerializer,
       this.jsonSerializer,
       this.typeCheckingService,
     );
@@ -143,6 +149,8 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly popupService: PopupService;
 
   public readonly storageImportExportService: StorageImportExportService;
+  public readonly tabListExportSerializer: TabListExportSerializer;
+  public readonly tabExportSerializer: TabExportSerializer;
 
   public readonly tabListService: TabListService;
   public readonly tabListRepository: TabListRepository;
@@ -150,7 +158,6 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly tabListNormalizer: TabListNormalizer;
   public readonly tabListsUpdatingService: TabListsUpdatingService;
   public readonly tabListSerializer: TabListSerializer;
-  public readonly tabSerializer: TabSerializer;
 
   public readonly storageService: StorageService;
   public readonly storageStateFactory: StorageStateFactory;

@@ -3,6 +3,7 @@ import { readonlyNonEmptyArray } from 'io-ts-types';
 import { SerializedTabT } from './SerializedTab';
 
 export const SerializedTabListT = type({
+  id: number,
   name: string,
   createdAtTimestamp: number,
   tabs: readonlyNonEmptyArray(SerializedTabT),

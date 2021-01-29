@@ -1,7 +1,7 @@
 import { MainPageService } from '../../Components/App/MainPage';
 import { ImportExportService } from '../../Components/App/ImportExport';
 import { PopupService } from '../../Components/Popup';
-import { StorageImportExportService } from '../../Storage/ImportExport';
+import { StorageImportExportService, TabListExportSerializer, TabExportSerializer } from '../../Storage/ImportExport';
 import {
   TabListService,
   TabListRepository,
@@ -35,6 +35,8 @@ export interface ServiceContainer {
   readonly popupService?: PopupService;
 
   readonly storageImportExportService?: StorageImportExportService;
+  readonly tabListExportSerializer?: TabListExportSerializer;
+  readonly tabExportSerializer?: TabExportSerializer;
 
   readonly tabListService?: TabListService;
   readonly tabListRepository?: TabListRepository;

@@ -1,6 +1,7 @@
-import { boolean, string, type, TypeOf, undefined, union } from 'io-ts';
+import { type, boolean, number, string, undefined, union, TypeOf } from 'io-ts';
 
 export const SerializedTabT = type({
+  id: number,
   title: string,
   url: string,
   favIconUrl: union([string, undefined]),
