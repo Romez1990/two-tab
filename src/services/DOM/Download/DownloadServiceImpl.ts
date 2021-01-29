@@ -14,12 +14,8 @@ export class DownloadServiceImpl implements DownloadService {
         link.style.display = 'none';
         link.href = blobURL;
         link.setAttribute('download', filename);
-        this.document.body.appendChild(link);
         link.click();
-        setTimeout((): void => {
-          this.document.body.removeChild(link);
-          URL.revokeObjectURL(blobURL);
-        }, 200);
+        URL.revokeObjectURL(blobURL);
       },
     );
 }
