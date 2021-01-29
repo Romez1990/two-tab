@@ -1,4 +1,4 @@
-import { ExportSerializedTabList } from './ExportSerializedTabList';
+import { ExportedTabList } from './ExportedTabList';
 import { StoredTabList } from '../../TabList/StoredTabList';
 import { StoredTab } from '../../TabList/StoredTab';
 import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
@@ -8,9 +8,9 @@ export interface TabListExportSerializer {
   serialize(
     storedTabLists: ReadonlyArray<StoredTabList>,
     storedTabs: ReadonlyArray<StoredTab>,
-  ): ReadonlyArray<ExportSerializedTabList>;
+  ): ReadonlyArray<ExportedTabList>;
   deserialize(
-    serializedTabLists: ReadonlyArray<ExportSerializedTabList>,
+    serializedTabLists: ReadonlyArray<ExportedTabList>,
   ): [
     ReadonlyArray<StoredTabListToCreate>,
     (storedTabLists: ReadonlyArray<StoredTabList>) => ReadonlyArray<StoredTabToCreate>,

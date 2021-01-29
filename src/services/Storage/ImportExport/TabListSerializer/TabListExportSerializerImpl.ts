@@ -1,11 +1,11 @@
 import { pipe } from 'fp-ts/function';
 import { map as mapA, filter, zipWith, unzip, flatten } from 'fp-ts/ReadonlyArray';
 import { map as mapAN, ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
-import { ExportSerializedTabList } from './ExportSerializedTabList';
+import { ExportedTabList } from './ExportedTabList';
 import { TabListExportSerializer } from './TabListExportSerializer';
 import { DatetimeService } from '../../../DataProcessing/Datetime';
 import { checkNonEmpty } from '../../../Utils/fp-ts/ReadonlyArray';
-import { ExportSerializedTab } from './ExportSerializedTab';
+import { ExportedTab } from './ExportedTab';
 import { TabExportSerializer } from './TabExportSerializer';
 import { StoredTabList } from '../../TabList/StoredTabList';
 import { belongsToTabList, StoredTab } from '../../TabList/StoredTab';
@@ -21,7 +21,7 @@ export class TabListExportSerializerImpl implements TabListExportSerializer {
   public serialize = (
     storedTabLists: ReadonlyArray<StoredTabList>,
     storedTabs: ReadonlyArray<StoredTab>,
-  ): ReadonlyArray<ExportSerializedTabList> =>
+  ): ReadonlyArray<ExportedTabList> =>
     pipe(
       storedTabLists,
       mapA(storedTabList =>
@@ -36,7 +36,7 @@ export class TabListExportSerializerImpl implements TabListExportSerializer {
     );
 
   public deserialize = (
-    serializedTabLists: ReadonlyArray<ExportSerializedTabList>,
+    serializedTabLists: ReadonlyArray<ExportedTabList>,
   ): [
     ReadonlyArray<StoredTabListToCreate>,
     (storedTabLists: ReadonlyArray<StoredTabList>) => ReadonlyArray<StoredTabToCreate>,
@@ -58,8 +58,8 @@ export class TabListExportSerializerImpl implements TabListExportSerializer {
     );
 
   private toSerializedTabList = ({ id, createdAt, ...storedTabList }: StoredTabList) => (
-    tabs: ReadonlyNonEmptyArray<ExportSerializedTab>,
-  ): ExportSerializedTabList => ({
+    tabs: ReadonlyNonEmptyArray<ExportedTab>,
+  ): ExportedTabList => ({
     ...storedTabList,
     createdAtTimestamp: this.datetimeService.toTimeStamp(createdAt),
     tabs,
@@ -69,7 +69,7 @@ export class TabListExportSerializerImpl implements TabListExportSerializer {
     createdAtTimestamp,
     tabs,
     ...serializedStoredTabList
-  }: ExportSerializedTabList): [
+  }: ExportedTabList): [
     StoredTabListToCreate,
     (storedTabList: StoredTabList) => ReadonlyNonEmptyArray<StoredTabToCreate>,
   ] => [

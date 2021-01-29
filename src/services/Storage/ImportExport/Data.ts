@@ -1,4 +1,4 @@
 import { readonlyArray } from 'io-ts';
-import { ExportSerializedTabListT } from './TabListSerializer';
+import { ExportedTabListT } from './TabListSerializer';
 
-export const DataT = readonlyArray(ExportSerializedTabListT);
+export const DataT = readonlyArray(ExportedTabListT);
