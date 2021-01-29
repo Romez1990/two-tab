@@ -8,7 +8,7 @@ import { TabListRepository, TabRepository } from '../TabList';
 import { JsonSerializer } from '../../DataProcessing/Serializer';
 import { TypeCheckingService, TypeCheckingError } from '../../DataProcessing/TypeChecking';
 import { StorageImportExportService } from './StorageImportExportService';
-import { DataT } from './Data';
+import { ExportedDataT } from './TabListSerializer/Data';
 import { Sort } from '../Storage';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
 import { TabListExportSerializer } from './TabListSerializer';
@@ -32,7 +32,7 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
   public import = (json: string): TaskEither<TypeCheckingError, void> =>
     pipe(
       this.jsonSerializer.deserialize(json),
-      this.typeChecking.check(DataT),
+      this.typeChecking.check(ExportedDataT),
       mapE(this.tabListExportSerializer.deserialize.bind(this.tabListExportSerializer)),
       fromEither,
       chainTE(([tabLists, getTabs]) =>
