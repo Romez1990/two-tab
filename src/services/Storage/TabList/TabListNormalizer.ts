@@ -8,7 +8,4 @@ export interface TabListNormalizer {
     storedTabLists: ReadonlyArray<StoredTabList>,
     storedTabs: ReadonlyArray<StoredTab>,
   ): ReadonlyArray<TabList>;
-  normalize(
-    storedTabListsToCreate: ReadonlyArray<StoredTabListToCreate>,
-  ): [ReadonlyArray<StoredTabListToCreate>, ReadonlyArray<StoredTab>];
 }
