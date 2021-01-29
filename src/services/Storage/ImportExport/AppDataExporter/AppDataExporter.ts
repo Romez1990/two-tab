@@ -1,4 +1,3 @@
-import { Type } from 'io-ts';
 import { StoredTabList } from '../../TabList/StoredTabList';
 import { StoredTab } from '../../TabList/StoredTab';
 import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
@@ -10,7 +9,7 @@ import { TabListExportSerializer } from './TabListExportSerializer';
 export class AppDataExporter implements DataExporter<ExportedData, ExportedDataOutput> {
   public constructor(private readonly tabListExportSerializer: TabListExportSerializer) {}
 
-  public readonly exportedDataType: Type<ExportedData, ExportedDataOutput> = AppExportedDataT;
+  public readonly exportedDataType = AppExportedDataT;
 
   public serialize = (
     storedTabLists: ReadonlyArray<StoredTabList>,
