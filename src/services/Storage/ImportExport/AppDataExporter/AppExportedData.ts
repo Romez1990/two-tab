@@ -3,5 +3,5 @@ import { ExportedTabListT } from './ExportedTabList';
 
 export const AppExportedDataT = readonlyArray(ExportedTabListT);
 
-export type ExportedData = TypeOf<typeof ExportedDataT>;
-export type ExportedDataOutput = OutputOf<typeof ExportedDataT>;
+export type ExportedData = TypeOf<typeof AppExportedDataT>;
+export type ExportedDataOutput = OutputOf<typeof AppExportedDataT>;
