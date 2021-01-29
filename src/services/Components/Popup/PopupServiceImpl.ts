@@ -1,10 +1,10 @@
 import { pipe, constVoid } from 'fp-ts/function';
-import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
+import { ReadonlyNonEmptyArray, map as mapAN } from 'fp-ts/ReadonlyNonEmptyArray';
 import { some, none } from 'fp-ts/Option';
 import { Task, map, chain } from 'fp-ts/Task';
 import { TaskOption, fold } from 'fp-ts-contrib/TaskOption';
 import { ExtensionService } from '../../Browser/Extension';
-import { BrowserTabService, BrowserTab, BrowserWindow } from '../../Browser/BrowserTab';
+import { BrowserTabService, BrowserTab, BrowserWindow, toTabToCreate } from '../../Browser/BrowserTab';
 import { TabListService } from '../../Storage/TabList';
 import { unsafeLookup } from '../../Utils/fp-ts/ReadonlyArray';
 import { PopupService } from './PopupService';
@@ -44,7 +44,9 @@ export class PopupServiceImpl implements PopupService {
 
   public saveTabs = (listName: string, tabs: ReadonlyNonEmptyArray<BrowserTab>): Task<void> =>
     pipe(
-      this.tabListService.addTabList(listName, tabs),
+      tabs,
+      mapAN(toTabToCreate),
+      tabsToCreate => this.tabListService.addTabList(listName, tabsToCreate),
       chain(() => this.browserTabService.close(tabs)),
     );
 }
