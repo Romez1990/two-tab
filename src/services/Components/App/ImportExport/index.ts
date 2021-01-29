@@ -1,2 +1,2 @@
 export * from './ImportExportService';
-export { ImportExportServiceImpl } from './ImportExportServiceImpl';
+export * from './ImportExportServiceImpl';
