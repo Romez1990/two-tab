@@ -1,9 +1,9 @@
 import { pipe, constant } from 'fp-ts/function';
+import { sequenceT } from 'fp-ts/Apply';
+import { isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { right, map as mapE } from 'fp-ts/Either';
 import { Task, map, chain, task } from 'fp-ts/Task';
 import { TaskEither, right as rightTE, fromEither, chain as chainTE } from 'fp-ts/TaskEither';
-import { sequenceT } from 'fp-ts/Apply';
-import { isNonEmpty } from 'fp-ts/ReadonlyArray';
 import { TabListRepository, TabRepository } from '../TabList';
 import { JsonSerializer } from '../../DataProcessing/Serializer';
 import { TypeCheckingService, TypeCheckingError } from '../../DataProcessing/TypeChecking';
