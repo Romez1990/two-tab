@@ -1,7 +1,6 @@
 import { StoredTabList } from './StoredTabList';
 import { StoredTab } from './StoredTab';
 import { TabList } from './TabList';
-import { StoredTabListToCreate } from './StoredTabListToCreate';
 
 export interface TabListNormalizer {
   denormalize(
