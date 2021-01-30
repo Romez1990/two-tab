@@ -62,11 +62,11 @@ import {
   ErrorReporter,
   ErrorReporterImpl,
 } from '../../DataProcessing/TypeChecking';
-import { getService, ServiceContainer } from './ServiceContainer';
 import { DatetimeService, DatetimeServiceImpl } from '../../DataProcessing/Datetime';
 import { UrlProcessingService, UrlProcessingServiceImpl } from '../../DataProcessing/UrlProcessing';
 import { JsonSerializer, JsonSerializerImpl } from '../../DataProcessing/Serializer';
 import { StringProcessingService, StringProcessingServiceImpl } from '../../DataProcessing/StringProcessing';
+import { ServiceContainer, getService } from './ServiceContainer';
 
 class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
