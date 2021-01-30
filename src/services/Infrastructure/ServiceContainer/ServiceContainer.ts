@@ -1,13 +1,20 @@
 import { MainPageService } from '../../Components/App/MainPage';
 import { ImportExportService } from '../../Components/App/ImportExport';
 import { PopupService } from '../../Components/Popup';
-import { StorageImportExportService, TabListExportSerializer, TabExportSerializer } from '../../Storage/ImportExport';
+import {
+  StorageImportExportService,
+  DataExporterFactory,
+  TabListExportSerializer,
+  TabExportSerializer,
+  BetterOneTabTabListExportSerializer,
+} from '../../Storage/ImportExport';
 import {
   TabListService,
   TabListRepository,
   TabRepository,
   TabListsUpdatingService,
   TabListSerializer,
+  TabListNormalizer,
 } from '../../Storage/TabList';
 import { StorageService, StorageStateFactory } from '../../Storage/Storage';
 import { FileReadingService } from '../../DOM/FileReading';
@@ -35,12 +42,15 @@ export interface ServiceContainer {
   readonly popupService?: PopupService;
 
   readonly storageImportExportService?: StorageImportExportService;
+  readonly dataExporterFactory?: DataExporterFactory;
+  readonly betterOneTabTabListExportSerializer?: BetterOneTabTabListExportSerializer;
   readonly tabListExportSerializer?: TabListExportSerializer;
   readonly tabExportSerializer?: TabExportSerializer;
 
   readonly tabListService?: TabListService;
   readonly tabListRepository?: TabListRepository;
   readonly tabRepository?: TabRepository;
+  readonly tabListNormalizer?: TabListNormalizer;
   readonly tabListsUpdatingService?: TabListsUpdatingService;
   readonly tabListSerializer?: TabListSerializer;
 
@@ -53,13 +63,13 @@ export interface ServiceContainer {
 
   readonly keyboardService?: KeyboardService;
 
-  readonly loggerService?: LoggerService;
-  readonly loggerStateFactory?: LoggerStateFactory;
-  readonly loggerHandler?: LoggerHandler;
+  readonly errorProcessingService?: ErrorProcessingService;
 
   readonly errorReportingService?: ErrorReportingService;
 
-  readonly errorProcessingService?: ErrorProcessingService;
+  readonly loggerService?: LoggerService;
+  readonly loggerStateFactory?: LoggerStateFactory;
+  readonly loggerHandler?: LoggerHandler;
 
   readonly config?: Config;
 

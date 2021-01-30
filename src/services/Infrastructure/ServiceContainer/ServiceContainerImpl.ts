@@ -4,6 +4,10 @@ import { PopupService, PopupServiceImpl } from '../../Components/Popup';
 import {
   StorageImportExportService,
   StorageImportExportServiceImpl,
+  DataExporterFactory,
+  DataExporterFactoryImpl,
+  BetterOneTabTabListExportSerializer,
+  BetterOneTabTabListExportSerializerImpl,
   TabListExportSerializer,
   TabListExportSerializerImpl,
   TabExportSerializer,
@@ -125,10 +129,18 @@ class ServiceContainerImpl implements ServiceContainer {
 
     this.tabExportSerializer = new TabExportSerializerImpl();
     this.tabListExportSerializer = new TabListExportSerializerImpl(this.tabExportSerializer, this.datetimeService);
+    this.betterOneTabTabListExportSerializer = new BetterOneTabTabListExportSerializerImpl(
+      this.tabExportSerializer,
+      this.datetimeService,
+    );
+    this.dataExporterFactory = new DataExporterFactoryImpl(
+      this.tabListExportSerializer,
+      this.betterOneTabTabListExportSerializer,
+    );
     this.storageImportExportService = new StorageImportExportServiceImpl(
       this.tabListRepository,
       this.tabRepository,
-      this.tabListExportSerializer,
+      this.dataExporterFactory,
       this.jsonSerializer,
       this.typeCheckingService,
     );
@@ -149,6 +161,8 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly popupService: PopupService;
 
   public readonly storageImportExportService: StorageImportExportService;
+  public readonly dataExporterFactory: DataExporterFactory;
+  public readonly betterOneTabTabListExportSerializer: BetterOneTabTabListExportSerializer;
   public readonly tabListExportSerializer: TabListExportSerializer;
   public readonly tabExportSerializer: TabExportSerializer;
 
