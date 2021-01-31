@@ -7,6 +7,8 @@ import { map } from 'fp-ts/Task';
 import { useService } from '../../Providers/ServiceContainer';
 import { run } from '../../../services/Utils/fp-ts/Task';
 import { ImportFileNotSelectedError } from './Errors';
+import { ExportStrategyName } from '../../../services/Storage/ImportExport';
+import { ExportStrategyButtonGroup } from './ExportStrategyButtonGroup';
 
 export const ImportExportPage: FC = () => {
   const importExport = useService('importExportService');
@@ -27,6 +29,13 @@ export const ImportExportPage: FC = () => {
     setImportFileValue(value);
     setImportFile(some(file));
   };
+
+  const [activeStrategy, setActiveStrategy] = useState<ExportStrategyName>('App');
+
+  function changeActiveStrategy(strategy: ExportStrategyName): void {
+    importExport.setStrategy(strategy);
+    setActiveStrategy(strategy);
+  }
 
   const [importError, setImportError] = useState<Option<string>>(none);
 
@@ -55,9 +64,16 @@ export const ImportExportPage: FC = () => {
       //
     );
 
+  const { strategyNames } = importExport;
+
   return (
     <Container>
       <input type="file" value={importFileValue} onChange={changeFile} />
+      <ExportStrategyButtonGroup
+        strategies={strategyNames}
+        activeStrategy={activeStrategy}
+        onChange={changeActiveStrategy}
+      />
       <Button variant="contained" color="primary" onClick={importData} disabled={isNone(importFile)}>
         Import
       </Button>
