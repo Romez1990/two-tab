@@ -22,7 +22,7 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
     private readonly jsonSerializer: JsonSerializer,
     private readonly typeChecking: TypeCheckingService,
   ) {
-    this.strategy = this.dataExporterFactory.create('app');
+    this.strategy = this.dataExporterFactory.create('App');
   }
 
   private strategy: ExportStrategy;

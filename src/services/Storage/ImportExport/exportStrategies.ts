@@ -6,8 +6,8 @@ export const getExportStrategies = (
   tabListExportSerializer: TabListExportSerializer,
   betterOneTabTabListExportSerializer: BetterOneTabTabListExportSerializer,
 ) => ({
-  app: () => new AppExportStrategy(tabListExportSerializer),
-  betterOneTab: () => new BetterOneTabExportStrategy(betterOneTabTabListExportSerializer),
+  App: () => new AppExportStrategy(tabListExportSerializer),
+  'Better One Tab': () => new BetterOneTabExportStrategy(betterOneTabTabListExportSerializer),
 });
 
 export type ExportStrategyName = keyof ReturnType<typeof getExportStrategies>;
