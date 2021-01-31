@@ -11,13 +11,15 @@ export class ExportStrategyFactoryImpl implements ExportStrategyFactory {
     tabListExportSerializer: TabListExportSerializer,
     betterOneTabTabListExportSerializer: BetterOneTabTabListExportSerializer,
   ) {
-    this.exportStrategies = getExportStrategies(
-      tabListExportSerializer,
-      betterOneTabTabListExportSerializer,
-    ) as ReadonlyRecord<ExportStrategyName, Lazy<ExportStrategy>>;
+    this.exportStrategies = getExportStrategies(tabListExportSerializer, betterOneTabTabListExportSerializer) as Record<
+      ExportStrategyName,
+      Lazy<ExportStrategy>
+    >;
+    this.strategyNames = Object.keys(this.exportStrategies) as Array<ExportStrategyName>;
   }
 
   private readonly exportStrategies: ReadonlyRecord<ExportStrategyName, Lazy<ExportStrategy>>;
+  public readonly strategyNames: ReadonlyArray<ExportStrategyName>;
 
   public create = (strategyName: ExportStrategyName): ExportStrategy => this.exportStrategies[strategyName]();
 }

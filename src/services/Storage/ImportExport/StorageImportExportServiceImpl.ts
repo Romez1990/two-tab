@@ -27,6 +27,10 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
 
   private strategy: ExportStrategy;
 
+  public get strategyNames(): ReadonlyArray<ExportStrategyName> {
+    return this.dataExporterFactory.strategyNames;
+  }
+
   public setStrategy(strategyName: ExportStrategyName): void {
     this.strategy = this.dataExporterFactory.create(strategyName);
   }

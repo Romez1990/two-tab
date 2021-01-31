@@ -15,6 +15,10 @@ export class ImportExportServiceImpl implements ImportExportService {
     private readonly downloadService: DownloadService,
   ) {}
 
+  public get strategyNames(): ReadonlyArray<ExportStrategyName> {
+    return this.storageImportExport.strategyNames;
+  }
+
   public setStrategy(strategyName: ExportStrategyName): void {
     this.storageImportExport.setStrategy(strategyName);
   }
