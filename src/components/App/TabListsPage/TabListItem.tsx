@@ -7,6 +7,8 @@ import {
   List,
   Typography,
   Button,
+  makeStyles,
+  createStyles,
 } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { Task } from 'fp-ts/Task';
@@ -23,6 +25,14 @@ interface Props {
   onTabListDelete(): Task<void>;
   onTabOpen(tab: Tab, shouldBeDeleted: boolean): Task<void>;
 }
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    deleteButton: {
+      color: 'red',
+    },
+  }),
+);
 
 export const TabListItem: FC<Props> = ({
   tabList,
@@ -83,6 +93,8 @@ export const TabListItem: FC<Props> = ({
       //
     );
 
+  const classes = useStyles();
+
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -97,7 +109,7 @@ export const TabListItem: FC<Props> = ({
         <Button type="button" onClick={openTabListInNewWindow}>
           Open list in new window
         </Button>
-        <Button type="button" onClick={deleteTabList}>
+        <Button type="button" onClick={deleteTabList} className={classes.deleteButton}>
           Delete list
         </Button>
       </AccordionActions>
