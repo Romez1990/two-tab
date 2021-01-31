@@ -4,8 +4,8 @@ import { PopupService, PopupServiceImpl } from '../../Components/Popup';
 import {
   StorageImportExportService,
   StorageImportExportServiceImpl,
-  DataExporterFactory,
-  DataExporterFactoryImpl,
+  ExportStrategyFactory,
+  ExportStrategyFactoryImpl,
   BetterOneTabTabListExportSerializer,
   BetterOneTabTabListExportSerializerImpl,
   TabListExportSerializer,
@@ -133,7 +133,7 @@ class ServiceContainerImpl implements ServiceContainer {
       this.tabExportSerializer,
       this.datetimeService,
     );
-    this.dataExporterFactory = new DataExporterFactoryImpl(
+    this.dataExporterFactory = new ExportStrategyFactoryImpl(
       this.tabListExportSerializer,
       this.betterOneTabTabListExportSerializer,
     );
@@ -161,7 +161,7 @@ class ServiceContainerImpl implements ServiceContainer {
   public readonly popupService: PopupService;
 
   public readonly storageImportExportService: StorageImportExportService;
-  public readonly dataExporterFactory: DataExporterFactory;
+  public readonly dataExporterFactory: ExportStrategyFactory;
   public readonly betterOneTabTabListExportSerializer: BetterOneTabTabListExportSerializer;
   public readonly tabListExportSerializer: TabListExportSerializer;
   public readonly tabExportSerializer: TabExportSerializer;

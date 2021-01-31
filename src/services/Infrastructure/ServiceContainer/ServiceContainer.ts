@@ -3,7 +3,7 @@ import { ImportExportService } from '../../Components/App/ImportExport';
 import { PopupService } from '../../Components/Popup';
 import {
   StorageImportExportService,
-  DataExporterFactory,
+  ExportStrategyFactory,
   TabListExportSerializer,
   TabExportSerializer,
   BetterOneTabTabListExportSerializer,
@@ -42,7 +42,7 @@ export interface ServiceContainer {
   readonly popupService?: PopupService;
 
   readonly storageImportExportService?: StorageImportExportService;
-  readonly dataExporterFactory?: DataExporterFactory;
+  readonly dataExporterFactory?: ExportStrategyFactory;
   readonly betterOneTabTabListExportSerializer?: BetterOneTabTabListExportSerializer;
   readonly tabListExportSerializer?: TabListExportSerializer;
   readonly tabExportSerializer?: TabExportSerializer;

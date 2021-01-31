@@ -10,34 +10,39 @@ import { TypeCheckingService, TypeCheckingError } from '../../DataProcessing/Typ
 import { StorageImportExportService } from './StorageImportExportService';
 import { Sort } from '../Storage';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
-import { DataExporter } from './DataExporter';
-import { DataExporterFactory } from './DataExporterFactory';
+import { ExportStrategy } from './ExportStrategy';
+import { ExportStrategyFactory } from './ExportStrategyFactory';
+import { ExportStrategyName } from './exportStrategies';
 
 export class StorageImportExportServiceImpl implements StorageImportExportService {
   public constructor(
     private readonly tabListRepository: TabListRepository,
     private readonly tabRepository: TabRepository,
-    private readonly dataExporterFactory: DataExporterFactory,
+    private readonly dataExporterFactory: ExportStrategyFactory,
     private readonly jsonSerializer: JsonSerializer,
     private readonly typeChecking: TypeCheckingService,
   ) {
-    this.exportSerializer = this.dataExporterFactory.createAppDataExporter();
+    this.strategy = this.dataExporterFactory.create('app');
   }
 
-  public exportSerializer: DataExporter;
+  private strategy: ExportStrategy;
+
+  public setStrategy(strategyName: ExportStrategyName): void {
+    this.strategy = this.dataExporterFactory.create(strategyName);
+  }
 
   public export = (): Task<string> =>
     pipe(
       sequenceT(task)(this.tabListRepository.getAll(Sort.by('createdAt').descending()), this.tabRepository.getAll()),
-      map(([storedTabLists, storedTabs]) => this.exportSerializer.serialize(storedTabLists, storedTabs)),
+      map(([storedTabLists, storedTabs]) => this.strategy.serialize(storedTabLists, storedTabs)),
       map(this.jsonSerializer.serialize.bind(this.jsonSerializer)),
     );
 
   public import = (json: string): TaskEither<TypeCheckingError, void> =>
     pipe(
       this.jsonSerializer.deserialize(json),
-      this.typeChecking.check(this.exportSerializer.exportedDataType),
-      mapE(this.exportSerializer.deserialize.bind(this.exportSerializer)),
+      this.typeChecking.check(this.strategy.exportedDataType),
+      mapE(this.strategy.deserialize.bind(this.strategy)),
       fromEither,
       chainTE(([tabLists, getTabs]) =>
         isNonEmpty(tabLists)

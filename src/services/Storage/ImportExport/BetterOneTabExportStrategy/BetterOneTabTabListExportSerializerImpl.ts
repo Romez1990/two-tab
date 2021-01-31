@@ -7,10 +7,10 @@ import { StoredTabList } from '../../TabList/StoredTabList';
 import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
 import { belongsToTabList, StoredTab } from '../../TabList/StoredTab';
 import { BetterOneTabTabListExportSerializer } from './BetterOneTabTabListExportSerializer';
-import { TabExportSerializer } from '../AppDataExporter';
+import { TabExportSerializer } from '../AppExportStrategy';
 import { DatetimeService } from '../../../DataProcessing/Datetime';
 import { checkNonEmpty } from '../../../Utils/fp-ts/ReadonlyArray';
-import { ExportedTab } from '../AppDataExporter/ExportedTab';
+import { ExportedTab } from '../AppExportStrategy/ExportedTab';
 
 export class BetterOneTabTabListExportSerializerImpl implements BetterOneTabTabListExportSerializer {
   public constructor(

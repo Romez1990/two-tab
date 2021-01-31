@@ -1,6 +1,6 @@
 import { number, string, type, TypeOf } from 'io-ts';
 import { readonlyNonEmptyArray } from 'io-ts-types';
-import { ExportedTabT } from '../AppDataExporter/ExportedTab';
+import { ExportedTabT } from '../AppExportStrategy/ExportedTab';
 
 export const BetterOneTabExportedTabListT = type({
   title: string,

@@ -1,4 +1,4 @@
-import { DataExporter } from '../DataExporter';
+import { ExportStrategy } from '../ExportStrategy';
 import { BetterOneTabDataT, BetterOneTabData, BetterOneTabDataOutput } from './BetterOneTabData';
 import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
 import { StoredTabList } from '../../TabList/StoredTabList';
@@ -6,7 +6,7 @@ import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
 import { StoredTab } from '../../TabList/StoredTab';
 import { BetterOneTabTabListExportSerializer } from './BetterOneTabTabListExportSerializer';
 
-export class BetterOneTabDataExporter implements DataExporter<BetterOneTabData, BetterOneTabDataOutput> {
+export class BetterOneTabExportStrategy implements ExportStrategy<BetterOneTabData, BetterOneTabDataOutput> {
   public constructor(private readonly betterOneTabTabListExportSerializer: BetterOneTabTabListExportSerializer) {}
 
   public readonly exportedDataType = BetterOneTabDataT;
