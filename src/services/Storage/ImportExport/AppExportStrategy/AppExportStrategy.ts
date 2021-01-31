@@ -11,10 +11,8 @@ export class AppExportStrategy implements ExportStrategy<AppData, AppDataOutput>
 
   public readonly exportedDataType = AppDataT;
 
-  public serialize = (
-    storedTabLists: ReadonlyArray<StoredTabList>,
-    storedTabs: ReadonlyArray<StoredTab>,
-  ): AppData => this.tabListExportSerializer.serialize(storedTabLists, storedTabs);
+  public serialize = (storedTabLists: ReadonlyArray<StoredTabList>, storedTabs: ReadonlyArray<StoredTab>): AppData =>
+    this.tabListExportSerializer.serialize(storedTabLists, storedTabs);
 
   public deserialize = (
     serializedTabLists: AppData,
