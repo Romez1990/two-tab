@@ -3,7 +3,7 @@ import { right } from 'fp-ts/Either';
 import { Task, map } from 'fp-ts/Task';
 import { TaskEither, chainW } from 'fp-ts/TaskEither';
 import { ImportExportService } from './ImportExportService';
-import { StorageImportExportService } from '../../../Storage/ImportExport';
+import { StorageImportExportService, ExportStrategyName } from '../../../Storage/ImportExport';
 import { FileReadingService } from '../../../DOM/FileReading';
 import { DownloadService } from '../../../DOM/Download';
 import { TypeCheckingError } from '../../../DataProcessing/TypeChecking';
@@ -14,6 +14,10 @@ export class ImportExportServiceImpl implements ImportExportService {
     private readonly fileReading: FileReadingService,
     private readonly downloadService: DownloadService,
   ) {}
+
+  public setStrategy(strategyName: ExportStrategyName): void {
+    this.storageImportExport.setStrategy(strategyName);
+  }
 
   public import = (file: File): TaskEither<TypeCheckingError, void> =>
     pipe(
