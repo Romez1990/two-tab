@@ -62,7 +62,7 @@ export class BetterOneTabTabListExportSerializerImpl implements BetterOneTabTabL
   ): BetterOneTabExportedTabList => ({
     ...storedTabList,
     title: name,
-    time: this.datetimeService.toTimeStamp(createdAt),
+    time: this.datetimeService.toTimeStamp(createdAt, true),
     tabs,
   });
 
@@ -78,7 +78,7 @@ export class BetterOneTabTabListExportSerializerImpl implements BetterOneTabTabL
     {
       ...serializedStoredTabList,
       name: title,
-      createdAt: this.datetimeService.fromTimeStamp(time),
+      createdAt: this.datetimeService.fromTimeStamp(time, true),
     },
     storedTabList =>
       pipe(
