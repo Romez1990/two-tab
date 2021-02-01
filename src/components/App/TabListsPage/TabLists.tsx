@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Task } from 'fp-ts/Task';
-import { TabListItem } from './TabListItem';
+import { TabListItem } from './TabList';
 import { Tab, TabList } from '../../../services/Storage/TabList';
 
 interface Props {

@@ -16,7 +16,7 @@ import { pipe } from 'fp-ts/function';
 import { TabList, Tab } from '../../../services/Storage/TabList';
 import { run } from '../../../services/Utils/fp-ts/Task';
 import { useService } from '../../Providers/ServiceContainer';
-import { TabItem } from './TabItem';
+import { TabItem } from './Tab';
 
 interface Props {
   readonly tabList: TabList;
