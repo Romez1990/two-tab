@@ -11,7 +11,7 @@ import { ExportStrategyName } from '../../../services/Storage/ImportExport';
 import { ExportStrategyButtonGroup } from './ExportStrategyButtonGroup';
 
 export const ImportExportPage: FC = () => {
-  const importExport = useService('importExportService');
+  const importExport = useService('importExportPageService');
 
   const [importFileValue, setImportFileValue] = useState<string>('');
   const [importFile, setImportFile] = useState<Option<File>>(none);

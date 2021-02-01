@@ -2,13 +2,13 @@ import { pipe } from 'fp-ts/function';
 import { right } from 'fp-ts/Either';
 import { Task, map } from 'fp-ts/Task';
 import { TaskEither, chainW } from 'fp-ts/TaskEither';
-import { ImportExportService } from './ImportExportService';
+import { ImportExportPageService } from './ImportExportPageService';
 import { StorageImportExportService, ExportStrategyName } from '../../../Storage/ImportExport';
 import { FileReadingService } from '../../../DOM/FileReading';
 import { DownloadService } from '../../../DOM/Download';
 import { TypeCheckingError } from '../../../DataProcessing/TypeChecking';
 
-export class ImportExportServiceImpl implements ImportExportService {
+export class ImportExportPageServiceImpl implements ImportExportPageService {
   public constructor(
     private readonly storageImportExport: StorageImportExportService,
     private readonly fileReading: FileReadingService,

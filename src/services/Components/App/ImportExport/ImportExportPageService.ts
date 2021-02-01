@@ -3,7 +3,7 @@ import { TaskEither } from 'fp-ts/TaskEither';
 import { ExportStrategyName } from '../../../Storage/ImportExport';
 import { TypeCheckingError } from '../../../DataProcessing/TypeChecking';
 
-export interface ImportExportService {
+export interface ImportExportPageService {
   readonly strategyNames: ReadonlyArray<ExportStrategyName>;
   setStrategy(strategyName: ExportStrategyName): void;
   import(file: File): TaskEither<TypeCheckingError, void>;

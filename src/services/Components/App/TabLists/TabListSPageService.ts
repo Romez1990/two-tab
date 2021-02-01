@@ -2,7 +2,7 @@ import { Task } from 'fp-ts/Task';
 import { TaskOption } from 'fp-ts-contrib/TaskOption';
 import { TabList, Tab, TabListsUpdateHandlers } from '../../../Storage/TabList';
 
-export interface MainPageService {
+export interface TabListSPageService {
   addUpdateHandlers(handlers: TabListsUpdateHandlers): void;
   removeUpdateHandlers(): void;
   getTabLists(): Task<ReadonlyArray<TabList>>;

@@ -3,9 +3,9 @@ import { Task, chain } from 'fp-ts/Task';
 import { TaskOption } from 'fp-ts-contrib/TaskOption';
 import { TabListService, TabList, Tab, TabListsUpdateHandlers } from '../../../Storage/TabList';
 import { BrowserTabService } from '../../../Browser/BrowserTab';
-import { MainPageService } from './MainPageService';
+import { TabListSPageService } from './TabListSPageService';
 
-export class MainPageServiceImpl implements MainPageService {
+export class TabListsPageServiceImpl implements TabListSPageService {
   public constructor(
     private readonly tabListService: TabListService,
     private readonly browserTabService: BrowserTabService,

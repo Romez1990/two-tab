@@ -1,5 +1,5 @@
-import { MainPageService } from '../../Components/App/MainPage';
-import { ImportExportService } from '../../Components/App/ImportExport';
+import { TabListSPageService } from '../../Components/App/TabLists';
+import { ImportExportPageService } from '../../Components/App/ImportExport';
 import { PopupService } from '../../Components/Popup';
 import {
   StorageImportExportService,
@@ -36,8 +36,8 @@ import { StringProcessingService } from '../../DataProcessing/StringProcessing';
 import { ServiceNotProvidedError } from './Errors';
 
 export interface ServiceContainer {
-  readonly mainPageService?: MainPageService;
-  readonly importExportService?: ImportExportService;
+  readonly tabListsPageService?: TabListSPageService;
+  readonly importExportPageService?: ImportExportPageService;
 
   readonly popupService?: PopupService;
 

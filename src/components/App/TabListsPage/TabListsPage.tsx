@@ -11,7 +11,7 @@ import { run } from '../../../services/Utils/fp-ts/Task';
 import { TabListNotFoundInTabListsError, TabListsNotInitializedError } from './Errors';
 
 export const TabListsPage: FC = () => {
-  const mainPageService = useService('mainPageService');
+  const tabListsService = useService('tabListsPageService');
 
   useEffect(() => {
     addUpdateHandlers();
@@ -22,19 +22,19 @@ export const TabListsPage: FC = () => {
   }, []);
 
   const addUpdateHandlers = (): void =>
-    mainPageService.addUpdateHandlers({
+    tabListsService.addUpdateHandlers({
       add: addTabListToTabLists,
       update: updateTabListsWithNewTabList,
       delete: deleteTabListFromTabLists,
     });
 
-  const removeUpdateHandlers = (): void => mainPageService.removeUpdateHandlers();
+  const removeUpdateHandlers = (): void => tabListsService.removeUpdateHandlers();
 
   const [tabLists, setTabLists] = useState<Option<ReadonlyArray<TabList>>>(none);
 
   const getTabLists = (): Task<void> =>
     pipe(
-      mainPageService.getTabLists(),
+      tabListsService.getTabLists(),
       map(some),
       map(setTabLists),
       //
@@ -42,26 +42,26 @@ export const TabListsPage: FC = () => {
 
   const openTabList = (tabList: TabList): Task<void> =>
     pipe(
-      mainPageService.openTabList(tabList),
+      tabListsService.openTabList(tabList),
       map(() => deleteTabListFromTabLists(tabList)),
     );
 
   const openTabListInNewWindow = (tabList: TabList, focused: boolean): Task<void> =>
     pipe(
-      mainPageService.openTabListInNewWindow(tabList, focused),
+      tabListsService.openTabListInNewWindow(tabList, focused),
       map(() => deleteTabListFromTabLists(tabList)),
     );
 
   const deleteTabList = (tabList: TabList): Task<void> =>
     pipe(
-      mainPageService.deleteTabList(tabList),
+      tabListsService.deleteTabList(tabList),
       map(() => deleteTabListFromTabLists(tabList)),
     );
 
   const deleteTabIfShould = (tabList: TabList, tab: Tab, shouldBeDeleted: boolean): Task<void> =>
     shouldBeDeleted
       ? pipe(
-          mainPageService.deleteTab(tabList, tab),
+          tabListsService.deleteTab(tabList, tab),
           map(fold(() => deleteTabListFromTabLists(tabList), updateTabListsWithNewTabList)),
         )
       : of(undefined);

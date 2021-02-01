@@ -1,5 +1,5 @@
-import { MainPageService, MainPageServiceImpl } from '../../Components/App/MainPage';
-import { ImportExportService, ImportExportServiceImpl } from '../../Components/App/ImportExport';
+import { TabListSPageService, TabListsPageServiceImpl } from '../../Components/App/TabLists';
+import { ImportExportPageService, ImportExportPageServiceImpl } from '../../Components/App/ImportExport';
 import { PopupService, PopupServiceImpl } from '../../Components/Popup';
 import {
   StorageImportExportService,
@@ -147,16 +147,16 @@ export class AppServiceContainer implements ServiceContainer {
 
     this.popupService = new PopupServiceImpl(this.tabListService, this.browserTabService, this.extensionService);
 
-    this.importExportService = new ImportExportServiceImpl(
+    this.importExportPageService = new ImportExportPageServiceImpl(
       this.storageImportExportService,
       this.fileReadingService,
       this.downloadService,
     );
-    this.mainPageService = new MainPageServiceImpl(this.tabListService, this.browserTabService);
+    this.tabListsPageService = new TabListsPageServiceImpl(this.tabListService, this.browserTabService);
   }
 
-  public readonly mainPageService: MainPageService;
-  public readonly importExportService: ImportExportService;
+  public readonly tabListsPageService: TabListSPageService;
+  public readonly importExportPageService: ImportExportPageService;
 
   public readonly popupService: PopupService;
 
