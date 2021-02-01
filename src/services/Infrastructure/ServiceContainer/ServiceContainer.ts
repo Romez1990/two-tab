@@ -100,6 +100,6 @@ export function getService<T extends keyof ServiceContainer>(
   serviceName: T,
 ): NonNullable<ServiceContainer[T]> {
   const service = container[serviceName];
-  if (service === null) throw new ServiceNotProvidedError(serviceName);
+  if (typeof service === 'undefined') throw new ServiceNotProvidedError(serviceName);
   return service as NonNullable<ServiceContainer[T]>;
 }
