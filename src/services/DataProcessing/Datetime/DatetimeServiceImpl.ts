@@ -1,24 +1,27 @@
 import { pipe } from 'fp-ts/function';
 import { DatetimeService } from './DatetimeService';
 
-type DateTimeFormat = Intl.DateTimeFormat;
-
 export class DatetimeServiceImpl implements DatetimeService {
   public constructor() {
-    this.dateTimeFormat = new Intl.DateTimeFormat([], {
+    const dateOptions: Intl.DateTimeFormatOptions = {
       year: '2-digit',
       month: '2-digit',
       day: '2-digit',
+    };
+    const timeOptions: Intl.DateTimeFormatOptions = {
       hour: '2-digit',
       minute: '2-digit',
-    });
+    };
+    this.dateTimeFormat = new Intl.DateTimeFormat([], { ...dateOptions, ...timeOptions });
+    this.dateFormat = new Intl.DateTimeFormat([], dateOptions);
+    this.timeFormat = new Intl.DateTimeFormat([], timeOptions);
   }
 
-  private readonly dateTimeFormat: DateTimeFormat;
+  private readonly dateTimeFormat: Intl.DateTimeFormat;
+  private readonly dateFormat: Intl.DateTimeFormat;
+  private readonly timeFormat: Intl.DateTimeFormat;
 
   public getCurrent = (): Date => new Date();
-
-  public toLocaleString = (datetime: Date): string => this.dateTimeFormat.format(datetime);
 
   public fromTimeStamp = (timestamp: number): Date =>
     pipe(
@@ -34,4 +37,10 @@ export class DatetimeServiceImpl implements DatetimeService {
       Math.round,
       //
     );
+
+  public toLocaleDatetimeString = (datetime: Date): string => this.dateTimeFormat.format(datetime);
+
+  public toLocaleDateString = (datetime: Date): string => this.dateFormat.format(datetime);
+
+  public toLocaleTimeString = (datetime: Date): string => this.timeFormat.format(datetime);
 }

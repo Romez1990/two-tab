@@ -47,7 +47,7 @@ export const TabListItem: FC<Props> = ({
   const datetimeService = useService('datetimeService');
 
   const tabsCount = getTabCount();
-  const datetime = datetimeService.toLocaleString(createdAt);
+  const datetime = datetimeService.toLocaleDatetimeString(createdAt);
 
   function getTabCount() {
     const tabCount = tabs.length;
