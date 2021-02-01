@@ -11,7 +11,6 @@ interface Props {
 const useStyles = makeStyles(({ spacing, typography: { pxToRem } }: Theme) =>
   createStyles({
     item: {
-      textDecoration: 'none',
       cursor: 'pointer',
     },
     icon: {
@@ -44,10 +43,11 @@ export const TabItem: FC<Props> = ({ tab: { title, url, favIconUrl }, onOpen }) 
   return (
     <Link
       className={classes.item}
-      color="inherit"
       href={url}
       target="_blank"
       rel="noreferrer"
+      color="inherit"
+      underline="none"
       onClick={onClick}
       onAuxClick={onAuxClick}
     >

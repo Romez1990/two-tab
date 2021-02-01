@@ -63,6 +63,9 @@ const useStyles = makeStyles(({ palette: { primary }, spacing, typography: { pxT
     actions: {
       justifyContent: 'flex-start',
     },
+    list: {
+      width: '100%',
+    },
   }),
 );
 
@@ -148,7 +151,7 @@ export const TabListItem: FC<Props> = ({
         </Button>
       </AccordionActions>
       <AccordionDetails>
-        <List>
+        <List className={classes.list}>
           {tabs.map(tab => (
             <TabItem key={tab.id} tab={tab} onOpen={onTabOpened(tab)} />
           ))}
