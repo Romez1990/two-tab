@@ -23,7 +23,7 @@ import { JsonSerializer, JsonSerializerImpl } from '../../DataProcessing/Seriali
 import { StringProcessingService, StringProcessingServiceImpl } from '../../DataProcessing/StringProcessing';
 import { ServiceContainer } from './ServiceContainer';
 
-export class StubServiceContainer implements ServiceContainer {
+export class BrowserServiceContainer implements ServiceContainer {
   public constructor() {
     this.stringProcessingService = new StringProcessingServiceImpl();
 
