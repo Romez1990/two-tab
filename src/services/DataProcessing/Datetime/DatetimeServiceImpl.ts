@@ -23,18 +23,17 @@ export class DatetimeServiceImpl implements DatetimeService {
 
   public getCurrent = (): Date => new Date();
 
-  public fromTimeStamp = (timestamp: number): Date =>
+  public fromTimeStamp = (timestamp: number, withMilliseconds = false): Date =>
     pipe(
-      timestamp * 1000,
+      withMilliseconds ? timestamp : timestamp * 1000,
       time => new Date(time),
       //
     );
 
-  public toTimeStamp = (datetime: Date): number =>
+  public toTimeStamp = (datetime: Date, withMilliseconds = false): number =>
     pipe(
       datetime.getTime(),
-      time => time / 1000,
-      Math.round,
+      time => (withMilliseconds ? time : Math.round(time / 1000)),
       //
     );
 
