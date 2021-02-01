@@ -68,7 +68,7 @@ import { JsonSerializer, JsonSerializerImpl } from '../../DataProcessing/Seriali
 import { StringProcessingService, StringProcessingServiceImpl } from '../../DataProcessing/StringProcessing';
 import { ServiceContainer, getService } from './ServiceContainer';
 
-class ServiceContainerImpl implements ServiceContainer {
+export class ServiceContainerImpl implements ServiceContainer {
   public constructor() {
     this.stringProcessingService = new StringProcessingServiceImpl();
 
@@ -216,5 +216,3 @@ class ServiceContainerImpl implements ServiceContainer {
   public get = <T extends keyof ServiceContainer>(serviceName: T): NonNullable<ServiceContainer[T]> =>
     getService(this, serviceName);
 }
-
-export const serviceContainer = new ServiceContainerImpl();

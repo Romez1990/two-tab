@@ -3,9 +3,14 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { ServiceContainerProvider } from './ServiceContainer';
 import { ThemeProvider } from './ThemeProvider';
 import { StorageConnector } from './Storage';
+import { ServiceContainer } from '../../services/Infrastructure/ServiceContainer';
 
-export const Providers: FC = ({ children }) => (
-  <ServiceContainerProvider>
+interface Props {
+  readonly serviceContainer: ServiceContainer;
+}
+
+export const Providers: FC<Props> = ({ serviceContainer, children }) => (
+  <ServiceContainerProvider serviceContainer={serviceContainer}>
     <ErrorBoundary>
       <ThemeProvider>
         <StorageConnector>{children}</StorageConnector>

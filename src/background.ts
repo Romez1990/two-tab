@@ -1,9 +1,10 @@
 import { pipe } from 'fp-ts/function';
-import { serviceContainer } from './services/Infrastructure/ServiceContainer';
+import { ServiceContainerImpl } from './services/Infrastructure/ServiceContainer';
 import { run } from './services/Utils/fp-ts/Task';
 
-const logger = serviceContainer.get('loggerService');
-const storage = serviceContainer.get('storageService');
+const container = new ServiceContainerImpl();
+const logger = container.get('loggerService');
+const storage = container.get('storageService');
 
 pipe(
   logger.registerAsReceiver(),
