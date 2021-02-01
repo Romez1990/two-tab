@@ -1,8 +1,7 @@
 import { Task, of } from 'fp-ts/Task';
-import { TaskOption } from 'fp-ts-contrib/TaskOption';
+import { TaskOption, some } from 'fp-ts-contrib/TaskOption';
 import { TabList } from '../../../Storage/TabList';
 import { TabListSPageService } from './TabListSPageService';
-import { NotImplementedError } from '../../../Infrastructure/Error';
 
 export class StubTabListSPageService implements TabListSPageService {
   public addUpdateHandlers(): void {
@@ -242,18 +241,18 @@ export class StubTabListSPageService implements TabListSPageService {
     ]);
 
   public openTabList(): Task<void> {
-    throw new NotImplementedError();
+    return of(undefined);
   }
 
   public openTabListInNewWindow(): Task<void> {
-    throw new NotImplementedError();
+    return of(undefined);
   }
 
   public deleteTabList(): Task<void> {
-    throw new NotImplementedError();
+    return of(undefined);
   }
 
-  public deleteTab(): TaskOption<TabList> {
-    throw new NotImplementedError();
+  public deleteTab(tabList: TabList): TaskOption<TabList> {
+    return some(tabList);
   }
 }
