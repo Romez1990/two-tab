@@ -60,8 +60,8 @@ const useStyles = makeStyles(({ palette: { primary }, spacing, typography: { pxT
     time: {
       fontSize: pxToRem(9),
     },
-    deleteButton: {
-      color: 'red',
+    actions: {
+      justifyContent: 'flex-start',
     },
   }),
 );
@@ -136,15 +136,15 @@ export const TabListItem: FC<Props> = ({
           <Typography className={classes.time}>{time}</Typography>
         </div>
       </AccordionSummary>
-      <AccordionActions>
-        <Button type="button" onClick={openTabList}>
-          Open list
+      <AccordionActions classes={{ root: classes.actions }}>
+        <Button type="button" variant="outlined" color="primary" onClick={openTabList}>
+          Open
         </Button>
-        <Button type="button" onClick={openTabListInNewWindow}>
-          Open list in new window
+        <Button type="button" variant="outlined" color="primary" onClick={openTabListInNewWindow}>
+          Open in new window
         </Button>
-        <Button type="button" onClick={deleteTabList} className={classes.deleteButton}>
-          Delete list
+        <Button type="button" variant="outlined" color="primary" onClick={deleteTabList}>
+          Delete
         </Button>
       </AccordionActions>
       <AccordionDetails>

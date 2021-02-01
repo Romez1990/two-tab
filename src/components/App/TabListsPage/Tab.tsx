@@ -8,12 +8,19 @@ interface Props {
   onOpen(shouldBeDeleted: boolean): void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const useStyles = makeStyles(({ spacing }: Theme) =>
+const useStyles = makeStyles(({ spacing, typography: { pxToRem } }: Theme) =>
   createStyles({
     item: {
       textDecoration: 'none',
       cursor: 'pointer',
+    },
+    icon: {
+      marginRight: spacing(1),
+      height: pxToRem(42),
+      width: pxToRem(42),
+    },
+    title: {
+      fontSize: pxToRem(16),
     },
   }),
 );
@@ -45,10 +52,10 @@ export const TabItem: FC<Props> = ({ tab: { title, url, favIconUrl }, onOpen }) 
       onAuxClick={onAuxClick}
     >
       <ListItem selected={isSelected} onMouseEnter={select} onMouseLeave={unSelect}>
-        <Avatar src={favIconUrl} />
-        <Typography>{title}</Typography>
-        &nbsp;
-        <Typography>[{hostName}]</Typography>
+        <Avatar className={classes.icon} src={favIconUrl} />
+        <Typography className={classes.title}>
+          {title} [{hostName}]
+        </Typography>
       </ListItem>
     </Link>
   );
