@@ -34,7 +34,7 @@ const useStyles = makeStyles(({ palette: { primary }, spacing, typography: { pxT
     },
     name: {
       marginRight: spacing(1),
-      fontSize: pxToRem(18),
+      fontSize: pxToRem(16),
       fontWeight: 700,
     },
     tabsCount: {
