@@ -1,2 +1,2 @@
 export * from './ServiceContainer';
-export * from './ServiceContainerImpl';
+export * from './AppServiceContainer';

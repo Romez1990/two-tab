@@ -68,7 +68,7 @@ import { JsonSerializer, JsonSerializerImpl } from '../../DataProcessing/Seriali
 import { StringProcessingService, StringProcessingServiceImpl } from '../../DataProcessing/StringProcessing';
 import { ServiceContainer, getService } from './ServiceContainer';
 
-export class ServiceContainerImpl implements ServiceContainer {
+export class AppServiceContainer implements ServiceContainer {
   public constructor() {
     this.stringProcessingService = new StringProcessingServiceImpl();
 

@@ -2,10 +2,10 @@ import React, { FC } from 'react';
 import { Providers } from './components/Providers';
 import { Router, RouterView } from './components/App/Router';
 import { MainLayout } from './components/App/Layout';
-import { ServiceContainerImpl } from './services/Infrastructure/ServiceContainer';
+import { AppServiceContainer } from './services/Infrastructure/ServiceContainer';
 
 export const App: FC = () => {
-  const serviceContainer = new ServiceContainerImpl();
+  const serviceContainer = new AppServiceContainer();
 
   return (
     <Providers serviceContainer={serviceContainer}>
