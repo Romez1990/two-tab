@@ -6,6 +6,7 @@ process.env.BABEL_ENV = 'development';
 process.env.NODE_ENV = 'development';
 process.env.USE_DEV_SERVER = 'true';
 process.env.EXTENSION_ENVIRONMENT = 'false';
+process.env.BROWSER = 'none';
 
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
