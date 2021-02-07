@@ -4,10 +4,10 @@ import { Sort } from './Sort';
 import { WithId } from './WithId';
 
 export interface Repository<T extends WithId & TToCreate, TToCreate> {
-  save(object: TToCreate): Task<T>;
-  saveAll(objects: ReadonlyNonEmptyArray<TToCreate>): Task<ReadonlyNonEmptyArray<T>>;
+  save(entity: TToCreate): Task<T>;
+  saveAll(entities: ReadonlyNonEmptyArray<TToCreate>): Task<ReadonlyNonEmptyArray<T>>;
   getAll(sort?: Sort): Task<ReadonlyArray<T>>;
   getAllById(ids: ReadonlyNonEmptyArray<number>): Task<ReadonlyNonEmptyArray<T>>;
-  delete(object: T): Task<void>;
-  deleteAll(objects: ReadonlyNonEmptyArray<T>): Task<void>;
+  delete(entity: T): Task<void>;
+  deleteAll(entities: ReadonlyNonEmptyArray<T>): Task<void>;
 }

@@ -36,26 +36,26 @@ export class RepositoryImpl<T extends TToCreate & WithId, TToCreate> implements 
 
   private readonly idLens = Lens.fromProp<T>()('id');
 
-  public save = (object: TToCreate): Task<T> =>
+  public save = (entity: TToCreate): Task<T> =>
     pipe(
-      () => this.table.add(object as T),
-      map(this.setObjectId(object)),
+      () => this.table.add(entity as T),
+      map(this.setEntityId(entity)),
       //
     );
 
-  public saveAll = (objects: ReadonlyNonEmptyArray<TToCreate>): Task<ReadonlyNonEmptyArray<T>> =>
+  public saveAll = (entities: ReadonlyNonEmptyArray<TToCreate>): Task<ReadonlyNonEmptyArray<T>> =>
     pipe(
-      () => this.table.bulkAdd(objects as ReadonlyNonEmptyArray<T>, { allKeys: true }),
+      () => this.table.bulkAdd(entities as ReadonlyNonEmptyArray<T>, { allKeys: true }),
       map(ids =>
         pipe(
           checkNonEmpty<number>('ids')(ids as ReadonlyArray<number>),
-          nonEmptyIds => zipWith(nonEmptyIds, objects, (id, object) => this.setObjectId(object)(id)),
+          nonEmptyIds => zipWith(nonEmptyIds, entities, (id, entity) => this.setEntityId(entity)(id)),
           //
         ),
       ),
     );
 
-  private setObjectId = (object: TToCreate) => (id: number): T => this.idLens.set(id)(object as T);
+  private setEntityId = (entity: TToCreate) => (id: number): T => this.idLens.set(id)(entity as T);
 
   public getAll = (sort?: Sort): Task<ReadonlyArray<T>> => () => {
     if (typeof sort === 'undefined') {
@@ -71,21 +71,21 @@ export class RepositoryImpl<T extends TToCreate & WithId, TToCreate> implements 
     pipe(
       () => this.table.bulkGet(toArray(ids)),
       map(
-        mapA(object => {
-          if (typeof object === 'undefined') {
+        mapA(entity => {
+          if (typeof entity === 'undefined') {
             throw new Error();
           }
-          return object;
+          return entity;
         }),
       ),
-      map(checkNonEmpty('objects')),
+      map(checkNonEmpty('entities')),
     );
 
   public delete = ({ id }: T): Task<void> => () => this.table.delete(id);
 
-  public deleteAll = (objects: ReadonlyNonEmptyArray<T>): Task<void> =>
+  public deleteAll = (entities: ReadonlyNonEmptyArray<T>): Task<void> =>
     pipe(
-      objects,
+      entities,
       mapAN(this.idLens.get),
       ids => () => this.table.bulkDelete(ids),
       //
