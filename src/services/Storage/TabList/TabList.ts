@@ -1,10 +1,7 @@
-import { pipe } from 'fp-ts/function';
 import { fromEquals } from 'fp-ts/Eq';
-import { ReadonlyNonEmptyArray, map } from 'fp-ts/ReadonlyNonEmptyArray';
+import { ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { Lens } from 'monocle-ts';
-import { Tab, toTabEntity } from './Tab';
-import { TabListEntity } from './TabListEntity';
-import { TabEntity } from './TabEntity';
+import { Tab } from './Tab';
 
 export interface TabList {
   readonly id: number;
@@ -23,14 +20,3 @@ export const eqTabList = fromEquals((x: TabList, y: TabList): boolean => {
 export const tabListsAreEquals = (x: TabList) => (y: TabList): boolean => eqTabList.equals(x, y);
 
 export const tabsLens = Lens.fromProp<TabList>()('tabs');
-
-export const toTabListAndTabEntities = ({
-  tabs,
-  ...tabListEntity
-}: TabList): [TabListEntity, ReadonlyNonEmptyArray<TabEntity>] =>
-  pipe(
-    tabs,
-    map(toTabEntity(tabListEntity)),
-    tabEntities => [tabListEntity, tabEntities],
-    //
-  );
