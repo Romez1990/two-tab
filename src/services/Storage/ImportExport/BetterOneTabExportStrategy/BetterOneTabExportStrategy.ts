@@ -1,9 +1,9 @@
 import { ExportStrategy } from '../ExportStrategy';
 import { BetterOneTabDataT, BetterOneTabData, BetterOneTabDataOutput } from './BetterOneTabData';
-import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
-import { StoredTabList } from '../../TabList/StoredTabList';
-import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
-import { StoredTab } from '../../TabList/StoredTab';
+import { TabListEntityToCreate } from '../../TabList/TabListEntityToCreate';
+import { TabListEntity } from '../../TabList/TabListEntity';
+import { TabEntityToCreate } from '../../TabList/TabEntityToCreate';
+import { TabEntity } from '../../TabList/TabEntity';
 import { BetterOneTabTabListExportSerializer } from './BetterOneTabTabListExportSerializer';
 
 export class BetterOneTabExportStrategy implements ExportStrategy<BetterOneTabData, BetterOneTabDataOutput> {
@@ -12,14 +12,14 @@ export class BetterOneTabExportStrategy implements ExportStrategy<BetterOneTabDa
   public readonly exportedDataType = BetterOneTabDataT;
 
   public serialize = (
-    storedTabLists: ReadonlyArray<StoredTabList>,
-    storedTabs: ReadonlyArray<StoredTab>,
-  ): BetterOneTabData => this.betterOneTabTabListExportSerializer.serialize(storedTabLists, storedTabs);
+    tabListEntities: ReadonlyArray<TabListEntity>,
+    tabEntities: ReadonlyArray<TabEntity>,
+  ): BetterOneTabData => this.betterOneTabTabListExportSerializer.serialize(tabListEntities, tabEntities);
 
   public deserialize = (
     serializedTabLists: BetterOneTabData,
   ): [
-    ReadonlyArray<StoredTabListToCreate>,
-    (storedTabLists: ReadonlyArray<StoredTabList>) => ReadonlyArray<StoredTabToCreate>,
+    ReadonlyArray<TabListEntityToCreate>,
+    (tabListEntities: ReadonlyArray<TabListEntity>) => ReadonlyArray<TabEntityToCreate>,
   ] => this.betterOneTabTabListExportSerializer.deserialize(serializedTabLists);
 }

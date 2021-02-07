@@ -2,10 +2,10 @@ import { pipe } from 'fp-ts/function';
 import { filter, flatten, map as mapA, unzip, zipWith } from 'fp-ts/ReadonlyArray';
 import { map as mapAN, ReadonlyNonEmptyArray } from 'fp-ts/ReadonlyNonEmptyArray';
 import { BetterOneTabExportedTabList } from './BetterOneTabExportedTabList';
-import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
-import { StoredTabList } from '../../TabList/StoredTabList';
-import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
-import { belongsToTabList, StoredTab } from '../../TabList/StoredTab';
+import { TabListEntityToCreate } from '../../TabList/TabListEntityToCreate';
+import { TabListEntity } from '../../TabList/TabListEntity';
+import { TabEntityToCreate } from '../../TabList/TabEntityToCreate';
+import { belongsToTabList, TabEntity } from '../../TabList/TabEntity';
 import { BetterOneTabTabListExportSerializer } from './BetterOneTabTabListExportSerializer';
 import { TabExportSerializer } from '../AppExportStrategy';
 import { DatetimeService } from '../../../DataProcessing/Datetime';
@@ -19,18 +19,18 @@ export class BetterOneTabTabListExportSerializerImpl implements BetterOneTabTabL
   ) {}
 
   public serialize = (
-    storedTabLists: ReadonlyArray<StoredTabList>,
-    storedTabs: ReadonlyArray<StoredTab>,
+    tabListEntities: ReadonlyArray<TabListEntity>,
+    tabEntities: ReadonlyArray<TabEntity>,
   ): ReadonlyArray<BetterOneTabExportedTabList> =>
     pipe(
-      storedTabLists,
-      mapA(storedTabList =>
+      tabListEntities,
+      mapA(tabListEntity =>
         pipe(
-          storedTabs,
-          filter(belongsToTabList(storedTabList)),
+          tabEntities,
+          filter(belongsToTabList(tabListEntity)),
           checkNonEmpty('tabs'),
           mapAN(this.tabExportSerializer.serialize.bind(this.tabExportSerializer)),
-          this.toSerializedTabList(storedTabList),
+          this.toSerializedTabList(tabListEntity),
         ),
       ),
     );
@@ -38,29 +38,29 @@ export class BetterOneTabTabListExportSerializerImpl implements BetterOneTabTabL
   public deserialize = (
     serializedTabLists: ReadonlyArray<BetterOneTabExportedTabList>,
   ): [
-    ReadonlyArray<StoredTabListToCreate>,
-    (storedTabLists: ReadonlyArray<StoredTabList>) => ReadonlyArray<StoredTabToCreate>,
+    ReadonlyArray<TabListEntityToCreate>,
+    (tabListEntities: ReadonlyArray<TabListEntity>) => ReadonlyArray<TabEntityToCreate>,
   ] =>
     pipe(
       serializedTabLists,
       mapA(this.fromSerializedTabList.bind(this)),
       unzip,
-      ([storedTabListsToCreate, getStoredTabToCreateFunctions]) => [
-        storedTabListsToCreate,
-        storedTabLists =>
+      ([tabListEntitiesToCreate, getTabEntityToCreateFunctions]) => [
+        tabListEntitiesToCreate,
+        tabListEntities =>
           pipe(
-            zipWith(storedTabLists, getStoredTabToCreateFunctions, (storedTabList, getStoredTabToCreate) =>
-              getStoredTabToCreate(storedTabList),
+            zipWith(tabListEntities, getTabEntityToCreateFunctions, (tabListEntity, getTabEntityToCreate) =>
+              getTabEntityToCreate(tabListEntity),
             ),
             flatten,
           ),
       ],
     );
 
-  private toSerializedTabList = ({ id, name, createdAt, ...storedTabList }: StoredTabList) => (
+  private toSerializedTabList = ({ id, name, createdAt, ...tabListEntity }: TabListEntity) => (
     tabs: ReadonlyNonEmptyArray<ExportedTab>,
   ): BetterOneTabExportedTabList => ({
-    ...storedTabList,
+    ...tabListEntity,
     title: name,
     time: this.datetimeService.toTimeStamp(createdAt, true),
     tabs,
@@ -70,20 +70,20 @@ export class BetterOneTabTabListExportSerializerImpl implements BetterOneTabTabL
     title,
     time,
     tabs,
-    ...serializedStoredTabList
+    ...serializedTabListEntity
   }: BetterOneTabExportedTabList): [
-    StoredTabListToCreate,
-    (storedTabList: StoredTabList) => ReadonlyNonEmptyArray<StoredTabToCreate>,
+    TabListEntityToCreate,
+    (tabListEntity: TabListEntity) => ReadonlyNonEmptyArray<TabEntityToCreate>,
   ] => [
     {
-      ...serializedStoredTabList,
+      ...serializedTabListEntity,
       name: title,
       createdAt: this.datetimeService.fromTimeStamp(time, true),
     },
-    storedTabList =>
+    tabListEntity =>
       pipe(
         tabs,
-        mapAN(this.tabExportSerializer.deserialize(storedTabList)),
+        mapAN(this.tabExportSerializer.deserialize(tabListEntity)),
         //
       ),
   ];

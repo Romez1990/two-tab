@@ -1,5 +1,5 @@
 import { Repository } from '../Storage';
-import { StoredTabList } from './StoredTabList';
-import { StoredTabListToCreate } from './StoredTabListToCreate';
+import { TabListEntity } from './TabListEntity';
+import { TabListEntityToCreate } from './TabListEntityToCreate';
 
-export type TabListRepository = Repository<StoredTabList, StoredTabListToCreate>;
+export type TabListRepository = Repository<TabListEntity, TabListEntityToCreate>;

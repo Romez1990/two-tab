@@ -38,7 +38,7 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
   public export = (): Task<string> =>
     pipe(
       sequenceT(task)(this.tabListRepository.getAll(Sort.by('createdAt').descending()), this.tabRepository.getAll()),
-      map(([storedTabLists, storedTabs]) => this.strategy.serialize(storedTabLists, storedTabs)),
+      map(([tabListEntities, tabEntities]) => this.strategy.serialize(tabListEntities, tabEntities)),
       map(this.jsonSerializer.serialize.bind(this.jsonSerializer)),
     );
 
@@ -53,7 +53,7 @@ export class StorageImportExportServiceImpl implements StorageImportExportServic
           ? pipe(
               this.tabListRepository.saveAll(tabLists),
               map(getTabs),
-              map(checkNonEmpty('stored tabs to create')),
+              map(checkNonEmpty('tab entities to create')),
               chain(this.tabRepository.saveAll.bind(this.tabRepository)),
               map(constant(right(undefined))),
             )

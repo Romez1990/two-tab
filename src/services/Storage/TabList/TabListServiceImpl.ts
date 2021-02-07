@@ -13,10 +13,10 @@ import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
 import { TabList, tabsLens } from './TabList';
 import { TabListService } from './TabListService';
 import { Tab, tabsAreEquals } from './Tab';
-import { StoredTab } from './StoredTab';
-import { StoredTabToCreate } from './StoredTabToCreate';
-import { StoredTabList, toTabList } from './StoredTabList';
-import { StoredTabListToCreate } from './StoredTabListToCreate';
+import { TabEntity } from './TabEntity';
+import { TabEntityToCreate } from './TabEntityToCreate';
+import { TabListEntity, toTabList } from './TabListEntity';
+import { TabListEntityToCreate } from './TabListEntityToCreate';
 import { TabToCreate } from './TabToCreate';
 import { TabRepository } from './TabRepository';
 import { TabListRepository } from './TabListRepository';
@@ -43,19 +43,19 @@ export class TabListServiceImpl implements TabListService {
   public getAllTabLists = (): Task<ReadonlyArray<TabList>> =>
     pipe(
       sequenceT(task)(this.tabListRepository.getAll(Sort.by('createdAt').descending()), this.tabRepository.getAll()),
-      map(([storedTabLists, storedTabs]) => this.tabListNormalizer.denormalize(storedTabLists, storedTabs)),
+      map(([tabListEntities, tabEntities]) => this.tabListNormalizer.denormalize(tabListEntities, tabEntities)),
     );
 
   public addTabList = (listName: string, tabs: ReadonlyNonEmptyArray<TabToCreate>): Task<TabList> =>
     pipe(
       this.createTabList(listName),
       this.tabListRepository.save.bind(this.tabListRepository),
-      chain(storedTabList =>
+      chain(tabListEntity =>
         pipe(
           tabs,
-          mapAN(this.toStoredToCreate(storedTabList)),
+          mapAN(this.toTabEntityToCreate(tabListEntity)),
           this.tabRepository.saveAll.bind(this.tabRepository),
-          map(toTabList(storedTabList)),
+          map(toTabList(tabListEntity)),
         ),
       ),
       map(tabList => {
@@ -64,12 +64,12 @@ export class TabListServiceImpl implements TabListService {
       }),
     );
 
-  private toStoredToCreate = ({ id }: StoredTabList) => (tab: TabToCreate): StoredTabToCreate => ({
+  private toTabEntityToCreate = ({ id }: TabListEntity) => (tab: TabToCreate): TabEntityToCreate => ({
     ...tab,
     tabListId: id,
   });
 
-  private createTabList = (name: string): StoredTabListToCreate => ({
+  private createTabList = (name: string): TabListEntityToCreate => ({
     name,
     createdAt: this.datetimeService.getCurrent(),
   });
@@ -77,13 +77,13 @@ export class TabListServiceImpl implements TabListService {
   public deleteTabList = (tabList: TabList): Task<void> =>
     pipe(
       tabList.tabs,
-      mapAN(this.toStoredTab(tabList)),
+      mapAN(this.toTabEntity(tabList)),
       this.tabRepository.deleteAll.bind(this.tabRepository),
       chain(() => this.tabListRepository.delete(tabList)),
       map(() => this.tabListsUpdatingService.deleteTabList(tabList)),
     );
 
-  private toStoredTab = ({ id }: TabList) => (tab: Tab): StoredTab => ({
+  private toTabEntity = ({ id }: TabList) => (tab: Tab): TabEntity => ({
     ...tab,
     tabListId: id,
   });
@@ -91,7 +91,7 @@ export class TabListServiceImpl implements TabListService {
   public deleteTab = (tabList: TabList, tab: Tab): TaskOption<TabList> =>
     pipe(
       tab,
-      this.toStoredTab(tabList),
+      this.toTabEntity(tabList),
       this.tabRepository.delete.bind(this.tabRepository),
       map(() =>
         pipe(

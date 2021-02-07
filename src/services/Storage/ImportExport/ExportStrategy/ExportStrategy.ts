@@ -1,16 +1,16 @@
 import { Type } from 'io-ts';
-import { StoredTabList } from '../../TabList/StoredTabList';
-import { StoredTab } from '../../TabList/StoredTab';
-import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
-import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
+import { TabListEntity } from '../../TabList/TabListEntity';
+import { TabEntity } from '../../TabList/TabEntity';
+import { TabListEntityToCreate } from '../../TabList/TabListEntityToCreate';
+import { TabEntityToCreate } from '../../TabList/TabEntityToCreate';
 
 export interface ExportStrategy<A = unknown, O = A> {
   readonly exportedDataType: Type<A, O>;
-  serialize(storedTabLists: ReadonlyArray<StoredTabList>, storedTabs: ReadonlyArray<StoredTab>): A;
+  serialize(tabListEntities: ReadonlyArray<TabListEntity>, tabEntities: ReadonlyArray<TabEntity>): A;
   deserialize(
     serializedTabLists: A,
   ): [
-    ReadonlyArray<StoredTabListToCreate>,
-    (storedTabLists: ReadonlyArray<StoredTabList>) => ReadonlyArray<StoredTabToCreate>,
+    ReadonlyArray<TabListEntityToCreate>,
+    (tabListEntities: ReadonlyArray<TabListEntity>) => ReadonlyArray<TabEntityToCreate>,
   ];
 }

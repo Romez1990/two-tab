@@ -1,9 +1,9 @@
 import { ExportedTab } from './ExportedTab';
-import { StoredTab } from '../../TabList/StoredTab';
-import { StoredTabList } from '../../TabList/StoredTabList';
-import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
+import { TabEntity } from '../../TabList/TabEntity';
+import { TabListEntity } from '../../TabList/TabListEntity';
+import { TabEntityToCreate } from '../../TabList/TabEntityToCreate';
 
 export interface TabExportSerializer {
-  serialize(tab: StoredTab): ExportedTab;
-  deserialize(tabList: StoredTabList): (serializedTab: ExportedTab) => StoredTabToCreate;
+  serialize(tab: TabEntity): ExportedTab;
+  deserialize(tabList: TabListEntity): (serializedTab: ExportedTab) => TabEntityToCreate;
 }

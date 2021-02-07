@@ -1,7 +1,7 @@
-import { StoredTabList } from '../../TabList/StoredTabList';
-import { StoredTab } from '../../TabList/StoredTab';
-import { StoredTabListToCreate } from '../../TabList/StoredTabListToCreate';
-import { StoredTabToCreate } from '../../TabList/StoredTabToCreate';
+import { TabListEntity } from '../../TabList/TabListEntity';
+import { TabEntity } from '../../TabList/TabEntity';
+import { TabListEntityToCreate } from '../../TabList/TabListEntityToCreate';
+import { TabEntityToCreate } from '../../TabList/TabEntityToCreate';
 import { ExportStrategy } from '../ExportStrategy';
 import { AppData, AppDataOutput, AppDataT } from './AppData';
 import { TabListExportSerializer } from './TabListExportSerializer';
@@ -11,13 +11,13 @@ export class AppExportStrategy implements ExportStrategy<AppData, AppDataOutput>
 
   public readonly exportedDataType = AppDataT;
 
-  public serialize = (storedTabLists: ReadonlyArray<StoredTabList>, storedTabs: ReadonlyArray<StoredTab>): AppData =>
-    this.tabListExportSerializer.serialize(storedTabLists, storedTabs);
+  public serialize = (tabListEntities: ReadonlyArray<TabListEntity>, tabEntities: ReadonlyArray<TabEntity>): AppData =>
+    this.tabListExportSerializer.serialize(tabListEntities, tabEntities);
 
   public deserialize = (
     serializedTabLists: AppData,
   ): [
-    ReadonlyArray<StoredTabListToCreate>,
-    (storedTabLists: ReadonlyArray<StoredTabList>) => ReadonlyArray<StoredTabToCreate>,
+    ReadonlyArray<TabListEntityToCreate>,
+    (tabListEntities: ReadonlyArray<TabListEntity>) => ReadonlyArray<TabEntityToCreate>,
   ] => this.tabListExportSerializer.deserialize(serializedTabLists);
 }

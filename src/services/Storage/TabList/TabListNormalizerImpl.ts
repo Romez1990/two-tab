@@ -2,25 +2,25 @@ import { pipe } from 'fp-ts/function';
 import { filter, map as mapA } from 'fp-ts/ReadonlyArray';
 import { map as mapAN } from 'fp-ts/ReadonlyNonEmptyArray';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
-import { StoredTabList, toTabList } from './StoredTabList';
-import { StoredTab, toTab } from './StoredTab';
+import { TabListEntity, toTabList } from './TabListEntity';
+import { TabEntity, toTab } from './TabEntity';
 import { TabList } from './TabList';
 import { TabListNormalizer } from './TabListNormalizer';
 
 export class TabListNormalizerImpl implements TabListNormalizer {
   public denormalize = (
-    storedTabLists: ReadonlyArray<StoredTabList>,
-    storedTabs: ReadonlyArray<StoredTab>,
+    tabListEntities: ReadonlyArray<TabListEntity>,
+    tabEntities: ReadonlyArray<TabEntity>,
   ): ReadonlyArray<TabList> =>
     pipe(
-      storedTabLists,
-      mapA(storedTabList =>
+      tabListEntities,
+      mapA(tabListEntity =>
         pipe(
-          storedTabs,
-          filter(({ tabListId }) => tabListId === storedTabList.id),
+          tabEntities,
+          filter(({ tabListId }) => tabListId === tabListEntity.id),
           checkNonEmpty('tabs'),
           mapAN(toTab),
-          toTabList(storedTabList),
+          toTabList(tabListEntity),
         ),
       ),
     );

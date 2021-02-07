@@ -1,5 +1,5 @@
 import { Repository } from '../Storage';
-import { StoredTab } from './StoredTab';
-import { StoredTabToCreate } from './StoredTabToCreate';
+import { TabEntity } from './TabEntity';
+import { TabEntityToCreate } from './TabEntityToCreate';
 
-export type TabRepository = Repository<StoredTab, StoredTabToCreate>;
+export type TabRepository = Repository<TabEntity, TabEntityToCreate>;
