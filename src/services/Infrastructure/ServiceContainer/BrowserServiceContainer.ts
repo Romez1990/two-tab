@@ -1,6 +1,6 @@
 import { TabListSPageService, StubTabListSPageService } from '../../Components/App/TabLists';
-import { ImportExportPageService } from '../../Components/App/ImportExport';
-import { PopupService } from '../../Components/Popup';
+// import { ImportExportPageService } from '../../Components/App/ImportExport';
+// import { PopupService } from '../../Components/Popup';
 import { StorageService, FakeStorageService } from '../../Storage/Storage';
 import { FileReadingService, FileReadingServiceImpl } from '../../DOM/FileReading';
 import { DownloadService, DownloadServiceImpl } from '../../DOM/Download';
@@ -10,7 +10,7 @@ import { ErrorProcessingService, ErrorProcessingServiceImpl } from '../Error';
 import { LoggerService, FakeLoggerService } from '../Logger';
 import { Config, ConfigImpl } from '../Config';
 import { EnvService, EnvServiceImpl } from '../Env';
-import { ExtensionService } from '../../Browser/Extension';
+// import { ExtensionService } from '../../Browser/Extension';
 import {
   TypeCheckingService,
   TypeCheckingServiceImpl,
