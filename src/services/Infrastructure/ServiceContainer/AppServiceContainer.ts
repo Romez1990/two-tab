@@ -105,11 +105,11 @@ export class AppServiceContainer implements ServiceContainer {
       this.loggerService,
     );
 
-    this.fileReadingService = new FileReadingServiceImpl();
-
     this.keyboardService = new KeyboardServiceImpl(window);
 
     this.downloadService = new DownloadServiceImpl(document);
+
+    this.fileReadingService = new FileReadingServiceImpl();
 
     this.storageStateFactory = new StorageStateFactoryImpl();
     this.storageService = new StorageServiceImpl(this.storageStateFactory);
