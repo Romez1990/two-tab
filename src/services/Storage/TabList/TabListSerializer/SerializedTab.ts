@@ -1,4 +1,4 @@
-import { type, boolean, number, string, undefined, union, TypeOf } from 'io-ts';
+import { type, boolean, number, string, undefined, union } from 'io-ts';
 
 export const SerializedTabT = type({
   id: number,
@@ -7,5 +7,3 @@ export const SerializedTabT = type({
   favIconUrl: union([string, undefined]),
   pinned: boolean,
 });
-
-export type SerializedTab = TypeOf<typeof SerializedTabT>;
