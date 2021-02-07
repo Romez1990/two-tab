@@ -24,6 +24,7 @@ const dotenvFiles = [
   NODE_ENV !== 'test' && `${paths.dotenv}.local`,
   `${paths.dotenv}.${NODE_ENV}`,
   paths.dotenv,
+  `${paths.dotenv}.example`,
 ].filter(Boolean);
 
 // Load environment variables from .env* files. Suppress warnings using silent
@@ -92,6 +93,7 @@ function getClientEnvironment(publicUrl) {
         // It is defined here so it is available in the webpackHotDevClient.
         FAST_REFRESH: process.env.FAST_REFRESH !== 'false',
         EXTENSION_ENVIRONMENT: process.env.EXTENSION_ENVIRONMENT !== 'false',
+        BACKEND_URL: process.env.BACKEND_URL,
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin
