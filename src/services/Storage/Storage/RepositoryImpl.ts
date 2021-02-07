@@ -87,7 +87,10 @@ export class RepositoryImpl<T extends TToCreate & WithId, TToCreate> implements 
     pipe(
       entities,
       mapAN(this.idLens.get),
+      this.deleteAllById.bind(this),
       ids => () => this.table.bulkDelete(ids),
       //
     );
+
+  public deleteAllById = (ids: ReadonlyNonEmptyArray<number>): Task<void> => () => this.table.bulkDelete(ids);
 }

@@ -10,4 +10,5 @@ export interface Repository<T extends WithId & TToCreate, TToCreate> {
   getAllById(ids: ReadonlyNonEmptyArray<number>): Task<ReadonlyNonEmptyArray<T>>;
   delete(entity: T): Task<void>;
   deleteAll(entities: ReadonlyNonEmptyArray<T>): Task<void>;
+  deleteAllById(ids: ReadonlyNonEmptyArray<number>): Task<void>;
 }
