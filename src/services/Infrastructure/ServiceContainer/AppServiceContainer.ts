@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { TabListSPageService, TabListsPageServiceImpl } from '../../Components/App/TabLists';
 import { ImportExportPageService, ImportExportPageServiceImpl } from '../../Components/App/ImportExport';
 import { PopupService, PopupServiceImpl } from '../../Components/Popup';
@@ -36,6 +37,7 @@ import {
 import { FileReadingService, FileReadingServiceImpl } from '../../DOM/FileReading';
 import { DownloadService, DownloadServiceImpl } from '../../DOM/Download';
 import { KeyboardService, KeyboardServiceImpl } from '../../DOM/Keyboard';
+import { HttpService, HttpServiceImpl, RequestService, AxiosRequestService } from '../../Network/Http';
 import { ErrorReportingService, ErrorReportingServiceImpl } from '../ErrorReporting';
 import { ErrorProcessingService, ErrorProcessingServiceImpl } from '../Error';
 import {
@@ -104,6 +106,9 @@ export class AppServiceContainer implements ServiceContainer {
       this.errorProcessingService,
       this.loggerService,
     );
+
+    this.requestService = new AxiosRequestService(axios, this.errorProcessingService);
+    this.httpService = new HttpServiceImpl(this.requestService, this.typeCheckingService, this.config);
 
     this.keyboardService = new KeyboardServiceImpl(window);
 
@@ -181,6 +186,9 @@ export class AppServiceContainer implements ServiceContainer {
   public readonly downloadService: DownloadService;
 
   public readonly keyboardService: KeyboardService;
+
+  public readonly httpService: HttpService;
+  public readonly requestService: RequestService;
 
   public readonly errorProcessingService: ErrorProcessingService;
 
