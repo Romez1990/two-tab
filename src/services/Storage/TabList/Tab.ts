@@ -18,3 +18,5 @@ export const toTabEntity = ({ id }: TabListEntity) => (tab: Tab): TabEntity => (
   ...tab,
   tabListId: id,
 });
+
+export const fromTabEntity = ({ tabListId, ...tab }: TabEntity): Tab => tab;

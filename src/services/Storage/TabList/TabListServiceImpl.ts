@@ -10,12 +10,12 @@ import { DatetimeService } from '../../DataProcessing/Datetime';
 import { TabListsUpdatingService, TabListsUpdateHandlers } from './Updating';
 import { Sort } from '../Storage';
 import { checkNonEmpty } from '../../Utils/fp-ts/ReadonlyArray';
-import { TabList, tabsLens } from './TabList';
+import { TabList, tabsLens, fromTabListEntity } from './TabList';
 import { TabListService } from './TabListService';
 import { Tab, tabsAreEquals } from './Tab';
 import { TabEntity } from './TabEntity';
 import { TabEntityToCreate } from './TabEntityToCreate';
-import { TabListEntity, toTabList } from './TabListEntity';
+import { TabListEntity } from './TabListEntity';
 import { TabListEntityToCreate } from './TabListEntityToCreate';
 import { TabToCreate } from './TabToCreate';
 import { TabRepository } from './TabRepository';
@@ -55,7 +55,7 @@ export class TabListServiceImpl implements TabListService {
           tabs,
           mapAN(this.toTabEntityToCreate(tabListEntity)),
           this.tabRepository.saveAll.bind(this.tabRepository),
-          map(toTabList(tabListEntity)),
+          map(fromTabListEntity(tabListEntity)),
         ),
       ),
       map(tabList => {
