@@ -8,6 +8,11 @@ import { JsonSerializer } from '../../DataProcessing/Serializer';
 export class ErrorProcessingServiceImpl implements ErrorProcessingService {
   public constructor(private readonly jsonSerializer: JsonSerializer) {}
 
+  public refine(error: unknown): Error {
+    if (!(error instanceof Error)) throw error;
+    return error;
+  }
+
   public getHeader(error: Error): string {
     const name = this.getName(error);
     const { message } = error;
