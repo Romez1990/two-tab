@@ -46,7 +46,7 @@ export class PopupServiceImpl implements PopupService {
     pipe(
       tabs,
       mapAN(toTabToCreate),
-      tabsToCreate => this.tabListService.addTabList(listName, tabsToCreate),
+      tabsToCreate => this.tabListService.add(listName, tabsToCreate),
       chain(() => this.browserTabService.close(tabs)),
     );
 }

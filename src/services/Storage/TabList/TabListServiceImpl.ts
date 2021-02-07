@@ -40,13 +40,13 @@ export class TabListServiceImpl implements TabListService {
     this.tabListsUpdatingService.removeHandlers();
   }
 
-  public getAllTabLists = (): Task<ReadonlyArray<TabList>> =>
+  public getAll = (): Task<ReadonlyArray<TabList>> =>
     pipe(
       sequenceT(task)(this.tabListRepository.getAll(Sort.by('createdAt').descending()), this.tabRepository.getAll()),
       map(([tabListEntities, tabEntities]) => this.tabListNormalizer.denormalize(tabListEntities, tabEntities)),
     );
 
-  public addTabList = (listName: string, tabs: ReadonlyNonEmptyArray<TabToCreate>): Task<TabList> =>
+  public add = (listName: string, tabs: ReadonlyNonEmptyArray<TabToCreate>): Task<TabList> =>
     pipe(
       this.createTabList(listName),
       this.tabListRepository.save.bind(this.tabListRepository),
@@ -74,7 +74,7 @@ export class TabListServiceImpl implements TabListService {
     createdAt: this.datetimeService.getCurrent(),
   });
 
-  public deleteTabList = (tabList: TabList): Task<void> =>
+  public delete = (tabList: TabList): Task<void> =>
     pipe(
       tabList.tabs,
       mapAN(this.toTabEntity(tabList)),
