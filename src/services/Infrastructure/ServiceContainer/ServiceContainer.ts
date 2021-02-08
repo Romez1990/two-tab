@@ -10,6 +10,7 @@ import {
 } from '../../Storage/ImportExport';
 import {
   TabListService,
+  TabService,
   TabListRepository,
   TabRepository,
   TabListsUpdatingService,
@@ -48,6 +49,7 @@ export interface ServiceContainer {
   readonly tabExportSerializer?: TabExportSerializer;
 
   readonly tabListService?: TabListService;
+  readonly tabService?: TabService;
   readonly tabListRepository?: TabListRepository;
   readonly tabRepository?: TabRepository;
   readonly tabListNormalizer?: TabListNormalizer;

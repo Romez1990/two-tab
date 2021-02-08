@@ -17,6 +17,8 @@ import {
 import {
   TabListService,
   TabListServiceImpl,
+  TabService,
+  TabServiceImpl,
   TabListRepository,
   TabListRepositoryImpl,
   TabRepository,
@@ -124,9 +126,10 @@ export class AppServiceContainer implements ServiceContainer {
     this.tabListRepository = new TabListRepositoryImpl(this.storageService);
     this.tabListNormalizer = new TabListNormalizerImpl();
     this.tabRepository = new TabRepositoryImpl(this.storageService);
+    this.tabService = new TabServiceImpl(this.tabRepository);
     this.tabListService = new TabListServiceImpl(
       this.tabListRepository,
-      this.tabRepository,
+      this.tabService,
       this.tabListNormalizer,
       this.tabListsUpdatingService,
       this.datetimeService,
@@ -172,6 +175,7 @@ export class AppServiceContainer implements ServiceContainer {
   public readonly tabExportSerializer: TabExportSerializer;
 
   public readonly tabListService: TabListService;
+  public readonly tabService: TabService;
   public readonly tabListRepository: TabListRepository;
   public readonly tabRepository: TabRepository;
   public readonly tabListNormalizer: TabListNormalizer;
