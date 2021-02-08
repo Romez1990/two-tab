@@ -88,7 +88,6 @@ export class RepositoryImpl<T extends TToCreate & WithId, TToCreate> implements 
       entities,
       mapAN(this.idLens.get),
       this.deleteAllById.bind(this),
-      ids => () => this.table.bulkDelete(ids),
       //
     );
 
