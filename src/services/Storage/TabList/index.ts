@@ -2,6 +2,8 @@ export * from './Updating';
 export * from './TabListSerializer';
 export * from './TabListService';
 export * from './TabListServiceImpl';
+export * from './TabService';
+export * from './TabServiceImpl';
 export * from './TabListRepository';
 export * from './TabListRepositoryImpl';
 export * from './TabRepository';

@@ -1,4 +1,5 @@
 import { fromEquals } from 'fp-ts/Eq';
+import { Lens } from 'monocle-ts';
 import { TabListEntity } from './TabListEntity';
 import { TabEntity } from './TabEntity';
 
@@ -9,6 +10,8 @@ export interface Tab {
   favIconUrl: string | undefined;
   pinned: boolean;
 }
+
+export const idLens = Lens.fromProp<Tab>()('id');
 
 export const eqTab = fromEquals((x: Tab, y: Tab): boolean => x.id === y.id);
 
