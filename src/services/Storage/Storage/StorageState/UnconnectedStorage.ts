@@ -1,24 +1,31 @@
-import { Task } from 'fp-ts/Task';
-import { Table, IndexableType } from 'dexie';
+import Dexie, { Table, IndexableType } from 'dexie';
+import { constant, constVoid, pipe } from 'fp-ts/function';
+import { Task, map } from 'fp-ts/Task';
 import { StorageState } from './StorageState';
 import { Schema } from './Schema';
 
 export class UnconnectedStorage implements StorageState {
+  public constructor(private readonly dexie: Dexie) {}
+
   private readonly schemas = new Map<string, string>();
 
   public addTable(name: string, schema: string): void {
     this.schemas.set(name, schema);
   }
 
-  public get schema(): Schema {
-    return Object.fromEntries(this.schemas.entries());
-  }
+  public getTable = <T, TKey = IndexableType>(name: string): Task<Table<T, TKey>> =>
+    pipe(
+      this.connect(),
+      map(() => this.dexie.table(name)),
+    );
 
-  public connect(): Task<void> {
-    throw new Error('Not implemented');
-  }
+  private connect = (): Task<void> =>
+    pipe(
+      this.getSelectedSchema(),
+      selectedSchema => this.dexie.version(1).stores(selectedSchema),
+      constant(this.dexie.open.bind(this.dexie)),
+      map(constVoid),
+    );
 
-  public getTable<T, TKey = IndexableType>(): Table<T, TKey> {
-    throw new Error('Not implemented');
-  }
+  private getSelectedSchema = (): Schema => Object.fromEntries(this.schemas.entries());
 }

@@ -1,31 +1,14 @@
-import { map, Task } from 'fp-ts/Task';
 import Dexie, { IndexableType, Table } from 'dexie';
-import { pipe, constant, constVoid } from 'fp-ts/function';
+import { Task, of } from 'fp-ts/Task';
 import { StorageState } from './StorageState';
 import { Schema } from './Schema';
 
-const databaseName = 'tabs';
-
-export class ConnectedStorage extends Dexie implements StorageState {
-  public constructor(private readonly _schema: Schema) {
-    super(databaseName);
-  }
+export class ConnectedStorage implements StorageState {
+  public constructor(private readonly dexie: Dexie) {}
 
   public addTable(): void {
     throw new Error('Not implemented');
   }
 
-  public get schema(): Schema {
-    throw new Error('Not implemented');
-  }
-
-  public connect = (): Task<void> =>
-    pipe(
-      this.version(1).stores(this._schema),
-      constant(this.open.bind(this)),
-      map(constVoid),
-      //
-    );
-
-  public getTable = <T, TKey = IndexableType>(name: string): Table<T, TKey> => this.table(name);
+  public getTable = <T, TKey = IndexableType>(name: string): Task<Table<T, TKey>> => of(this.dexie.table(name));
 }
