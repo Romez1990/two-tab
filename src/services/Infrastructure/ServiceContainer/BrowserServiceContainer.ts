@@ -1,7 +1,6 @@
 import { TabListSPageService, StubTabListSPageService } from '../../Components/App/TabLists';
 // import { ImportExportPageService } from '../../Components/App/ImportExport';
 // import { PopupService } from '../../Components/Popup';
-import { StorageService, FakeStorageService } from '../../Storage/Storage';
 import { FileReadingService, FileReadingServiceImpl } from '../../DOM/FileReading';
 import { DownloadService, DownloadServiceImpl } from '../../DOM/Download';
 import { KeyboardService, KeyboardServiceImpl } from '../../DOM/Keyboard';
@@ -58,8 +57,6 @@ export class BrowserServiceContainer implements ServiceContainer {
 
     this.downloadService = new DownloadServiceImpl(document);
 
-    this.storageService = new FakeStorageService();
-
     // this.popupService = new PopupServiceImpl();
     //
     // this.importExportPageService = new ImportExportPageServiceImpl();
@@ -71,8 +68,6 @@ export class BrowserServiceContainer implements ServiceContainer {
   // public readonly importExportPageService: ImportExportPageService;
 
   // public readonly popupService: PopupService;
-
-  public readonly storageService: StorageService;
 
   public readonly fileReadingService: FileReadingService;
 
