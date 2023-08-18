@@ -1,0 +1,6 @@
+{
+  "name": "Two Tab",
+  "version": "1.0.0",
+  "description": "Tab grouper with ability to sync tabs across devices",
+  "manifest_version": 3
+}
