@@ -189,7 +189,9 @@ module.exports = webpackEnv => {
       : isEnvDevelopment && 'cheap-module-source-map',
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
-    entry: paths.appIndexJs,
+    entry: {
+      main: paths.appIndexJs,
+    },
     output: {
       // The build folder.
       path: paths.appBuild,
@@ -525,7 +527,8 @@ module.exports = webpackEnv => {
     plugins: [
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin({
-        inject: true,
+        filename: 'index.html',
+        chunks: ['main'],
         template: paths.appHtml,
         ...(isEnvProduction
           ? {
