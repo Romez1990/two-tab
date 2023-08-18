@@ -6,7 +6,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx --fix .",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -41,7 +42,6 @@
     "file-loader": "^6.2.0",
     "fs-extra": "^10.0.0",
     "html-webpack-plugin": "^5.5.0",
-    "husky": "^8.0.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.4.3",
     "jest-resolve": "^27.4.2",
@@ -74,5 +74,8 @@
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
     "workbox-webpack-plugin": "^6.4.1"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3"
   }
 }
