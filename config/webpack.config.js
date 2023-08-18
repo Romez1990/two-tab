@@ -191,6 +191,7 @@ module.exports = webpackEnv => {
     // This means they will be the "root" imports that are included in JS bundle.
     entry: {
       main: paths.appIndexJs,
+      serviceWorker: paths.appServiceWorkerJs,
     },
     output: {
       // The build folder.
