@@ -190,7 +190,7 @@ module.exports = webpackEnv => {
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     entry: {
-      main: paths.appIndexJs,
+      main: paths.appMainJs,
       serviceWorker: paths.appServiceWorkerJs,
     },
     output: {
