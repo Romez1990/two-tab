@@ -176,6 +176,23 @@ module.exports = webpackEnv => {
     return loaders;
   };
 
+  const htmlWebpackPluginOptions = isEnvProduction
+    ? {
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true,
+          removeEmptyAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          keepClosingSlash: true,
+          minifyJS: true,
+          minifyCSS: true,
+          minifyURLs: true,
+        },
+      }
+    : undefined;
+
   return {
     target: ['browserslist'],
     // Webpack noise constrained to errors and warnings
@@ -535,22 +552,7 @@ module.exports = webpackEnv => {
         filename: 'index.html',
         chunks: ['main'],
         template: paths.appHtml,
-        ...(isEnvProduction
-          ? {
-              minify: {
-                removeComments: true,
-                collapseWhitespace: true,
-                removeRedundantAttributes: true,
-                useShortDoctype: true,
-                removeEmptyAttributes: true,
-                removeStyleLinkTypeAttributes: true,
-                keepClosingSlash: true,
-                minifyJS: true,
-                minifyCSS: true,
-                minifyURLs: true,
-              },
-            }
-          : undefined),
+        ...htmlWebpackPluginOptions,
       }),
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
