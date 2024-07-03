@@ -210,6 +210,7 @@ module.exports = webpackEnv => {
     entry: {
       main: paths.appMainJs,
       serviceWorker: paths.appServiceWorkerJs,
+      popup: paths.appPopupJs,
     },
     output: {
       // The build folder.
@@ -551,6 +552,12 @@ module.exports = webpackEnv => {
       new HtmlWebpackPlugin({
         filename: 'index.html',
         chunks: ['main'],
+        template: paths.appHtml,
+        ...htmlWebpackPluginOptions,
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'popup.html',
+        chunks: ['popup'],
         template: paths.appHtml,
         ...htmlWebpackPluginOptions,
       }),
