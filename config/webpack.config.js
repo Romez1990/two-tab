@@ -82,6 +82,7 @@ const hasJsxRuntime = (() => {
 module.exports = webpackEnv => {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
+  const isRunningDevServer = process.env.USE_DEV_SERVER === 'true';
 
   // Variable used for enabling profiling in Production
   // passed into alias object. Uses a flag if passed into the build command
@@ -398,9 +399,12 @@ module.exports = webpackEnv => {
                   ],
                 ],
 
-                plugins: [isEnvDevelopment && shouldUseReactRefresh && require.resolve('react-refresh/babel')].filter(
-                  Boolean,
-                ),
+                plugins: [
+                  isEnvDevelopment &&
+                    isRunningDevServer &&
+                    shouldUseReactRefresh &&
+                    require.resolve('react-refresh/babel'),
+                ].filter(Boolean),
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
                 // directory for faster rebuilds.
@@ -570,6 +574,7 @@ module.exports = webpackEnv => {
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh
       isEnvDevelopment &&
+        isRunningDevServer &&
         shouldUseReactRefresh &&
         new ReactRefreshWebpackPlugin({
           overlay: false,
