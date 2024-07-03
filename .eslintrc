@@ -101,6 +101,14 @@
       "rules": {
         "no-console": "off"
       }
+    },
+    {
+      "files": [
+        "*.test.tsx"
+      ],
+      "rules": {
+        "import/no-extraneous-dependencies": "off"
+      }
     }
   ]
 }
