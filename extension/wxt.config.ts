@@ -7,6 +7,14 @@ const MANIFEST_KEY =
 
 export default defineConfig({
   srcDir: 'src',
+  // npm run dev: свой постоянный профиль Chrome в extension/.chrome-profile, окна и данные расширения сохраняются между запусками.
+  webExt: {
+    chromiumArgs: ['--user-data-dir=.chrome-profile'],
+  },
+  // Vite 8 по умолчанию слушает localhost только на IPv6 (::1), а Chrome из расширения ходит на 127.0.0.1
+  dev: {
+    server: { host: '127.0.0.1' },
+  },
   modules: ['@wxt-dev/module-react'],
   manifest: {
     name: 'Tabsurd',
