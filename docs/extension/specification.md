@@ -1,7 +1,7 @@
 # Tabsurd: расширение браузера
 
 Статус: набросок требований, 2026-10-11.
-Связанные документы: `docs/specification.md` (идея, части и режимы, принятые решения), `video-analyzer/docs/local_service/local_service.md` (локальный сервис video-analyzer), `video-analyzer/docs/watch_stats.md` (общая логика учёта просмотров и оценки), `video-analyzer/docs/Prime Time/vlc_tracking.md` (учёт просмотров в VLC), `video-analyzer/docs/web_links.md` (ссылки `.url` и поиск папки модели), `video-analyzer/docs/specification.md`.
+Связанные документы: `docs/specification.md` (идея, части и режимы, принятые решения), `docs/extension/technologies.md` (технологии расширения), `video-analyzer/docs/local_service/local_service.md` (локальный сервис video-analyzer), `video-analyzer/docs/watch_stats.md` (общая логика учёта просмотров и оценки), `video-analyzer/docs/Prime Time/vlc_tracking.md` (учёт просмотров в VLC), `video-analyzer/docs/web_links.md` (ссылки `.url` и поиск папки модели), `video-analyzer/docs/specification.md`.
 
 ---
 
