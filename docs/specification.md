@@ -1,7 +1,7 @@
 # Tabsurd
 
 Статус: набросок требований, 2026-10-11.
-Связанные документы: `docs/extension/specification.md` (расширение), `docs/extension/technologies.md` (технологии расширения), `video-analyzer/docs/local_service/local_service.md` (локальный сервис video-analyzer), `video-analyzer/docs/watch_stats.md` (общая логика учёта просмотров и оценки), `video-analyzer/docs/Prime Time/vlc_tracking.md` (учёт просмотров в VLC), `video-analyzer/docs/web_links.md` (ссылки `.url` и поиск папки модели), `video-analyzer/docs/specification.md`.
+Связанные документы: `docs/extension/specification.md` (расширение), `docs/extension/technologies.md` (технологии расширения), `docs/sync_server/specification.md` (сервер синхронизации), `docs/sync_server/technologies.md` (технологии сервера), `video-analyzer/docs/local_service/local_service.md` (локальный сервис video-analyzer), `video-analyzer/docs/watch_stats.md` (общая логика учёта просмотров и оценки), `video-analyzer/docs/Prime Time/vlc_tracking.md` (учёт просмотров в VLC), `video-analyzer/docs/web_links.md` (ссылки `.url` и поиск папки модели), `video-analyzer/docs/specification.md`.
 
 Код расширения и сервера синхронизации будет в отдельном репозитории `tabsurd`. Документы пока лежат здесь и переедут туда, когда репозиторий появится.
 
@@ -76,7 +76,28 @@ Tabsurd решает это так, чтобы **закрыть вкладку �
 
 ---
 
-## 4. Изменения спецификации
+## 4. Репозиторий
+
+```
+extension/                 расширение (docs/extension/technologies.md)
+  api/local-service.openapi.yaml   копия договора из video-analyzer
+sync-server/
+  openapi.yaml             договор сервера синхронизации, строится из кода
+  src/
+    main.ts
+    auth/                  вход через Google, список разрешённых
+    sync/                  push, changes
+    devices/
+    db/                    сущности MikroORM, миграции
+  deno.json
+sync-core/                 zod-схемы записей, функция слияния — общие для расширения и сервера
+deploy/                    развёртывание — позже
+docs/                      сюда переедут docs/Tabsurd/
+```
+
+---
+
+## 5. Изменения спецификации
 
 Утверждены 2026-10-11 и внесены в `video-analyzer/docs/specification.md`: исключение из NFR-1 (скачивание yt-dlp по действию пользователя, с куками из расширения), UI-3 и раздел 7 (интерфейс — страницы расширения, локальный сервис отдаёт только данные), исключение из NFR-9 (папка скачивания по выбору пользователя), R-6 (скачивание место заранее не проверяет), новые документы в разделе 1.1, код расширения — в отдельном репозитории `tabsurd`.
 
