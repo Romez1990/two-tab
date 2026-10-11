@@ -1,0 +1,15 @@
+{
+  "name": "tabsurd-extension",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "compile": "tsc --noEmit",
+    "lint:fsd": "steiger ./src",
+    "test": "vitest run",
+    "postinstall": "wxt prepare",
+    "check": "pnpm compile && pnpm lint:fsd && pnpm test"
+  }
+}
