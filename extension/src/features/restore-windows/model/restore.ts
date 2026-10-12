@@ -110,7 +110,17 @@ export async function restoreGroup(group: SnapshotWindow): Promise<void> {
   await restoreTabs({ ...group, uid: uid ?? newWindowUid() }, group.tabs);
 }
 
-/** «Вернуть» сохранённое: окно или группа открываются как были, запись убирается из «Сохранённых». */
+/** «Открыть» сохранённое: вкладки открываются в текущем окне в фоне, без группы; запись остаётся в «Сохранённых». */
+export async function openSaved(item: SavedItem): Promise<void> {
+  const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
+  if (target?.id === undefined) {
+    await browser.windows.create({ url: item.window.tabs.map((t) => t.url) });
+    return;
+  }
+  for (const t of item.window.tabs) await browser.tabs.create({ windowId: target.id, url: t.url, active: false });
+}
+
+/** «Вернуть» сохранённое (из уведомления автозакрытия): окно или группа открываются как были, запись убирается из «Сохранённых». */
 export async function returnSaved(item: SavedItem): Promise<void> {
   if (item.kind === 'window') await restoreWindows([item.window]);
   else await restoreGroup(item.window);

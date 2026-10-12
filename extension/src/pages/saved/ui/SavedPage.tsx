@@ -5,7 +5,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
 import SearchIcon from '@mui/icons-material/Search';
-import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import WebAssetIcon from '@mui/icons-material/WebAsset';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -44,7 +44,7 @@ import {
   toExport,
   type SavedItem,
 } from '@/entities/saved';
-import { returnSaved } from '@/features/restore-windows';
+import { openSaved } from '@/features/restore-windows';
 import { useSiteIcons } from '@/features/fetch-favicons';
 import { needsTitle, TitleFetcher } from '@/features/fetch-titles';
 import { useSiteAccess } from '@/shared/browser';
@@ -201,7 +201,7 @@ export function SavedPage() {
               item={item}
               opened={item.id === opened?.id}
               highlightUrl={item.id === opened?.id ? opened.tabUrl : undefined}
-              onReturn={() => run(() => returnSaved(item), 'Открыто.')}
+              onOpen={() => run(() => openSaved(item), 'Открыто.')}
               onRemove={() => setToRemove(item)}
               onEdit={(next) => void edit(item, next)}
             />
@@ -262,14 +262,14 @@ function SavedAccordion({
   item,
   opened,
   highlightUrl,
-  onReturn,
+  onOpen,
   onRemove,
   onEdit,
 }: {
   item: SavedItem;
   opened: boolean;
   highlightUrl?: string;
-  onReturn: () => void;
+  onOpen: () => void;
   onRemove: () => void;
   onEdit: (next: SavedItem | undefined) => void;
 }) {
@@ -296,6 +296,20 @@ function SavedAccordion({
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', minWidth: 0, width: '100%' }}>
+          {/* Открыть можно, не разворачивая запись: нажатие не доходит до заголовка аккордеона. */}
+          <Tooltip title="Открыть">
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen();
+              }}
+              onFocus={(e) => e.stopPropagation()}
+            >
+              <OpenInNewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           {item.kind === 'window' ? (
             <WebAssetIcon color="action" />
           ) : (
@@ -315,9 +329,6 @@ function SavedAccordion({
       </AccordionSummary>
       <AccordionDetails>
         <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-          <Button variant="contained" size="small" startIcon={<UnarchiveOutlinedIcon />} onClick={onReturn}>
-            Вернуть
-          </Button>
           <Button size="small" color="error" startIcon={<DeleteOutlineIcon />} onClick={onRemove}>
             Убрать из сохранённых
           </Button>
