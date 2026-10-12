@@ -4,6 +4,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -30,18 +31,32 @@ export function WindowsPage() {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Новый порядок (номера окон), пока его не применили. Закрытые тем временем окна выпадают, новые — в конце.
+  const [draft, setDraft] = useState<number[] | null>(null);
+  const shown = draft
+    ? [
+        ...draft.flatMap((id) => windows.filter((w) => w.id === id)),
+        ...windows.filter((w) => !draft.includes(w.id)),
+      ]
+    : windows;
+  const changed = draft !== null && shown.some((w, i) => w.id !== windows[i]?.id);
 
-  async function drop(to: number) {
-    if (dragIndex === null || dragIndex === to) return;
-    const next = [...windows];
-    const [moved] = next.splice(dragIndex, 1);
-    if (!moved) return;
-    next.splice(to, 0, moved);
+  function drop(to: number) {
     setDragIndex(null);
+    if (dragIndex === null || dragIndex === to) return;
+    const next = shown.map((w) => w.id);
+    const [moved] = next.splice(dragIndex, 1);
+    if (moved === undefined) return;
+    next.splice(to, 0, moved);
+    setDraft(next);
+  }
+
+  async function apply() {
     setBusy(true);
     setError(null);
     try {
-      await reorderWindows(windows, next);
+      await reorderWindows(windows, shown);
+      setDraft(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -53,13 +68,13 @@ export function WindowsPage() {
   return (
     <Stack spacing={2}>
       <Typography color="text.secondary">
-        Порядок — как в списке окон на панели задач Windows. Перетащите окно, чтобы поменять порядок: окна ниже
-        пересоздадутся.
+        Порядок — как в списке окон на панели задач Windows. Перетащите окна в нужный порядок и нажмите «Применить»:
+        окна, порядок которых изменился, пересоздадутся.
       </Typography>
       {busy && <LinearProgress />}
       {error && <Alert severity="error">{error}</Alert>}
       <Stack spacing={1}>
-        {windows.map((w, i) => (
+        {shown.map((w, i) => (
           <Box
             key={w.id}
             draggable={!busy}
@@ -72,6 +87,23 @@ export function WindowsPage() {
           </Box>
         ))}
       </Stack>
+      {changed && (
+        // Панель поверх страницы внизу: окна не трогаются, пока не нажато «Применить».
+        <Paper
+          elevation={6}
+          sx={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 'snackbar', px: 2, py: 1 }}
+        >
+          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+            <Typography>Порядок окон изменён</Typography>
+            <Button disabled={busy} onClick={() => setDraft(null)}>
+              Отменить
+            </Button>
+            <Button variant="contained" disabled={busy} onClick={() => void apply()}>
+              Применить
+            </Button>
+          </Stack>
+        </Paper>
+      )}
     </Stack>
   );
 }
