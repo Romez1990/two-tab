@@ -8,6 +8,9 @@ import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
+import { findSavedByUrl, SavedMatches, type SavedMatch } from '@/entities/saved';
+import { openSavedItem } from '@/features/saved-banner';
 import { useWindows, WindowRow } from '@/entities/window';
 import { SaveCloseButton } from '@/features/save-close';
 import { browser } from '@/shared/browser';
@@ -19,6 +22,10 @@ function openSection(section: string) {
 
 export function PopupPage() {
   const { windows, reload } = useWindows();
+  const [saved, setSaved] = useState<SavedMatch[]>([]);
+  useEffect(() => {
+    void browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => (tab?.url ? findSavedByUrl(tab.url) : [])).then(setSaved);
+  }, []);
 
   return (
     <Box sx={{ width: 420, maxHeight: 580, display: 'flex', flexDirection: 'column' }}>
@@ -42,6 +49,11 @@ export function PopupPage() {
           </IconButton>
         </Tooltip>
       </Stack>
+      {saved.length > 0 && (
+        <Box sx={{ px: 2, pt: 1.5 }}>
+          <SavedMatches matches={saved} onOpen={(id) => void openSavedItem(id).then(() => window.close())} />
+        </Box>
+      )}
       <Typography variant="overline" sx={{ px: 2, pt: 1, color: 'text.secondary' }}>
         Окна: {windows.length}
       </Typography>

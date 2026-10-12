@@ -81,6 +81,7 @@ export function SavedPage() {
   const { icons, missing: iconsMissing } = useSiteIcons(allUrls, access);
   const fileInput = useRef<HTMLInputElement>(null);
 
+  const openId = useOpenedItemId();
   const reload = useCallback(() => void listSaved().then(setItems), []);
   useEffect(reload, [reload]);
   const shown = useMemo(() => items.filter((i) => matchesQuery(i, query)), [items, query]);
@@ -197,6 +198,7 @@ export function SavedPage() {
             <SavedAccordion
               key={item.id}
               item={item}
+              opened={item.id === openId}
               onReturn={() => run(() => returnSaved(item), 'Открыто.')}
               onRemove={() => setToRemove(item)}
               onEdit={(next) => void edit(item, next)}
@@ -235,13 +237,30 @@ export function SavedPage() {
   );
 }
 
+/** Запись, которую нужно раскрыть: `#saved/<id>` — переход из плашки «Уже сохранено». */
+function useOpenedItemId(): string | undefined {
+  const read = () => {
+    const [section, id] = location.hash.slice(1).split('/');
+    return section === 'saved' && id ? decodeURIComponent(id) : undefined;
+  };
+  const [id, setId] = useState(read);
+  useEffect(() => {
+    const onHash = () => setId(read());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  return id;
+}
+
 function SavedAccordion({
   item,
+  opened,
   onReturn,
   onRemove,
   onEdit,
 }: {
   item: SavedItem;
+  opened: boolean;
   onReturn: () => void;
   onRemove: () => void;
   onEdit: (next: SavedItem | undefined) => void;
@@ -249,8 +268,23 @@ function SavedAccordion({
   const group = item.kind === 'group' ? item.window.groups[0] : undefined;
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState(opened);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!opened) return;
+    setExpanded(true);
+    ref.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, [opened]);
   return (
-    <Accordion variant="outlined" disableGutters slotProps={{ transition: { unmountOnExit: true } }}>
+    <Accordion
+      ref={ref}
+      variant="outlined"
+      disableGutters
+      expanded={expanded}
+      onChange={(_, open) => setExpanded(open)}
+      sx={opened ? { borderColor: 'primary.main' } : undefined}
+      slotProps={{ transition: { unmountOnExit: true } }}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', minWidth: 0, width: '100%' }}>
           {item.kind === 'window' ? (

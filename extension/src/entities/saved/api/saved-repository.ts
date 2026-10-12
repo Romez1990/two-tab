@@ -1,4 +1,6 @@
 import { db } from '@/shared/db';
+import { browser } from '@/shared/browser';
+import { findMatches, type SavedMatch } from '../model/match-url';
 import type { SavedItem } from '../model/types';
 
 export async function addSaved(item: SavedItem): Promise<void> {
@@ -33,4 +35,14 @@ export async function importSaved(items: readonly SavedItem[]): Promise<{ added:
     await db.saved.bulkAdd(fresh.map((i) => ({ ...i })));
     return { added: fresh.length, skipped: items.length - fresh.length };
   });
+}
+
+/** Сохранённые окна и группы, где есть вкладка с этим адресом. */
+export async function findSavedByUrl(url: string): Promise<SavedMatch[]> {
+  return findMatches(await listSaved(), url);
+}
+
+/** Адрес страницы «Сохранённые» с раскрытой записью `id`. */
+export function savedItemPageUrl(id: string): string {
+  return `${browser.runtime.getURL('/app.html')}#saved/${encodeURIComponent(id)}`;
 }

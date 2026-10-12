@@ -1,5 +1,6 @@
 import { getSaved } from '@/entities/saved';
 import { AUTO_CLOSE_NOTIFICATION_PREFIX, runAutoClose } from '@/features/auto-close';
+import { showBannerIfSaved } from '@/features/saved-banner';
 import { restoreTabs, restoreWindows, returnSaved } from '@/features/restore-windows';
 import { saveAndCloseGroup, saveAndCloseWindow } from '@/features/save-close';
 import {
@@ -27,6 +28,11 @@ export function startBackground(): void {
   browser.tabs.onDetached.addListener(changed);
   browser.tabs.onActivated.addListener(changed);
   browser.tabs.onReplaced.addListener(changed);
+  browser.tabs.onUpdated.addListener((id, info, tab) => {
+    // Сразу при начале загрузки; при полной загрузке — ещё раз, если в начале во вкладке был старый документ.
+    if (info.status === 'loading' || info.url) void showBannerIfSaved(id, tab.url, 'start');
+    if (info.status === 'complete') void showBannerIfSaved(id, tab.url, 'complete');
+  });
   browser.tabs.onRemoved.addListener((id, info) => void onTabRemoved(id, info));
   browser.windows.onCreated.addListener(changed);
   browser.windows.onRemoved.addListener(changed);
