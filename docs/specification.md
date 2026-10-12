@@ -96,8 +96,10 @@
 
 ```
 extension/                 расширение (docs/extension/technologies.md)
+  .run/                    конфигурации запуска IDE для расширения
   api/local-service.openapi.yaml   копия договора из video-analyzer
 sync-server/
+  .run/                    конфигурации запуска IDE для сервера
   openapi.yaml             договор сервера синхронизации, строится из кода
   src/
     main.ts
