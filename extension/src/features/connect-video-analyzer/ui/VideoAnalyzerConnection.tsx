@@ -15,8 +15,11 @@ function sinceText(since: string): string {
   return new Date(since).toLocaleDateString('ru-RU');
 }
 
-/** Блок «video-analyzer» для «Первого запуска» и настроек (docs/extension/specification.md, раздел 1.2). */
-export function VideoAnalyzerConnection() {
+/**
+ * Блок «video-analyzer» для «Первого запуска» и настроек (docs/extension/specification.md, раздел 1.2).
+ * `disabled` — подключаться пока нельзя (на «Первом запуске» не заполнено название профиля).
+ */
+export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boolean }) {
   const settings = useSettings();
   const [port, setPort] = useState('');
   const [status, setStatus] = useState<ConnectionStatus>();
@@ -101,7 +104,7 @@ export function VideoAnalyzerConnection() {
             Отключиться от video-analyzer
           </Button>
         ) : (
-          <Button variant="contained" disabled={busy || !portValid} onClick={() => void connect()}>
+          <Button variant="contained" disabled={disabled || busy || !portValid} onClick={() => void connect()}>
             Подключить
           </Button>
         )}

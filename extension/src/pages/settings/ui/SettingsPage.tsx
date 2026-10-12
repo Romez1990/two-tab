@@ -54,6 +54,8 @@ export function SettingsPage() {
           placeholder="Основной"
           defaultValue={settings.profileName}
           onBlur={(e) => void updateSettings({ profileName: e.target.value.trim() })}
+          error={!settings.profileName}
+          helperText={settings.profileName ? undefined : 'Заполните название: его видно в video-analyzer'}
           sx={{ width: 320 }}
         />
       </Section>

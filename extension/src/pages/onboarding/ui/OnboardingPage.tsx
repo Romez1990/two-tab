@@ -1,18 +1,24 @@
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { VideoAnalyzerConnection } from '@/features/connect-video-analyzer';
 import { updateSettings, useSettings } from '@/shared/config';
 
 /** Первый запуск (docs/extension/specification.md, раздел 1.1). Синхронизация появится на этапе 6. */
 export function OnboardingPage() {
   const settings = useSettings();
-  if (!settings) return null;
+  const [name, setName] = useState<string>();
+  useEffect(() => {
+    if (settings && name === undefined) setName(settings.profileName);
+  }, [settings, name]);
+  if (!settings || name === undefined) return null;
+  const named = name.trim() !== '';
 
   return (
     <Container maxWidth="sm" sx={{ py: 8 }}>
@@ -30,11 +36,16 @@ export function OnboardingPage() {
           <Stack spacing={4}>
             <Step title="1. Как назвать этот профиль?">
               <TextField
-                key={settings.profileName}
                 label="Название профиля"
                 placeholder="Основной"
-                defaultValue={settings.profileName}
-                onBlur={(e) => void updateSettings({ profileName: e.target.value.trim() })}
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  void updateSettings({ profileName: e.target.value.trim() });
+                }}
+                required
+                error={!named}
+                helperText={named ? 'Его видно в video-analyzer.' : 'Обязательно: его видно в video-analyzer.'}
                 fullWidth
               />
             </Step>
@@ -42,9 +53,12 @@ export function OnboardingPage() {
               title="2. Подключить к video-analyzer?"
               hint="Если на этом компьютере стоит video-analyzer: время просмотра, оценки, скачивание. Подключён может быть только один профиль Chrome."
             >
-              <VideoAnalyzerConnection />
+              <VideoAnalyzerConnection disabled={!named} />
             </Step>
             <Step title="3. Синхронизация" hint="Синхронизация списка через сервер появится позже, на этапе 6." />
+            <Button variant="contained" disabled={!named} onClick={() => window.close()} sx={{ alignSelf: 'flex-end' }}>
+              Готово
+            </Button>
           </Stack>
         </CardContent>
       </Card>
