@@ -96,7 +96,8 @@ async function applyGroups(
     const groupId = await browser.tabs.group({ tabIds: [firstId, ...otherIds], createProperties: { windowId } });
     await browser.tabGroups.update(groupId, {
       title: group.title,
-      color: group.color as Browser.tabGroups.Color,
+      // У импортированных групп цвета нет — Chrome выберет сам.
+      ...(group.color ? { color: group.color as Browser.tabGroups.Color } : {}),
       collapsed: group.collapsed,
     });
   }

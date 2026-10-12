@@ -167,11 +167,12 @@ function SavedAccordion({ item, onReturn, onRemove }: { item: SavedItem; onRetur
           {item.kind === 'window' ? (
             <WebAssetIcon color="action" />
           ) : (
-            <FolderOutlinedIcon sx={{ color: group ? groupColor(group.color) : undefined }} />
+            <FolderOutlinedIcon sx={{ color: group?.color ? groupColor(group.color) : 'action.active' }} />
           )}
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography noWrap sx={{ fontWeight: 500 }}>
-              {item.title}
+            {/* Без названия — показывается первая вкладка курсивом. */}
+            <Typography noWrap sx={{ fontWeight: 500, fontStyle: item.title ? undefined : 'italic' }}>
+              {item.title || item.window.tabs[0]?.title || item.window.tabs[0]?.url}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {item.kind === 'window' ? 'Окно' : 'Группа'} · {item.window.tabs.length} вкладок · {formatDateTime(item.savedAt)}

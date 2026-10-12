@@ -1,3 +1,4 @@
+import { parseBetterOneTab, parseSupaTabs } from './import-other';
 import type { SavedItem } from './types';
 
 /** Файл экспорта «Сохранённых» (docs/extension/specification.md, раздел 2.1). */
@@ -21,15 +22,22 @@ export function exportFileName(now = Date.now()): string {
   return `tabsurd-saved-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.json`;
 }
 
-/** Разбирает файл экспорта. Чужой формат или испорченная запись — ошибка, и ничего не импортируется. */
+/**
+ * Разбирает файл импорта: экспорт Tabsurd, BetterOneTab или SupaTabs — формат определяется сам.
+ * Чужой формат или испорченная запись — ошибка, и ничего не импортируется.
+ */
 export function parseExport(text: string): SavedItem[] {
   let data: unknown;
   try {
-    data = JSON.parse(text);
+    data = JSON.parse(text.replace(/^﻿/, ''));
   } catch {
     throw new Error('Это не файл JSON');
   }
-  if (!isObject(data) || data.format !== FORMAT) throw new Error('Это не файл экспорта Tabsurd');
+  if (!isObject(data) || data.format !== FORMAT) {
+    const items = parseBetterOneTab(data) ?? parseSupaTabs(data);
+    if (items) return items;
+    throw new Error('Это не файл экспорта Tabsurd, BetterOneTab или SupaTabs');
+  }
   if (data.version !== VERSION) throw new Error(`Неизвестная версия формата: ${String(data.version)}`);
   if (!Array.isArray(data.items)) throw new Error('В файле нет списка записей');
   return data.items.map((item, i) => {
