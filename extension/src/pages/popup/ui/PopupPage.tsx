@@ -23,8 +23,15 @@ function openSection(section: string) {
 export function PopupPage() {
   const { windows, reload } = useWindows();
   const [saved, setSaved] = useState<SavedMatch[]>([]);
+  const [tabUrl, setTabUrl] = useState('');
   useEffect(() => {
-    void browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => (tab?.url ? findSavedByUrl(tab.url) : [])).then(setSaved);
+    void browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then(([tab]) => {
+        setTabUrl(tab?.url ?? '');
+        return tab?.url ? findSavedByUrl(tab.url) : [];
+      })
+      .then(setSaved);
   }, []);
 
   return (
@@ -51,7 +58,7 @@ export function PopupPage() {
       </Stack>
       {saved.length > 0 && (
         <Box sx={{ px: 2, pt: 1.5 }}>
-          <SavedMatches matches={saved} onOpen={(id) => void openSavedItem(id).then(() => window.close())} />
+          <SavedMatches matches={saved} onOpen={(id) => void openSavedItem(id, tabUrl).then(() => window.close())} />
         </Box>
       )}
       <Typography variant="overline" sx={{ px: 2, pt: 1, color: 'text.secondary' }}>

@@ -24,7 +24,7 @@ export function mountSavedBanner(): void {
   const frame = document.createElement('iframe');
   frame.id = FRAME_ID;
   frame.dataset.url = location.href;
-  frame.src = `${browser.runtime.getURL(BANNER_PAGE as '/')}?matches=${encodeURIComponent(JSON.stringify(matches))}`;
+  frame.src = `${browser.runtime.getURL(BANNER_PAGE as '/')}?matches=${encodeURIComponent(JSON.stringify(matches))}&url=${encodeURIComponent(location.href)}`;
   frame.style.cssText =
     'position:fixed;top:16px;right:16px;width:400px;height:0;border:0;z-index:2147483647;color-scheme:normal;' +
     'border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,.25);background:transparent;';

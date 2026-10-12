@@ -42,7 +42,8 @@ export async function findSavedByUrl(url: string): Promise<SavedMatch[]> {
   return findMatches(await listSaved(), url);
 }
 
-/** Адрес страницы «Сохранённые» с раскрытой записью `id`. */
-export function savedItemPageUrl(id: string): string {
-  return `${browser.runtime.getURL('/app.html')}#saved/${encodeURIComponent(id)}`;
+/** Адрес страницы «Сохранённые» с раскрытой записью `id` и подсвеченной вкладкой с адресом `tabUrl`. */
+export function savedItemPageUrl(id: string, tabUrl?: string): string {
+  const tab = tabUrl ? `/${encodeURIComponent(tabUrl)}` : '';
+  return `${browser.runtime.getURL('/app.html')}#saved/${encodeURIComponent(id)}${tab}`;
 }

@@ -18,9 +18,9 @@ export const MATCHES_GLOBAL = '__tabsurdSavedMatches';
 
 export type BannerFrameMessage = { tabsurd: 'banner-height'; height: number } | { tabsurd: 'banner-close' };
 
-/** Открывает «Сохранённые» с раскрытой записью — из плашки и из всплывающего окна. */
-export async function openSavedItem(id: string): Promise<void> {
-  await browser.tabs.create({ url: savedItemPageUrl(id) });
+/** Открывает «Сохранённые» с раскрытой записью и подсвеченной вкладкой `tabUrl` — из плашки и из всплывающего окна. */
+export async function openSavedItem(id: string, tabUrl: string): Promise<void> {
+  await browser.tabs.create({ url: savedItemPageUrl(id, tabUrl) });
 }
 
 /** Страница загрузилась — если её адрес сохранён, на неё вставляется плашка. */

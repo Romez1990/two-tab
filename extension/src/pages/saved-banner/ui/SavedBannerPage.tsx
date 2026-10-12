@@ -14,7 +14,7 @@ function post(message: BannerFrameMessage) {
   parent.postMessage(message, '*');
 }
 
-/** Плашка «Уже сохранено» в iframe на сайте (docs/extension/specification.md, раздел 2.1); найденные записи — в `?matches=`. */
+/** Плашка «Уже сохранено» в iframe на сайте (docs/extension/specification.md, раздел 2.1); найденные записи — в `?matches=`, адрес сайта — в `&url=`. */
 export function SavedBannerPage() {
   const [matches] = useState<SavedMatch[]>(readMatches);
   const box = useRef<HTMLDivElement>(null);
@@ -33,7 +33,7 @@ export function SavedBannerPage() {
     <div ref={box}>
       <SavedMatches
         matches={matches}
-        onOpen={(id) => void openSavedItem(id)}
+        onOpen={(id) => void openSavedItem(id, new URLSearchParams(location.search).get('url') ?? '')}
         onClose={() => post({ tabsurd: 'banner-close' })}
       />
     </div>

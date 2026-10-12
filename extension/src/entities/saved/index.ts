@@ -1,5 +1,6 @@
 export type { SavedItem } from './model/types';
 export type { SavedMatch } from './model/match-url';
+export { pageKey } from './model/match-url';
 export { SavedMatches } from './ui/SavedMatches';
 export type { SavedExport } from './model/transfer';
 export { exportFileName, parseExport, toExport } from './model/transfer';

@@ -37,6 +37,7 @@ import {
   importSaved,
   listSaved,
   matchesQuery,
+  pageKey,
   moveSavedTab,
   parseExport,
   removeSavedTab,
@@ -81,7 +82,7 @@ export function SavedPage() {
   const { icons, missing: iconsMissing } = useSiteIcons(allUrls, access);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const openId = useOpenedItemId();
+  const opened = useOpenedItem();
   const reload = useCallback(() => void listSaved().then(setItems), []);
   useEffect(reload, [reload]);
   const shown = useMemo(() => items.filter((i) => matchesQuery(i, query)), [items, query]);
@@ -198,7 +199,8 @@ export function SavedPage() {
             <SavedAccordion
               key={item.id}
               item={item}
-              opened={item.id === openId}
+              opened={item.id === opened?.id}
+              highlightUrl={item.id === opened?.id ? opened.tabUrl : undefined}
               onReturn={() => run(() => returnSaved(item), 'Открыто.')}
               onRemove={() => setToRemove(item)}
               onEdit={(next) => void edit(item, next)}
@@ -237,11 +239,15 @@ export function SavedPage() {
   );
 }
 
-/** Запись, которую нужно раскрыть: `#saved/<id>` — переход из плашки «Уже сохранено». */
-function useOpenedItemId(): string | undefined {
+/**
+ * Запись, которую нужно раскрыть, и вкладка, которую нужно подсветить: `#saved/<id>/<адрес вкладки>` —
+ * переход из плашки «Уже сохранено».
+ */
+function useOpenedItem(): { id: string; tabUrl?: string } | undefined {
   const read = () => {
-    const [section, id] = location.hash.slice(1).split('/');
-    return section === 'saved' && id ? decodeURIComponent(id) : undefined;
+    const [section, id, tabUrl] = location.hash.slice(1).split('/');
+    if (section !== 'saved' || !id) return undefined;
+    return { id: decodeURIComponent(id), tabUrl: tabUrl ? decodeURIComponent(tabUrl) : undefined };
   };
   const [id, setId] = useState(read);
   useEffect(() => {
@@ -255,12 +261,14 @@ function useOpenedItemId(): string | undefined {
 function SavedAccordion({
   item,
   opened,
+  highlightUrl,
   onReturn,
   onRemove,
   onEdit,
 }: {
   item: SavedItem;
   opened: boolean;
+  highlightUrl?: string;
   onReturn: () => void;
   onRemove: () => void;
   onEdit: (next: SavedItem | undefined) => void;
@@ -273,8 +281,9 @@ function SavedAccordion({
   useEffect(() => {
     if (!opened) return;
     setExpanded(true);
-    ref.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-  }, [opened]);
+    if (!highlightUrl) ref.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, [opened, highlightUrl]);
+  const highlightKey = highlightUrl ? pageKey(highlightUrl) : undefined;
   return (
     <Accordion
       ref={ref}
@@ -314,60 +323,65 @@ function SavedAccordion({
           </Button>
         </Stack>
         <List dense disablePadding>
-          {item.window.tabs.map((t, i) => (
-            <ListItem
-              key={`${i}-${t.url}`}
-              disableGutters
-              draggable
-              onDragStart={(e) => {
-                setDragIndex(i);
-                e.dataTransfer.effectAllowed = 'move';
-              }}
-              onDragOver={(e) => {
-                if (dragIndex === null) return;
-                e.preventDefault();
-                setOverIndex(i);
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                if (dragIndex !== null && dragIndex !== i) onEdit(moveSavedTab(item, dragIndex, i));
-                setDragIndex(null);
-                setOverIndex(null);
-              }}
-              onDragEnd={() => {
-                setDragIndex(null);
-                setOverIndex(null);
-              }}
-              secondaryAction={
-                <Tooltip title="Убрать вкладку">
-                  <IconButton edge="end" size="small" onClick={() => onEdit(removeSavedTab(item, i))}>
-                    <DeleteOutlineIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              }
-              sx={{
-                opacity: dragIndex === i ? 0.4 : 1,
-                borderTop: 2,
-                borderColor: overIndex === i && dragIndex !== null && dragIndex > i ? 'primary.main' : 'transparent',
-                borderBottom: 2,
-                borderBottomColor: overIndex === i && dragIndex !== null && dragIndex < i ? 'primary.main' : 'transparent',
-                pr: 5,
-              }}
-            >
-              {/* Вся строка — ссылка: нажатие открывает в новой вкладке, колёсико — в фоновой. */}
-              <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense sx={{ borderRadius: 1 }}>
-                <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
-                <Box sx={{ mr: 1.5 }}>
-                  <SiteIcon url={t.url} />
-                </Box>
-                <ListItemText
-                  primary={t.title || t.url}
-                  secondary={t.url}
-                  slotProps={{ primary: { noWrap: true, color: 'primary' }, secondary: { noWrap: true } }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
+          {item.window.tabs.map((t, i) => {
+            const highlighted = highlightKey !== undefined && pageKey(t.url) === highlightKey;
+            return (
+              <ListItem
+                key={`${i}-${t.url}`}
+                // Вкладка, с которой пришли из плашки, — подсвечена и прокручена к середине экрана.
+                ref={highlighted ? (el: HTMLLIElement | null) => el?.scrollIntoView({ block: 'center', behavior: 'smooth' }) : undefined}
+                disableGutters
+                draggable
+                onDragStart={(e) => {
+                  setDragIndex(i);
+                  e.dataTransfer.effectAllowed = 'move';
+                }}
+                onDragOver={(e) => {
+                  if (dragIndex === null) return;
+                  e.preventDefault();
+                  setOverIndex(i);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (dragIndex !== null && dragIndex !== i) onEdit(moveSavedTab(item, dragIndex, i));
+                  setDragIndex(null);
+                  setOverIndex(null);
+                }}
+                onDragEnd={() => {
+                  setDragIndex(null);
+                  setOverIndex(null);
+                }}
+                secondaryAction={
+                  <Tooltip title="Убрать вкладку">
+                    <IconButton edge="end" size="small" onClick={() => onEdit(removeSavedTab(item, i))}>
+                      <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                }
+                sx={{
+                  opacity: dragIndex === i ? 0.4 : 1,
+                  borderTop: 2,
+                  borderColor: overIndex === i && dragIndex !== null && dragIndex > i ? 'primary.main' : 'transparent',
+                  borderBottom: 2,
+                  borderBottomColor: overIndex === i && dragIndex !== null && dragIndex < i ? 'primary.main' : 'transparent',
+                  pr: 5,
+                }}
+              >
+                {/* Вся строка — ссылка: нажатие открывает в новой вкладке, колёсико — в фоновой. */}
+                <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense selected={highlighted} sx={{ borderRadius: 1 }}>
+                  <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
+                  <Box sx={{ mr: 1.5 }}>
+                    <SiteIcon url={t.url} />
+                  </Box>
+                  <ListItemText
+                    primary={t.title || t.url}
+                    secondary={t.url}
+                    slotProps={{ primary: { noWrap: true, color: 'primary' }, secondary: { noWrap: true } }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
         </List>
       </AccordionDetails>
     </Accordion>
