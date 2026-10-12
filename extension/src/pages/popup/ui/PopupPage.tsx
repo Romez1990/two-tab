@@ -40,14 +40,14 @@ export function PopupPage() {
         <Typography variant="h6" sx={{ fontWeight: 700, flex: 1 }}>
           Tabsurd
         </Typography>
-        <Tooltip title="Окна">
-          <IconButton onClick={() => openSection('windows')}>
-            <ViewQuiltOutlinedIcon />
-          </IconButton>
-        </Tooltip>
         <Tooltip title="Сохранённые">
           <IconButton onClick={() => openSection('saved')}>
             <BookmarksOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Окна">
+          <IconButton onClick={() => openSection('windows')}>
+            <ViewQuiltOutlinedIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Восстановление">

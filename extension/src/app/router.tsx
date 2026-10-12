@@ -12,8 +12,8 @@ import { WindowsPage } from '@/pages/windows';
 
 /** Разделы главной страницы расширения по адресу после `#`. */
 const sections: Record<string, { title: string; page: ComponentType }> = {
-  windows: { title: 'Окна', page: WindowsPage },
   saved: { title: 'Сохранённые', page: SavedPage },
+  windows: { title: 'Окна', page: WindowsPage },
   recovery: { title: 'Восстановление', page: RecoveryPage },
   settings: { title: 'Настройки', page: SettingsPage },
 };
