@@ -48,7 +48,7 @@ import {
 } from '@/entities/saved';
 import { openSaved } from '@/features/restore-windows';
 import { useSiteIcons } from '@/features/fetch-favicons';
-import { needsTitle, useItemTitles } from '@/features/fetch-titles';
+import { needsTitle, PageStatus, usePageChecks, type PageCheck } from '@/features/check-pages';
 import { useSiteAccess } from '@/shared/browser';
 import { formatDateTime, hostOf, mostCommonHostUrl } from '@/shared/lib';
 import { Favicon, groupColor } from '@/shared/ui';
@@ -56,18 +56,22 @@ import { Favicon, groupColor } from '@/shared/ui';
 /** Значки сайтов, загруженные расширением, — для сайтов, которых нет в кеше значков Chrome. */
 const SiteIconsContext = createContext<ReadonlyMap<string, string>>(new Map());
 
-/** Подгрузка заголовков и значков для развёрнутой записи. */
+/** Подгрузка для развёрнутой записи: проверка страниц (с заголовками) и значки; метки статуса страниц. */
 interface Loader {
-  access: boolean | undefined;
+  loadItem: (item: SavedItem) => () => void;
   loadIcons: (urls: readonly string[]) => () => void;
-  onTitle: (url: string, title: string) => void;
+  checks: ReadonlyMap<string, PageCheck>;
+  recheck: (url: string) => void;
 }
-const LoaderContext = createContext<Loader>({ access: false, loadIcons: () => () => {}, onTitle: () => {} });
+const LoaderContext = createContext<Loader>({ loadItem: () => () => {}, loadIcons: () => () => {}, checks: new Map(), recheck: () => {} });
 
-/** Пока запись развёрнута (детали аккордеона смонтированы), её заголовки и значки подгружаются. */
+/** Пока запись развёрнута (детали аккордеона смонтированы), её страницы проверяются и значки подгружаются. */
 function ExpandedLoader({ item }: { item: SavedItem }) {
-  const { access, loadIcons, onTitle } = useContext(LoaderContext);
-  useItemTitles(item, access, onTitle);
+  const { loadItem, loadIcons } = useContext(LoaderContext);
+  // Запись перерисовывается, когда приходят заголовки, — проверка от этого не перезапускается.
+  const itemRef = useRef(item);
+  itemRef.current = item;
+  useEffect(() => loadItem(itemRef.current), [loadItem, item.id]);
   const urls = useMemo(() => item.window.tabs.map((t) => t.url), [item]);
   useEffect(() => loadIcons(urls), [loadIcons, urls]);
   return null;
@@ -79,6 +83,11 @@ function SiteIcon({ url, size }: { url: string; size?: number }) {
 }
 
 /** Значок группы — значок самого частого в ней сайта; цвет группы, если он есть, — полоской снизу. */
+function TabStatus({ url }: { url: string }) {
+  const { checks, recheck } = useContext(LoaderContext);
+  return <PageStatus check={checks.get(url)} onRecheck={() => recheck(url)} />;
+}
+
 function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined }) {
   const url = mostCommonHostUrl(item.window.tabs.map((t) => t.url));
   if (!url) return <FolderOutlinedIcon sx={{ color: color ? groupColor(color) : 'action.active' }} />;
@@ -210,7 +219,8 @@ export function SavedPage() {
     );
   }, []);
 
-  const loader = useMemo<Loader>(() => ({ access, loadIcons, onTitle: applyTitle }), [access, loadIcons, applyTitle]);
+  const { checks, loadItem, recheck } = usePageChecks(access, applyTitle);
+  const loader = useMemo<Loader>(() => ({ loadItem, loadIcons, checks, recheck }), [loadItem, loadIcons, checks, recheck]);
 
   async function edit(before: SavedItem, after: SavedItem | undefined) {
     setItems((list) => (after ? list.map((i) => (i.id === after.id ? after : i)) : list.filter((i) => i.id !== before.id)));
@@ -561,6 +571,7 @@ function SavedAccordion({
                   <Box sx={{ mr: 1.5 }}>
                     <SiteIcon url={t.url} />
                   </Box>
+                  <TabStatus url={t.url} />
                   <ListItemText
                     primary={t.title || t.url}
                     secondary={t.url}

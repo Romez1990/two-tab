@@ -1,5 +1,5 @@
 import { db } from '@/shared/db';
-import { DAY, hostOf } from '@/shared/lib';
+import { DAY, hostOf, siteFetch, SiteSkippedError } from '@/shared/lib';
 import { faviconUrl } from '@/shared/ui';
 
 /**
@@ -9,7 +9,6 @@ import { faviconUrl } from '@/shared/ui';
 
 const CACHE_KEY = 'siteIcons';
 const RETRY_AFTER_MS = 30 * DAY;
-const TIMEOUT_MS = 10_000;
 const MAX_ICON_BYTES = 200_000;
 const PARALLEL = 4;
 
@@ -43,14 +42,24 @@ export async function missingIconSites(urls: readonly string[], signal: AbortSig
   return missing;
 }
 
-/** Загружает значки сайтов; каждый найденный сразу сохраняется и передаётся в `onIcon`. */
+/**
+ * Загружает значки сайтов; каждый найденный сразу сохраняется и передаётся в `onIcon`. Запросы — через
+ * `siteFetch`: сайт, который просил не спешить и был пропущен, не сохраняется и проверится в следующий раз.
+ */
 export async function fillIcons(
   sites: ReadonlyMap<string, string>,
   onIcon: (host: string, data: string | undefined) => void,
   signal: AbortSignal,
 ): Promise<void> {
   await runParallel([...sites], signal, async ([host, url]) => {
-    const data = await fetchSiteIcon(url, signal);
+    let data: string | undefined;
+    try {
+      data = await fetchSiteIcon(url, signal);
+    } catch (e) {
+      if (!(e instanceof SiteSkippedError)) throw e;
+      onIcon(host, undefined);
+      return;
+    }
     if (signal.aborted) return;
     await writeCache(host, { data, at: Date.now() });
     onIcon(host, data);
@@ -61,7 +70,7 @@ async function fetchSiteIcon(pageUrl: string, signal: AbortSignal): Promise<stri
   const origin = new URL(pageUrl).origin;
   const candidates: string[] = [];
   try {
-    const page = await fetch(`${origin}/`, { signal: withTimeout(signal), credentials: 'include' });
+    const page = await siteFetch(`${origin}/`, signal);
     if (page.ok) {
       const doc = new DOMParser().parseFromString(await page.text(), 'text/html');
       for (const link of doc.querySelectorAll('link[rel~="icon" i], link[rel="apple-touch-icon" i]')) {
@@ -69,7 +78,8 @@ async function fetchSiteIcon(pageUrl: string, signal: AbortSignal): Promise<stri
         if (href) candidates.push(new URL(href, page.url).href);
       }
     }
-  } catch {
+  } catch (e) {
+    if (e instanceof SiteSkippedError) throw e;
     // Страница не открылась — остаётся /favicon.ico.
   }
   candidates.push(`${origin}/favicon.ico`);
@@ -84,7 +94,7 @@ async function fetchSiteIcon(pageUrl: string, signal: AbortSignal): Promise<stri
 async function fetchImage(url: string, signal: AbortSignal): Promise<string | undefined> {
   if (url.startsWith('data:image/')) return url;
   try {
-    const response = await fetch(url, { signal: withTimeout(signal), credentials: 'include' });
+    const response = await siteFetch(url, signal);
     const type = response.headers.get('content-type') ?? '';
     if (!response.ok || !(type.startsWith('image/') || url.endsWith('.ico'))) return undefined;
     const blob = await response.blob();
@@ -95,7 +105,8 @@ async function fetchImage(url: string, signal: AbortSignal): Promise<string | un
       reader.onerror = () => reject(reader.error);
       reader.readAsDataURL(type.startsWith('image/') ? blob : new Blob([blob], { type: 'image/x-icon' }));
     });
-  } catch {
+  } catch (e) {
+    if (e instanceof SiteSkippedError) throw e;
     return undefined;
   }
 }
@@ -111,10 +122,6 @@ async function chromeIconBytes(url: string): Promise<Uint8Array> {
 
 function equalBytes(a: Uint8Array, b: Uint8Array): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
-}
-
-function withTimeout(signal: AbortSignal): AbortSignal {
-  return AbortSignal.any([signal, AbortSignal.timeout(TIMEOUT_MS)]);
 }
 
 async function runParallel<T>(tasks: T[], signal: AbortSignal, run: (task: T) => Promise<void>): Promise<void> {
