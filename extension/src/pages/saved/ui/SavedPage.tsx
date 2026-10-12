@@ -362,7 +362,7 @@ export function SavedPage() {
       </SiteIconsContext.Provider>
 
       <Dialog open={toRemove !== null} onClose={() => setToRemove(null)}>
-        <DialogTitle>Убрать из сохранённых?</DialogTitle>
+        <DialogTitle>Удалить из сохранённых?</DialogTitle>
         <DialogContent>
           «{toRemove?.title}» и {toRemove?.window.tabs.length} вкладок пропадут из списка. Они останутся только в старых снимках
           окон.
@@ -374,10 +374,10 @@ export function SavedPage() {
             onClick={() => {
               const item = toRemove;
               setToRemove(null);
-              if (item) void run(() => deleteSaved(item.id), 'Убрано.');
+              if (item) void run(() => deleteSaved(item.id), 'Удалено.');
             }}
           >
-            Убрать
+            Удалить
           </Button>
         </DialogActions>
       </Dialog>
@@ -477,14 +477,23 @@ function SavedAccordion({
             </Typography>
           </Box>
           {item.reason === 'auto' && <Chip size="small" label="автозакрытие" variant="outlined" />}
+          {/* Удалить запись можно, не разворачивая её: кнопка рядом со стрелкой, нажатие не раскрывает аккордеон. */}
+          <Tooltip title="Удалить">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove();
+              }}
+              onFocus={(e) => e.stopPropagation()}
+            >
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Stack>
       </AccordionSummary>
       <AccordionDetails>
-        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-          <Button size="small" color="error" startIcon={<DeleteOutlineIcon />} onClick={onRemove}>
-            Убрать из сохранённых
-          </Button>
-        </Stack>
         <List dense disablePadding>
           {item.window.tabs.map((t, i) => {
             const highlighted = highlightKey !== undefined && pageKey(t.url) === highlightKey;
@@ -515,7 +524,7 @@ function SavedAccordion({
                   setOverIndex(null);
                 }}
                 secondaryAction={
-                  <Tooltip title="Убрать вкладку">
+                  <Tooltip title="Удалить вкладку">
                     <IconButton edge="end" size="small" onClick={() => onEdit(removeSavedTab(item, i))}>
                       <DeleteOutlineIcon fontSize="small" />
                     </IconButton>
