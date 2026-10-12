@@ -1,6 +1,7 @@
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
 import SearchIcon from '@mui/icons-material/Search';
@@ -17,22 +18,28 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  addSaved,
   deleteSaved,
   exportFileName,
   importSaved,
   listSaved,
   matchesQuery,
+  moveSavedTab,
   parseExport,
+  removeSavedTab,
   toExport,
   type SavedItem,
 } from '@/entities/saved';
@@ -60,6 +67,18 @@ export function SavedPage() {
       setStatus({ text: `Ошибка: ${e instanceof Error ? e.message : String(e)}`, error: true });
     }
     reload();
+  }
+
+  /** Правка вкладок записи: сразу на экране, потом в базе. `undefined` — запись удалена вместе с последней вкладкой. */
+  async function edit(before: SavedItem, after: SavedItem | undefined) {
+    setItems((list) => (after ? list.map((i) => (i.id === after.id ? after : i)) : list.filter((i) => i.id !== before.id)));
+    try {
+      if (after) await addSaved(after);
+      else await deleteSaved(before.id);
+    } catch (e) {
+      setStatus({ text: `Ошибка: ${e instanceof Error ? e.message : String(e)}`, error: true });
+      reload();
+    }
   }
 
   function exportAll() {
@@ -124,6 +143,7 @@ export function SavedPage() {
             item={item}
             onReturn={() => run(() => returnSaved(item), 'Открыто.')}
             onRemove={() => setToRemove(item)}
+            onEdit={(next) => void edit(item, next)}
           />
         ))}
       </div>
@@ -158,8 +178,20 @@ export function SavedPage() {
   );
 }
 
-function SavedAccordion({ item, onReturn, onRemove }: { item: SavedItem; onReturn: () => void; onRemove: () => void }) {
+function SavedAccordion({
+  item,
+  onReturn,
+  onRemove,
+  onEdit,
+}: {
+  item: SavedItem;
+  onReturn: () => void;
+  onRemove: () => void;
+  onEdit: (next: SavedItem | undefined) => void;
+}) {
   const group = item.kind === 'group' ? item.window.groups[0] : undefined;
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
   return (
     <Accordion variant="outlined" disableGutters slotProps={{ transition: { unmountOnExit: true } }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -192,12 +224,54 @@ function SavedAccordion({ item, onReturn, onRemove }: { item: SavedItem; onRetur
         </Stack>
         <List dense disablePadding>
           {item.window.tabs.map((t, i) => (
-            <ListItem key={i} disableGutters>
-              <ListItemText
-                primary={t.title || t.url}
-                secondary={t.url}
-                slotProps={{ primary: { noWrap: true }, secondary: { noWrap: true } }}
-              />
+            <ListItem
+              key={`${i}-${t.url}`}
+              disableGutters
+              draggable
+              onDragStart={(e) => {
+                setDragIndex(i);
+                e.dataTransfer.effectAllowed = 'move';
+              }}
+              onDragOver={(e) => {
+                if (dragIndex === null) return;
+                e.preventDefault();
+                setOverIndex(i);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (dragIndex !== null && dragIndex !== i) onEdit(moveSavedTab(item, dragIndex, i));
+                setDragIndex(null);
+                setOverIndex(null);
+              }}
+              onDragEnd={() => {
+                setDragIndex(null);
+                setOverIndex(null);
+              }}
+              secondaryAction={
+                <Tooltip title="Убрать вкладку">
+                  <IconButton edge="end" size="small" onClick={() => onEdit(removeSavedTab(item, i))}>
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              }
+              sx={{
+                opacity: dragIndex === i ? 0.4 : 1,
+                borderTop: 2,
+                borderColor: overIndex === i && dragIndex !== null && dragIndex > i ? 'primary.main' : 'transparent',
+                borderBottom: 2,
+                borderBottomColor: overIndex === i && dragIndex !== null && dragIndex < i ? 'primary.main' : 'transparent',
+                pr: 5,
+              }}
+            >
+              {/* Вся строка — ссылка: нажатие открывает в новой вкладке, колёсико — в фоновой. */}
+              <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense sx={{ borderRadius: 1 }}>
+                <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
+                <ListItemText
+                  primary={t.title || t.url}
+                  secondary={t.url}
+                  slotProps={{ primary: { noWrap: true, color: 'primary' }, secondary: { noWrap: true } }}
+                />
+              </ListItemButton>
             </ListItem>
           ))}
         </List>
