@@ -1,5 +1,6 @@
 import { getSaved } from '@/entities/saved';
 import { AUTO_CLOSE_NOTIFICATION_PREFIX, runAutoClose } from '@/features/auto-close';
+import { onCheckMessage, resumeBackgroundCheck } from '@/features/background-check';
 import { showBannerIfSaved } from '@/features/saved-banner';
 import { restoreTabs, restoreWindows, returnSaved } from '@/features/restore-windows';
 import { saveAndCloseGroup, saveAndCloseWindow } from '@/features/save-close';
@@ -56,7 +57,10 @@ export function startBackground(): void {
     void openAppSection(section);
   });
 
+  browser.runtime.onMessage.addListener((message, _sender, sendResponse) => onCheckMessage(message, sendResponse));
+
   void ensureHistoryAlarm();
+  void resumeBackgroundCheck();
   void startTracking();
 }
 

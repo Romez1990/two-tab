@@ -21,12 +21,15 @@ class TabsurdDb extends Dexie {
   snapshots!: EntityTable<StoredRecord & { takenAt: number }, 'id'>;
   closedTabs!: EntityTable<StoredRecord & { closedAt: number }, 'id'>;
   saved!: EntityTable<{ id: string; savedAt: number; [field: string]: unknown }, 'id'>;
+  /** Проверки страниц по адресу: когда загружали последний раз и что получили. */
+  pageChecks!: EntityTable<{ url: string; at: number; [field: string]: unknown }, 'url'>;
 
   constructor() {
     super('tabsurd');
     this.version(1).stores({ meta: 'key' });
     this.version(2).stores({ snapshots: '++id, takenAt', closedTabs: '++id, closedAt' });
     this.version(3).stores({ saved: 'id, savedAt' });
+    this.version(4).stores({ pageChecks: 'url' });
   }
 }
 

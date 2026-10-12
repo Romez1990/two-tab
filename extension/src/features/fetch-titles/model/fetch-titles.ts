@@ -6,23 +6,18 @@ import { detectCharset, needsTitle, titleFromHtml } from './needs-title';
 /**
  * Настоящие заголовки для сохранённых вкладок без заголовка (docs/extension/specification.md, раздел 2.1):
  * страница загружается, заголовок берётся из `<title>`. Нужен доступ к сайтам — необязательное разрешение.
+ * Когда страницу загружали последний раз, хранится в таблице `pageChecks`, по записи на адрес.
  */
 
-const ATTEMPTS_KEY = 'titleAttempts';
 const RETRY_AFTER_MS = 30 * DAY;
 const TIMEOUT_MS = 10_000;
 const PARALLEL = 4;
 
-/** Адреса, которым нужен заголовок и которые не запрашивались последние 30 дней. */
+/** Адреса вкладок `items`, которым нужен заголовок и которые не загружались последние 30 дней. */
 export async function pendingTitleUrls(items: readonly SavedItem[], now = Date.now()): Promise<string[]> {
-  const attempts = await getAttempts();
-  const urls = new Set<string>();
-  for (const item of items) {
-    for (const tab of item.window.tabs) {
-      if (needsTitle(tab) && now - (attempts[tab.url] ?? 0) > RETRY_AFTER_MS) urls.add(tab.url);
-    }
-  }
-  return [...urls];
+  const urls = [...new Set(items.flatMap((i) => i.window.tabs.filter(needsTitle).map((t) => t.url)))];
+  const checks = await db.pageChecks.bulkGet(urls);
+  return urls.filter((_, n) => now - (checks[n]?.at ?? 0) > RETRY_AFTER_MS);
 }
 
 /**
@@ -46,7 +41,7 @@ export async function fillTitles(
     for (let url = queue.shift(); url !== undefined && !signal.aborted; url = queue.shift()) {
       const title = await fetchTitle(url, signal);
       if (signal.aborted) return;
-      await markAttempt(url);
+      await db.pageChecks.put({ url, at: Date.now() });
       if (title) for (const id of itemIdsByUrl.get(url) ?? []) await saveTitle(id, url, title);
       onTitle(url, title ?? '');
     }
@@ -84,16 +79,4 @@ async function saveTitle(itemId: string, url: string, title: string): Promise<vo
     return { ...t, title };
   });
   if (changed) await addSaved({ ...item, window: { ...item.window, tabs } });
-}
-
-async function getAttempts(): Promise<Record<string, number>> {
-  return ((await db.meta.get(ATTEMPTS_KEY))?.value as Record<string, number> | undefined) ?? {};
-}
-
-async function markAttempt(url: string): Promise<void> {
-  await db.transaction('rw', db.meta, async () => {
-    const attempts = await getAttempts();
-    attempts[url] = Date.now();
-    await db.meta.put({ key: ATTEMPTS_KEY, value: attempts });
-  });
 }

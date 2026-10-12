@@ -48,20 +48,37 @@ import {
 } from '@/entities/saved';
 import { openSaved } from '@/features/restore-windows';
 import { useSiteIcons } from '@/features/fetch-favicons';
-import { needsTitle, TitleFetcher } from '@/features/fetch-titles';
+import { needsTitle, useItemTitles } from '@/features/fetch-titles';
 import { useSiteAccess } from '@/shared/browser';
 import { formatDateTime, hostOf, mostCommonHostUrl } from '@/shared/lib';
 import { Favicon, groupColor } from '@/shared/ui';
 
-/** Значок группы — значок самого частого в ней сайта; цвет группы, если он есть, — полоской снизу. */
 /** Значки сайтов, загруженные расширением, — для сайтов, которых нет в кеше значков Chrome. */
 const SiteIconsContext = createContext<ReadonlyMap<string, string>>(new Map());
+
+/** Подгрузка заголовков и значков для развёрнутой записи. */
+interface Loader {
+  access: boolean | undefined;
+  loadIcons: (urls: readonly string[]) => () => void;
+  onTitle: (url: string, title: string) => void;
+}
+const LoaderContext = createContext<Loader>({ access: false, loadIcons: () => () => {}, onTitle: () => {} });
+
+/** Пока запись развёрнута (детали аккордеона смонтированы), её заголовки и значки подгружаются. */
+function ExpandedLoader({ item }: { item: SavedItem }) {
+  const { access, loadIcons, onTitle } = useContext(LoaderContext);
+  useItemTitles(item, access, onTitle);
+  const urls = useMemo(() => item.window.tabs.map((t) => t.url), [item]);
+  useEffect(() => loadIcons(urls), [loadIcons, urls]);
+  return null;
+}
 
 function SiteIcon({ url, size }: { url: string; size?: number }) {
   const icons = useContext(SiteIconsContext);
   return <Favicon url={url} size={size} src={icons.get(hostOf(url))} />;
 }
 
+/** Значок группы — значок самого частого в ней сайта; цвет группы, если он есть, — полоской снизу. */
 function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined }) {
   const url = mostCommonHostUrl(item.window.tabs.map((t) => t.url));
   if (!url) return <FolderOutlinedIcon sx={{ color: color ? groupColor(color) : 'action.active' }} />;
@@ -125,9 +142,7 @@ export function SavedPage() {
   const [toRemove, setToRemove] = useState<SavedItem | null>(null);
   const [status, setStatus] = useState<{ text: string; error: boolean } | null>(null);
   const [access, requestAccess] = useSiteAccess();
-  const [titlesPending, setTitlesPending] = useState(0);
-  const allUrls = useMemo(() => items.flatMap((i) => i.window.tabs.map((t) => t.url)), [items]);
-  const { icons, missing: iconsMissing } = useSiteIcons(allUrls, access);
+  const { icons, load: loadIcons } = useSiteIcons(access);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const opened = useOpenedItem();
@@ -195,6 +210,8 @@ export function SavedPage() {
     );
   }, []);
 
+  const loader = useMemo<Loader>(() => ({ access, loadIcons, onTitle: applyTitle }), [access, loadIcons, applyTitle]);
+
   async function edit(before: SavedItem, after: SavedItem | undefined) {
     setItems((list) => (after ? list.map((i) => (i.id === after.id ? after : i)) : list.filter((i) => i.id !== before.id)));
     try {
@@ -261,7 +278,7 @@ export function SavedPage() {
           }}
         />
       </Stack>
-      {access === false && (titlesPending > 0 || iconsMissing > 0) && (
+      {access === false && items.length > 0 && (
         <Alert
           severity="info"
           action={
@@ -270,14 +287,9 @@ export function SavedPage() {
             </Button>
           }
         >
-          {[titlesPending > 0 && `у ${titlesPending} вкладок нет заголовка`, iconsMissing > 0 && `у ${iconsMissing} сайтов нет значка`]
-            .filter(Boolean)
-            .join(', ')
-            .replace(/^./, (c) => c.toUpperCase())}
-          . Чтобы загрузить их с сайтов, расширению нужен доступ к сайтам.
+          Чтобы загружать с сайтов заголовки и значки вкладок, расширению нужен доступ к сайтам.
         </Alert>
       )}
-      <TitleFetcher items={items} access={access} onTitle={applyTitle} onPending={setTitlesPending} />
       <TextField
         placeholder="Поиск по названию, заголовкам и адресам вкладок"
         value={query}
@@ -290,76 +302,78 @@ export function SavedPage() {
         </Alert>
       )}
       {items.length > 0 && shown.length === 0 && <Typography color="text.secondary">Ничего не найдено.</Typography>}
-      <SiteIconsContext.Provider value={icons}>
-        <div>
-          {visible.map((item) => (
-            <SavedAccordion
-              key={item.id}
-              item={item}
-              opened={item.id === opened?.id}
-              highlightUrl={item.id === opened?.id ? opened.tabUrl : undefined}
-              onOpen={() => run(() => openSaved(item), 'Открыто.')}
-              onRemove={() => setToRemove(item)}
-              onEdit={(next) => void edit(item, next)}
-            />
-          ))}
-        </div>
-        {/* Невидимая отметка конца списка: когда она близко к экрану, подгружается следующая порция. */}
-        {paging === 'scroll' && visible.length < shown.length && <Box ref={more} sx={{ height: 1 }} />}
-        {shown.length > PAGE_SIZE && (
-          // Тонкая панель всегда прилипает к низу окна: страницы и режим переключаются без прокрутки к концу списка.
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              py: 0.5,
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              rowGap: 0.5,
-              position: 'sticky',
-              bottom: 0,
-              zIndex: 1,
-              bgcolor: 'background.paper',
-              borderTop: 1,
-              borderColor: 'divider',
-            }}
-          >
-            {paging === 'pages' ? (
-              <Pagination
-                count={pages}
-                page={Math.min(page, pages)}
-                onChange={(_, p) => {
-                  setPage(p);
-                  window.scrollTo({ top: 0 });
-                }}
-                color="primary"
-                size="small"
-                renderItem={(it) =>
-                  it.type === 'start-ellipsis' || it.type === 'end-ellipsis' ? (
-                    <PageJump
-                      pages={pages}
-                      onJump={(p) => {
-                        setPage(p);
-                        window.scrollTo({ top: 0 });
-                      }}
-                    />
-                  ) : (
-                    <PaginationItem {...it} />
-                  )
-                }
+      <LoaderContext.Provider value={loader}>
+        <SiteIconsContext.Provider value={icons}>
+          <div>
+            {visible.map((item) => (
+              <SavedAccordion
+                key={item.id}
+                item={item}
+                opened={item.id === opened?.id}
+                highlightUrl={item.id === opened?.id ? opened.tabUrl : undefined}
+                onOpen={() => run(() => openSaved(item), 'Открыто.')}
+                onRemove={() => setToRemove(item)}
+                onEdit={(next) => void edit(item, next)}
               />
-            ) : (
-              <Box sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
-                Показано {visible.length} из {shown.length}
-              </Box>
-            )}
-            <Button size="small" variant="outlined" onClick={() => changePaging(paging === 'pages' ? 'scroll' : 'pages')}>
-              {paging === 'pages' ? 'Листать прокруткой' : 'По страницам'}
-            </Button>
-          </Stack>
-        )}
-      </SiteIconsContext.Provider>
+            ))}
+          </div>
+          {/* Невидимая отметка конца списка: когда она близко к экрану, подгружается следующая порция. */}
+          {paging === 'scroll' && visible.length < shown.length && <Box ref={more} sx={{ height: 1 }} />}
+          {shown.length > PAGE_SIZE && (
+            // Тонкая панель всегда прилипает к низу окна: страницы и режим переключаются без прокрутки к концу списка.
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                py: 0.5,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                rowGap: 0.5,
+                position: 'sticky',
+                bottom: 0,
+                zIndex: 1,
+                bgcolor: 'background.paper',
+                borderTop: 1,
+                borderColor: 'divider',
+              }}
+            >
+              {paging === 'pages' ? (
+                <Pagination
+                  count={pages}
+                  page={Math.min(page, pages)}
+                  onChange={(_, p) => {
+                    setPage(p);
+                    window.scrollTo({ top: 0 });
+                  }}
+                  color="primary"
+                  size="small"
+                  renderItem={(it) =>
+                    it.type === 'start-ellipsis' || it.type === 'end-ellipsis' ? (
+                      <PageJump
+                        pages={pages}
+                        onJump={(p) => {
+                          setPage(p);
+                          window.scrollTo({ top: 0 });
+                        }}
+                      />
+                    ) : (
+                      <PaginationItem {...it} />
+                    )
+                  }
+                />
+              ) : (
+                <Box sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                  Показано {visible.length} из {shown.length}
+                </Box>
+              )}
+              <Button size="small" variant="outlined" onClick={() => changePaging(paging === 'pages' ? 'scroll' : 'pages')}>
+                {paging === 'pages' ? 'Листать прокруткой' : 'По страницам'}
+              </Button>
+            </Stack>
+          )}
+        </SiteIconsContext.Provider>
+      </LoaderContext.Provider>
 
       <Dialog open={toRemove !== null} onClose={() => setToRemove(null)}>
         <DialogTitle>Удалить из сохранённых?</DialogTitle>
@@ -494,6 +508,7 @@ function SavedAccordion({
         </Stack>
       </AccordionSummary>
       <AccordionDetails sx={{ py: 0.5 }}>
+        <ExpandedLoader item={item} />
         <List dense disablePadding>
           {item.window.tabs.map((t, i) => {
             const highlighted = highlightKey !== undefined && pageKey(t.url) === highlightKey;

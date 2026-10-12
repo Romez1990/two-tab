@@ -1,40 +1,54 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { hostOf } from '@/shared/lib';
 import { cachedIcons, fillIcons, missingIconSites } from './site-icons';
 
 /**
- * Свои значки сайтов (по домену) для адресов `urls`. Сайты без значка в кеше Chrome ищутся один раз,
- * когда адреса загрузились; с доступом к сайтам их значки загружаются. `missing` — сколько сайтов ещё без значка.
+ * Свои значки сайтов (по домену). Загружаются только для адресов, переданных в `load` (вкладки развёрнутых
+ * записей), и только с доступом к сайтам; каждый сайт — один раз, пока открыта страница. `load` возвращает
+ * отмену: недогруженные сайты при следующем вызове загружаются снова.
  */
-export function useSiteIcons(urls: readonly string[], access: boolean | undefined): { icons: ReadonlyMap<string, string>; missing: number } {
+export function useSiteIcons(access: boolean | undefined): {
+  icons: ReadonlyMap<string, string>;
+  load: (urls: readonly string[]) => () => void;
+} {
   const [icons, setIcons] = useState<ReadonlyMap<string, string>>(new Map());
-  const [sites, setSites] = useState<ReadonlyMap<string, string>>(new Map());
-  const [checked, setChecked] = useState(0);
-  const started = useRef(false);
+  const requested = useRef(new Set<string>());
 
   useEffect(() => {
-    void cachedIcons().then(setIcons);
+    void cachedIcons().then((cached) => setIcons((prev) => new Map([...cached, ...prev])));
   }, []);
 
-  useEffect(() => {
-    if (started.current || urls.length === 0) return;
-    started.current = true;
-    const controller = new AbortController();
-    void missingIconSites(urls, controller.signal).then(setSites);
-  }, [urls]);
+  const load = useCallback(
+    (urls: readonly string[]) => {
+      if (!access) return () => {};
+      const fresh = urls.filter((u) => {
+        const host = hostOf(u);
+        if (!host || requested.current.has(host)) return false;
+        requested.current.add(host);
+        return true;
+      });
+      if (fresh.length === 0) return () => {};
+      const controller = new AbortController();
+      let done = false;
+      void missingIconSites(fresh, controller.signal)
+        .then((sites) =>
+          fillIcons(
+            sites,
+            (host, data) => {
+              if (data) setIcons((prev) => new Map(prev).set(host, data));
+            },
+            controller.signal,
+          ),
+        )
+        .then(() => (done = true));
+      return () => {
+        if (done) return;
+        controller.abort();
+        for (const u of fresh) requested.current.delete(hostOf(u));
+      };
+    },
+    [access],
+  );
 
-  useEffect(() => {
-    if (!access || sites.size === 0) return;
-    const controller = new AbortController();
-    void fillIcons(
-      sites,
-      (host, data) => {
-        if (data) setIcons((prev) => new Map(prev).set(host, data));
-        setChecked((n) => n + 1);
-      },
-      controller.signal,
-    );
-    return () => controller.abort();
-  }, [access, sites]);
-
-  return { icons, missing: Math.max(0, sites.size - checked) };
+  return { icons, load };
 }

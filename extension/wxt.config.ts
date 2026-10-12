@@ -27,7 +27,7 @@ export default defineConfig({
     name: 'Tabsurd',
     description: 'Сохраняет окна и группы вкладок, восстанавливает пропавшие и освобождает память.',
     key: MANIFEST_KEY,
-    permissions: ['tabs', 'tabGroups', 'storage', 'unlimitedStorage', 'alarms', 'idle', 'notifications', 'favicon', 'scripting'],
+    permissions: ['tabs', 'tabGroups', 'storage', 'unlimitedStorage', 'alarms', 'idle', 'notifications', 'favicon', 'scripting', 'offscreen'],
     // Загрузка настоящих заголовков сохранённых вкладок; спрашивается кнопкой на странице «Сохранённые».
     optional_host_permissions: ['<all_urls>'],
     // Плашка «Уже сохранено» — страница расширения в iframe на сайтах.

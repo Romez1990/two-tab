@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useWindows } from '@/entities/window';
+import { BackgroundCheck } from '@/features/background-check';
 import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
@@ -36,6 +37,13 @@ export function SettingsPage() {
 
       <Section title="Не закрывать" hint="Отмеченные окна не закрываются автоматически. Закреплённые вкладки не закрываются никогда.">
         <KeepWindows settings={settings} />
+      </Section>
+
+      <Section
+        title="Проверка сохранённых"
+        hint="Загружает заголовки и значки для всех сохранённых вкладок. Идёт в фоне, пока не закончится или её не остановят, и продолжается после перезапуска Chrome. Проверенное меньше 30 дней назад пропускается."
+      >
+        <BackgroundCheck />
       </Section>
 
       <Section title="Профиль" hint="Название профиля Chrome на этом компьютере. Хранится только здесь.">
