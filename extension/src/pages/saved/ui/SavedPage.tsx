@@ -131,15 +131,24 @@ export function SavedPage() {
     URL.revokeObjectURL(url);
   }
 
-  async function importFile(file: File) {
-    let text = '';
-    try {
-      text = await file.text();
-      const { added, skipped } = await importSaved(parseExport(text));
-      setStatus({ text: `Добавлено: ${added}, уже были: ${skipped}.`, error: false });
-    } catch (e) {
-      setStatus({ text: `Не импортировано: ${e instanceof Error ? e.message : String(e)}`, error: true });
+  /** Файлы импортируются по очереди; испорченный файл не мешает остальным. */
+  async function importFiles(files: readonly File[]) {
+    let added = 0;
+    let skipped = 0;
+    const failed: string[] = [];
+    for (const file of files) {
+      try {
+        const result = await importSaved(parseExport(await file.text()));
+        added += result.added;
+        skipped += result.skipped;
+      } catch (e) {
+        failed.push(`${file.name} (${e instanceof Error ? e.message : String(e)})`);
+      }
     }
+    const done = `Добавлено: ${added}, уже были: ${skipped}.`;
+    if (failed.length === 0) setStatus({ text: done, error: false });
+    else if (failed.length === files.length) setStatus({ text: `Не импортировано: ${failed.join('; ')}`, error: true });
+    else setStatus({ text: `${done} Не импортировано: ${failed.join('; ')}`, error: true });
     reload();
   }
 
@@ -156,11 +165,12 @@ export function SavedPage() {
           ref={fileInput}
           type="file"
           accept="application/json,.json"
+          multiple
           hidden
           onChange={(e) => {
-            const file = e.target.files?.[0];
+            const files = [...(e.target.files ?? [])];
             e.target.value = '';
-            if (file) void importFile(file);
+            if (files.length > 0) void importFiles(files);
           }}
         />
       </Stack>
