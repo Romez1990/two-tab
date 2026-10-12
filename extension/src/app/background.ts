@@ -1,4 +1,7 @@
-import { restoreTabs, restoreWindows } from '@/features/restore-windows';
+import { getSaved } from '@/entities/saved';
+import { AUTO_CLOSE_NOTIFICATION_PREFIX, runAutoClose } from '@/features/auto-close';
+import { restoreTabs, restoreWindows, returnSaved } from '@/features/restore-windows';
+import { saveAndCloseGroup, saveAndCloseWindow } from '@/features/save-close';
 import {
   HISTORY_ALARM,
   LOSS_NOTIFICATION,
@@ -34,15 +37,17 @@ export function startBackground(): void {
   browser.tabGroups.onRemoved.addListener(changed);
 
   browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === HISTORY_ALARM) void onHistoryAlarm();
+    if (alarm.name === HISTORY_ALARM) void onHistoryAlarm().then(autoClose);
   });
   browser.notifications.onButtonClicked.addListener((id) => {
     if (id === LOSS_NOTIFICATION) void restoreLastLoss();
+    if (id.startsWith(AUTO_CLOSE_NOTIFICATION_PREFIX)) void returnAutoClosed(id);
   });
   browser.notifications.onClicked.addListener((id) => {
-    if (id !== LOSS_NOTIFICATION) return;
+    const section = id === LOSS_NOTIFICATION ? 'recovery' : id.startsWith(AUTO_CLOSE_NOTIFICATION_PREFIX) ? 'saved' : null;
+    if (!section) return;
     void browser.notifications.clear(id);
-    void openRecoveryPage();
+    void openAppSection(section);
   });
 
   void ensureHistoryAlarm();
@@ -64,6 +69,20 @@ async function restoreLastLoss(): Promise<void> {
   for (const { window, tabs } of loss.tabs) await restoreTabs(window, tabs);
 }
 
-async function openRecoveryPage(): Promise<void> {
-  await browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#recovery` });
+/** Автозакрытие (docs/extension/specification.md, раздел 2.5) — вместе с историей снимков, раз в 10 минут. */
+function autoClose(): Promise<void> {
+  return runAutoClose({
+    window: (id) => saveAndCloseWindow(id, 'auto'),
+    group: (id) => saveAndCloseGroup(id, 'auto'),
+  });
+}
+
+async function returnAutoClosed(notificationId: string): Promise<void> {
+  await browser.notifications.clear(notificationId);
+  const item = await getSaved(notificationId.slice(AUTO_CLOSE_NOTIFICATION_PREFIX.length));
+  if (item) await returnSaved(item);
+}
+
+async function openAppSection(section: string): Promise<void> {
+  await browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#${section}` });
 }

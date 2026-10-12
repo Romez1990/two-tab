@@ -1,1 +1,1 @@
-export { RecreateWindowButton } from './ui/RecreateWindowButton';
+export { reorderWindows } from './model/recreate-window';

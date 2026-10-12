@@ -1,7 +1,8 @@
-import { addClosedTab, pruneClosedTabs } from '@/entities/closed-tab';
+import { addClosedTab, pruneClosedTabs, takeClosingByExtension } from '@/entities/closed-tab';
 import {
   archiveSnapshot,
   findLoss,
+  tabUrl,
   getCurrentSnapshot,
   lossSize,
   saveCurrentSnapshot,
@@ -12,7 +13,7 @@ import { matchWindows, setWindowUids } from '@/entities/window';
 import { browser, type Browser } from '@/shared/browser';
 import { db } from '@/shared/db';
 import { sleep } from '@/shared/lib';
-import { captureWindows, tabUrl, type TabInfo } from './capture';
+import { captureWindows, type TabInfo } from './capture';
 
 /**
  * Постоянный снимок окон, история снимков, недавно закрытые вкладки и проверка при запуске
@@ -89,6 +90,7 @@ export async function onTabRemoved(tabId: number, info: Browser.tabs.OnRemovedIn
   scheduleSnapshot();
   // Вкладки закрытого окна остаются в снимках; в «Недавно закрытые» — только вкладки, закрытые по одной.
   if (info.isWindowClosing) return;
+  if (await takeClosingByExtension(tabId)) return;
   const tabs = (await browser.storage.session.get(TABS_KEY))[TABS_KEY] as Record<number, TabInfo> | undefined;
   const tab = tabs?.[tabId];
   if (!tab || !tab.url || tab.url.startsWith('chrome://newtab')) return;

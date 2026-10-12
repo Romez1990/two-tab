@@ -1,1 +1,1 @@
-export { DAY, HOUR, MINUTE, dayKey, formatDateTime, hourKey, monthKey, sleep } from './time';
+export { DAY, HOUR, MINUTE, dayIndex, dayKey, formatDateTime, hourKey, monthKey, sleep } from './time';

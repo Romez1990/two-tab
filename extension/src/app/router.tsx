@@ -6,12 +6,18 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ComponentType } from 'react';
 import { RecoveryPage } from '@/pages/recovery';
+import { SavedPage } from '@/pages/saved';
+import { SettingsPage } from '@/pages/settings';
+import { WindowsPage } from '@/pages/windows';
 
-/** Разделы главной страницы расширения по адресу после `#`. «Сохранённые» и «Окна» добавятся на этапе 3. */
+/** Разделы главной страницы расширения по адресу после `#`. */
 const sections: Record<string, { title: string; page: ComponentType }> = {
+  windows: { title: 'Окна', page: WindowsPage },
+  saved: { title: 'Сохранённые', page: SavedPage },
   recovery: { title: 'Восстановление', page: RecoveryPage },
+  settings: { title: 'Настройки', page: SettingsPage },
 };
-const DEFAULT_SECTION = 'recovery';
+const DEFAULT_SECTION = 'windows';
 
 function currentSection(): string {
   const name = location.hash.slice(1);
@@ -25,7 +31,7 @@ export function AppRouter() {
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
-  const Page = sections[section]?.page ?? RecoveryPage;
+  const Page = sections[section]?.page ?? WindowsPage;
 
   return (
     <>

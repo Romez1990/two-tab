@@ -1,3 +1,4 @@
+import { deleteSaved, type SavedItem } from '@/entities/saved';
 import { archiveCurrentSnapshot, type SnapshotTab, type SnapshotWindow } from '@/entities/snapshot';
 import { getWindowUids, newWindowUid, setWindowUid } from '@/entities/window';
 import { browser, type Browser } from '@/shared/browser';
@@ -99,4 +100,18 @@ async function applyGroups(
       collapsed: group.collapsed,
     });
   }
+}
+
+/** Открывает группу в последнем активном окне (или в новом, если окон нет). */
+export async function restoreGroup(group: SnapshotWindow): Promise<void> {
+  const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
+  const uid = target?.id !== undefined ? (await getWindowUids()).get(target.id) : undefined;
+  await restoreTabs({ ...group, uid: uid ?? newWindowUid() }, group.tabs);
+}
+
+/** «Вернуть» сохранённое: окно или группа открываются как были, запись убирается из «Сохранённых». */
+export async function returnSaved(item: SavedItem): Promise<void> {
+  if (item.kind === 'window') await restoreWindows([item.window]);
+  else await restoreGroup(item.window);
+  await deleteSaved(item.id);
 }

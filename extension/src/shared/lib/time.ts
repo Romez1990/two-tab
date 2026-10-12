@@ -34,3 +34,9 @@ export function sleep(ms: number): Promise<void> {
 export function formatDateTime(ms: number): string {
   return new Date(ms).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' });
 }
+
+/** Номер суток (с 6:00 по местному времени), чтобы считать дни подряд и сравнивать их числами. */
+export function dayIndex(ms: number): number {
+  const d = shifted(ms);
+  return Math.floor((d.getTime() - d.getTimezoneOffset() * MINUTE) / DAY);
+}

@@ -18,13 +18,8 @@ import { useState } from 'react';
 import { countTabs, type Snapshot, type SnapshotWindow } from '@/entities/snapshot';
 import { restoreTabs, restoreWindows } from '@/features/restore-windows';
 import { formatDateTime } from '@/shared/lib';
+import { groupColor } from '@/shared/ui';
 import type { RunAction } from './RecoveryPage';
-
-/** Chrome называет цвета групп словами; здесь — близкие цвета для метки. */
-const GROUP_COLORS: Record<string, string> = {
-  grey: '#5f6368', blue: '#1a73e8', red: '#d93025', yellow: '#f9ab00', green: '#188038',
-  pink: '#d01884', purple: '#a142f4', cyan: '#007b83', orange: '#fa903e',
-};
 
 export function SnapshotDetails({ snapshot, run }: { snapshot: Snapshot; run: RunAction }) {
   return (
@@ -107,7 +102,7 @@ function WindowAccordion({ index, window, run }: { index: number; window: Snapsh
                     <Chip
                       size="small"
                       label={group.title || 'группа'}
-                      sx={{ mr: 1, bgcolor: GROUP_COLORS[group.color] ?? 'grey.500', color: '#fff' }}
+                      sx={{ mr: 1, bgcolor: groupColor(group.color), color: '#fff' }}
                     />
                   )}
                   <ListItemText primary={t.title || t.url} secondary={t.url} slotProps={{ primary: { noWrap: true }, secondary: { noWrap: true } }} />

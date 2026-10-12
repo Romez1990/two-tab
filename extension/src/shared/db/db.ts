@@ -14,17 +14,19 @@ export interface StoredRecord {
   [field: string]: unknown;
 }
 
-/** База расширения в IndexedDB. Таблицы сохранённых окон и групп добавятся на этапе 3. */
+/** База расширения в IndexedDB. */
 class TabsurdDb extends Dexie {
   meta!: EntityTable<Meta, 'key'>;
   /** История снимков окон; текущий снимок — в `meta` под ключом `currentSnapshot`. */
   snapshots!: EntityTable<StoredRecord & { takenAt: number }, 'id'>;
   closedTabs!: EntityTable<StoredRecord & { closedAt: number }, 'id'>;
+  saved!: EntityTable<{ id: string; savedAt: number; [field: string]: unknown }, 'id'>;
 
   constructor() {
     super('tabsurd');
     this.version(1).stores({ meta: 'key' });
     this.version(2).stores({ snapshots: '++id, takenAt', closedTabs: '++id, closedAt' });
+    this.version(3).stores({ saved: 'id, savedAt' });
   }
 }
 

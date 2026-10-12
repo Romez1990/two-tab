@@ -1,3 +1,4 @@
+import { browser } from '@/shared/browser';
 import { db } from '@/shared/db';
 import { DAY } from '@/shared/lib';
 
@@ -26,4 +27,20 @@ export async function deleteClosedTab(id: number): Promise<void> {
 
 export async function pruneClosedTabs(now = Date.now()): Promise<void> {
   await db.closedTabs.where('closedAt').below(now - KEEP_MS).delete();
+}
+
+const CLOSING_KEY = 'closingByExtension';
+
+/** Вкладки, которые закрывает само расширение (сохранение группы, автозакрытие): в «Недавно закрытые» они не попадают. */
+export async function markClosingByExtension(tabIds: readonly number[]): Promise<void> {
+  const stored = ((await browser.storage.session.get(CLOSING_KEY))[CLOSING_KEY] as number[] | undefined) ?? [];
+  await browser.storage.session.set({ [CLOSING_KEY]: [...stored, ...tabIds] });
+}
+
+/** true, если вкладку закрыло расширение; отметка при этом снимается. */
+export async function takeClosingByExtension(tabId: number): Promise<boolean> {
+  const stored = ((await browser.storage.session.get(CLOSING_KEY))[CLOSING_KEY] as number[] | undefined) ?? [];
+  if (!stored.includes(tabId)) return false;
+  await browser.storage.session.set({ [CLOSING_KEY]: stored.filter((id) => id !== tabId) });
+  return true;
 }

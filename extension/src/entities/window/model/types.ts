@@ -17,4 +17,13 @@ export interface BrowserWindow {
   width?: number;
   height?: number;
   tabs: WindowTab[];
+  groups: WindowGroup[];
+}
+
+export interface WindowGroup {
+  id: number;
+  title: string;
+  color: string;
+  /** Вкладок в группе. */
+  size: number;
 }
