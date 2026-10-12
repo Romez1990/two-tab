@@ -20,6 +20,7 @@
     "@mui/icons-material": "^9.5.0",
     "@mui/material": "^9.5.0",
     "dexie": "^4.4.6",
+    "openapi-fetch": "^0.17.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
@@ -28,6 +29,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@wxt-dev/module-react": "^1.2.2",
+    "openapi-typescript": "^7.13.0",
     "steiger": "^0.7.0",
     "typescript": "^5.9.3",
     "vitest": "^5.0.3",
