@@ -17,6 +17,12 @@ export interface SyncSettings {
 
 export interface LocalSettings {
   profileName: string;
+  /** Случайный номер профиля для локального сервиса; создаётся при первом подключении. */
+  profileId: string;
+  /** Порт локального сервиса video-analyzer на 127.0.0.1. */
+  localServicePort: number;
+  /** Ключ доступа к локальному сервису; пустой — профиль не подключён. */
+  localServiceKey: string;
 }
 
 export interface Settings extends SyncSettings, LocalSettings {}
@@ -27,7 +33,7 @@ const SYNC_DEFAULTS: SyncSettings = {
   windowNames: {},
   syncServerUrl: '',
 };
-const LOCAL_DEFAULTS: LocalSettings = { profileName: '' };
+const LOCAL_DEFAULTS: LocalSettings = { profileName: '', profileId: '', localServicePort: 47810, localServiceKey: '' };
 const SYNC_KEY = 'settings';
 const LOCAL_KEY = 'localSettings';
 
@@ -45,7 +51,12 @@ export async function updateSettings(change: Partial<Settings>): Promise<void> {
     windowNames: next.windowNames,
     syncServerUrl: next.syncServerUrl,
   };
-  const local: LocalSettings = { profileName: next.profileName };
+  const local: LocalSettings = {
+    profileName: next.profileName,
+    profileId: next.profileId,
+    localServicePort: next.localServicePort,
+    localServiceKey: next.localServiceKey,
+  };
   await Promise.all([browser.storage.sync.set({ [SYNC_KEY]: sync }), browser.storage.local.set({ [LOCAL_KEY]: local })]);
 }
 

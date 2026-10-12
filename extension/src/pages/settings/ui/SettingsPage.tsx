@@ -9,11 +9,12 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useWindows } from '@/entities/window';
 import { BackgroundCheck } from '@/features/background-check';
+import { VideoAnalyzerConnection } from '@/features/connect-video-analyzer';
 import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
 
-/** Настройки (docs/extension/specification.md, раздел 1.3): автозакрытие, «Не закрывать», профиль, сервер синхронизации. */
+/** Настройки (docs/extension/specification.md, раздел 1.3): автозакрытие, «Не закрывать», профиль, video-analyzer, сервер синхронизации. */
 export function SettingsPage() {
   const settings = useSettings();
   if (!settings) return null;
@@ -55,6 +56,13 @@ export function SettingsPage() {
           onBlur={(e) => void updateSettings({ profileName: e.target.value.trim() })}
           sx={{ width: 320 }}
         />
+      </Section>
+
+      <Section
+        title="video-analyzer"
+        hint="Локальный сервис video-analyzer на этом компьютере: время просмотра, оценки, скачивание. Подключён может быть только один профиль Chrome."
+      >
+        <VideoAnalyzerConnection />
       </Section>
 
       <Section title="Хранилище" hint="Сколько места на этом компьютере занимает база расширения: сохранённые окна, снимки, недавно закрытые вкладки.">
