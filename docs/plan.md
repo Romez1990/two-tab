@@ -31,6 +31,7 @@
 - [x] Экспорт и импорт сохранённых окон и групп файлом JSON (`docs/extension/specification.md`, раздел 2.1).
 - [x] Вкладки в «Сохранённых»: открыть ссылкой, перетащить, удалить (`docs/extension/specification.md`, раздел 2.1).
 - [x] Значки вкладок и групп, загрузка настоящих заголовков для вкладок без заголовка (`docs/extension/specification.md`, раздел 2.1).
+- [x] Загрузка значков сайтов, которых нет в кеше значков Chrome (`docs/extension/specification.md`, раздел 2.1).
 - [x] Импорт из BetterOneTab и SupaTabs в «Сохранённые» (`docs/extension/specification.md`, раздел 2.1).
 - [x] Автозакрытие: 30 дней работы Chrome, сутки с 6:00, уведомление с «Вернуть» (`docs/extension/specification.md`, раздел 2.5).
 - [x] Список «Не закрывать»: окна, группы по названию, сайты.
