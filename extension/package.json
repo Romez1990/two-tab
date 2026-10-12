@@ -14,6 +14,11 @@
     "check": "pnpm compile && pnpm lint:fsd && pnpm test"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.3.0",
+    "@mui/icons-material": "^9.5.0",
+    "@mui/material": "^9.5.0",
     "dexie": "^4.4.6",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
