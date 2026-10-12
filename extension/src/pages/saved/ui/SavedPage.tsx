@@ -44,8 +44,19 @@ import {
   type SavedItem,
 } from '@/entities/saved';
 import { returnSaved } from '@/features/restore-windows';
-import { formatDateTime } from '@/shared/lib';
-import { groupColor } from '@/shared/ui';
+import { formatDateTime, mostCommonHostUrl } from '@/shared/lib';
+import { Favicon, groupColor } from '@/shared/ui';
+
+/** Значок группы — значок самого частого в ней сайта; цвет группы, если он есть, — полоской снизу. */
+function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined }) {
+  const url = mostCommonHostUrl(item.window.tabs.map((t) => t.url));
+  if (!url) return <FolderOutlinedIcon sx={{ color: color ? groupColor(color) : 'action.active' }} />;
+  return (
+    <Box sx={{ p: 0.25, borderBottom: 3, borderColor: color ? groupColor(color) : 'transparent' }}>
+      <Favicon url={url} size={20} />
+    </Box>
+  );
+}
 
 /** «Сохранённые» (docs/extension/specification.md, раздел 2.1): сохранённые окна и группы с поиском по вкладкам. */
 export function SavedPage() {
@@ -199,7 +210,7 @@ function SavedAccordion({
           {item.kind === 'window' ? (
             <WebAssetIcon color="action" />
           ) : (
-            <FolderOutlinedIcon sx={{ color: group?.color ? groupColor(group.color) : 'action.active' }} />
+            <GroupIcon item={item} color={group?.color} />
           )}
           <Box sx={{ minWidth: 0, flex: 1 }}>
             {/* Без названия — показывается первая вкладка курсивом. */}
@@ -266,6 +277,9 @@ function SavedAccordion({
               {/* Вся строка — ссылка: нажатие открывает в новой вкладке, колёсико — в фоновой. */}
               <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense sx={{ borderRadius: 1 }}>
                 <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
+                <Box sx={{ mr: 1.5 }}>
+                  <Favicon url={t.url} />
+                </Box>
                 <ListItemText
                   primary={t.title || t.url}
                   secondary={t.url}
