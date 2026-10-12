@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { listWindows, WindowRow, type BrowserWindow } from '@/entities/window';
 import { RecreateWindowButton } from '@/features/recreate-window';
 
-/** Пока — список окон с кнопкой эксперимента «Пересоздать» (этап 1). */
+/** Пока — список окон с кнопкой «Пересоздать» (этап 1). */
 export function PopupPage() {
   const [windows, setWindows] = useState<BrowserWindow[]>([]);
   const reload = useCallback(() => {
