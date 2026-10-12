@@ -44,6 +44,7 @@ import {
   type SavedItem,
 } from '@/entities/saved';
 import { returnSaved } from '@/features/restore-windows';
+import { needsTitle, TitleFetcher } from '@/features/fetch-titles';
 import { formatDateTime, mostCommonHostUrl } from '@/shared/lib';
 import { Favicon, groupColor } from '@/shared/ui';
 
@@ -81,6 +82,18 @@ export function SavedPage() {
   }
 
   /** Правка вкладок записи: сразу на экране, потом в базе. `undefined` — запись удалена вместе с последней вкладкой. */
+  /** Загруженный заголовок — сразу на экране; в базу его уже записала фича загрузки заголовков. */
+  const applyTitle = useCallback((url: string, title: string) => {
+    if (!title) return;
+    setItems((list) =>
+      list.map((i) =>
+        i.window.tabs.some((t) => t.url === url)
+          ? { ...i, window: { ...i.window, tabs: i.window.tabs.map((t) => (t.url === url && needsTitle(t) ? { ...t, title } : t)) } }
+          : i,
+      ),
+    );
+  }, []);
+
   async function edit(before: SavedItem, after: SavedItem | undefined) {
     setItems((list) => (after ? list.map((i) => (i.id === after.id ? after : i)) : list.filter((i) => i.id !== before.id)));
     try {
@@ -135,6 +148,7 @@ export function SavedPage() {
           }}
         />
       </Stack>
+      <TitleFetcher items={items} onTitle={applyTitle} />
       <TextField
         placeholder="Поиск по названию, заголовкам и адресам вкладок"
         value={query}
