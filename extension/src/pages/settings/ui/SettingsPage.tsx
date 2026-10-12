@@ -6,10 +6,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useWindows } from '@/entities/window';
 import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
+import { formatBytes, getDbUsageBytes } from '@/shared/db';
 
 /** Настройки (docs/extension/specification.md, раздел 1.3): автозакрытие, «Не закрывать», профиль, сервер синхронизации. */
 export function SettingsPage() {
@@ -48,6 +49,10 @@ export function SettingsPage() {
         />
       </Section>
 
+      <Section title="Хранилище" hint="Сколько места на этом компьютере занимает база расширения: сохранённые окна, снимки, недавно закрытые вкладки.">
+        <DbUsage />
+      </Section>
+
       <Section title="Сервер синхронизации" hint="Синхронизация появится на этапе 6.">
         <TextField
           key={settings.syncServerUrl}
@@ -60,6 +65,14 @@ export function SettingsPage() {
       </Section>
     </Stack>
   );
+}
+
+function DbUsage() {
+  const [bytes, setBytes] = useState<number | undefined>();
+  useEffect(() => {
+    void getDbUsageBytes().then(setBytes);
+  }, []);
+  return <Typography>{bytes === undefined ? '…' : `≈ ${formatBytes(bytes)}`}</Typography>;
 }
 
 /**
