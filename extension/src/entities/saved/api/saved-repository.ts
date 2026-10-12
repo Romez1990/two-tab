@@ -24,3 +24,13 @@ export function matchesQuery(item: SavedItem, query: string): boolean {
   if (item.title.toLowerCase().includes(q)) return true;
   return item.window.tabs.some((t) => t.title.toLowerCase().includes(q) || t.url.toLowerCase().includes(q));
 }
+
+/** Добавляет записи, которых ещё нет (по номеру записи). */
+export async function importSaved(items: readonly SavedItem[]): Promise<{ added: number; skipped: number }> {
+  return db.transaction('rw', db.saved, async () => {
+    const existing = new Set((await db.saved.bulkGet(items.map((i) => i.id))).flatMap((r) => (r ? [r.id] : [])));
+    const fresh = items.filter((i, n) => !existing.has(i.id) && items.findIndex((x) => x.id === i.id) === n);
+    await db.saved.bulkAdd(fresh.map((i) => ({ ...i })));
+    return { added: fresh.length, skipped: items.length - fresh.length };
+  });
+}

@@ -1,3 +1,5 @@
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
@@ -23,8 +25,17 @@ import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { deleteSaved, listSaved, matchesQuery, type SavedItem } from '@/entities/saved';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  deleteSaved,
+  exportFileName,
+  importSaved,
+  listSaved,
+  matchesQuery,
+  parseExport,
+  toExport,
+  type SavedItem,
+} from '@/entities/saved';
 import { returnSaved } from '@/features/restore-windows';
 import { formatDateTime } from '@/shared/lib';
 import { groupColor } from '@/shared/ui';
@@ -35,6 +46,7 @@ export function SavedPage() {
   const [query, setQuery] = useState('');
   const [toRemove, setToRemove] = useState<SavedItem | null>(null);
   const [status, setStatus] = useState<{ text: string; error: boolean } | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const reload = useCallback(() => void listSaved().then(setItems), []);
   useEffect(reload, [reload]);
@@ -50,8 +62,49 @@ export function SavedPage() {
     reload();
   }
 
+  function exportAll() {
+    const blob = new Blob([JSON.stringify(toExport(items), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = exportFileName();
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function importFile(file: File) {
+    let text = '';
+    try {
+      text = await file.text();
+      const { added, skipped } = await importSaved(parseExport(text));
+      setStatus({ text: `Добавлено: ${added}, уже были: ${skipped}.`, error: false });
+    } catch (e) {
+      setStatus({ text: `Не импортировано: ${e instanceof Error ? e.message : String(e)}`, error: true });
+    }
+    reload();
+  }
+
   return (
     <Stack spacing={2}>
+      <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
+        <Button startIcon={<FileUploadOutlinedIcon />} onClick={() => fileInput.current?.click()}>
+          Импорт
+        </Button>
+        <Button startIcon={<FileDownloadOutlinedIcon />} onClick={exportAll} disabled={items.length === 0}>
+          Экспорт
+        </Button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept="application/json,.json"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = '';
+            if (file) void importFile(file);
+          }}
+        />
+      </Stack>
       <TextField
         placeholder="Поиск по названию, заголовкам и адресам вкладок"
         value={query}
