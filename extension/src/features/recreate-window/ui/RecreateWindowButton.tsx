@@ -1,3 +1,8 @@
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
 import type { BrowserWindow } from '@/entities/window';
 import { recreateWindow } from '../model/recreate-window';
@@ -20,11 +25,12 @@ export function RecreateWindowButton({ window, onDone }: { window: BrowserWindow
   }
 
   return (
-    <>
-      <button type="button" disabled={busy} onClick={handleClick}>
-        Пересоздать
-      </button>
-      {error && <span role="alert"> {error}</span>}
-    </>
+    <Tooltip title={error ?? 'Пересоздать: окно станет последним на панели задач'}>
+      <span>
+        <IconButton edge="end" disabled={busy} onClick={handleClick} color={error ? 'error' : 'default'}>
+          {busy ? <CircularProgress size={20} /> : error ? <ErrorOutlineIcon /> : <AutorenewIcon />}
+        </IconButton>
+      </span>
+    </Tooltip>
   );
 }

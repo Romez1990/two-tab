@@ -1,5 +1,5 @@
-import { onExtensionInstalled } from '@/app/background';
+import { startBackground } from '@/app/background';
 
 export default defineBackground(() => {
-  browser.runtime.onInstalled.addListener(onExtensionInstalled);
+  startBackground();
 });

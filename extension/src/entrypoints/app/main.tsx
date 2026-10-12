@@ -1,4 +1,3 @@
-import { renderPage } from '@/app';
-import { AppPage } from '@/pages/app';
+import { AppRouter, renderPage } from '@/app';
 
-renderPage(<AppPage />);
+renderPage(<AppRouter />);
