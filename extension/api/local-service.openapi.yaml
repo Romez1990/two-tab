@@ -1,0 +1,167 @@
+openapi: 3.1.0
+info:
+  title: video-analyzer local service
+  version: 0.1.0
+paths:
+  /api/connection:
+    get:
+      tags:
+      - connection
+      summary: Get Connection
+      operationId: get_connection
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - connection
+      summary: Create Connection
+      operationId: create_connection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewConnection'
+        '403':
+          description: Not a page of an extension
+        '409':
+          description: Another profile is connected
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - connection
+      summary: Delete Connection
+      operationId: delete_connection
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+components:
+  schemas:
+    Connection:
+      properties:
+        profile_id:
+          type: string
+          title: Profile Id
+        name:
+          type: string
+          title: Name
+        connected_at:
+          type: string
+          title: Connected At
+          description: ISO 8601 with the time zone
+      type: object
+      required:
+      - profile_id
+      - name
+      - connected_at
+      title: Connection
+    ConnectionRequest:
+      properties:
+        profile_id:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Profile Id
+          description: Random id the extension made on its first start
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+          description: Name of the profile
+      type: object
+      required:
+      - profile_id
+      - name
+      title: ConnectionRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    NewConnection:
+      properties:
+        profile_id:
+          type: string
+          title: Profile Id
+        name:
+          type: string
+          title: Name
+        connected_at:
+          type: string
+          title: Connected At
+          description: ISO 8601 with the time zone
+        key:
+          type: string
+          title: Key
+          description: Secret key for the Authorization header; given only once
+      type: object
+      required:
+      - profile_id
+      - name
+      - connected_at
+      - key
+      title: NewConnection
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
