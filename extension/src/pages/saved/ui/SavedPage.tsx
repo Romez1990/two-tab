@@ -493,7 +493,7 @@ function SavedAccordion({
           </Tooltip>
         </Stack>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails sx={{ py: 0.5 }}>
         <List dense disablePadding>
           {item.window.tabs.map((t, i) => {
             const highlighted = highlightKey !== undefined && pageKey(t.url) === highlightKey;
@@ -525,7 +525,7 @@ function SavedAccordion({
                 }}
                 secondaryAction={
                   <Tooltip title="Удалить вкладку">
-                    <IconButton edge="end" size="small" onClick={() => onEdit(removeSavedTab(item, i))}>
+                    <IconButton edge="end" size="small" sx={{ p: 0.25 }} onClick={() => onEdit(removeSavedTab(item, i))}>
                       <DeleteOutlineIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
@@ -536,11 +536,12 @@ function SavedAccordion({
                   borderColor: overIndex === i && dragIndex !== null && dragIndex > i ? 'primary.main' : 'transparent',
                   borderBottom: 2,
                   borderBottomColor: overIndex === i && dragIndex !== null && dragIndex < i ? 'primary.main' : 'transparent',
+                  py: 0,
                   pr: 5,
                 }}
               >
                 {/* Вся строка — ссылка: нажатие открывает в новой вкладке, колёсико — в фоновой. */}
-                <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense selected={highlighted} sx={{ borderRadius: 1 }}>
+                <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense selected={highlighted} sx={{ borderRadius: 1, py: 0 }}>
                   <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
                   <Box sx={{ mr: 1.5 }}>
                     <SiteIcon url={t.url} />
@@ -548,6 +549,7 @@ function SavedAccordion({
                   <ListItemText
                     primary={t.title || t.url}
                     secondary={t.url}
+                    sx={{ my: 0 }}
                     slotProps={{ primary: { noWrap: true, color: 'primary' }, secondary: { noWrap: true } }}
                   />
                 </ListItemButton>
