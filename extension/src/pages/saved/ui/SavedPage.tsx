@@ -29,7 +29,7 @@ import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   addSaved,
   deleteSaved,
@@ -44,17 +44,27 @@ import {
   type SavedItem,
 } from '@/entities/saved';
 import { returnSaved } from '@/features/restore-windows';
+import { useSiteIcons } from '@/features/fetch-favicons';
 import { needsTitle, TitleFetcher } from '@/features/fetch-titles';
-import { formatDateTime, mostCommonHostUrl } from '@/shared/lib';
+import { useSiteAccess } from '@/shared/browser';
+import { formatDateTime, hostOf, mostCommonHostUrl } from '@/shared/lib';
 import { Favicon, groupColor } from '@/shared/ui';
 
 /** Значок группы — значок самого частого в ней сайта; цвет группы, если он есть, — полоской снизу. */
+/** Значки сайтов, загруженные расширением, — для сайтов, которых нет в кеше значков Chrome. */
+const SiteIconsContext = createContext<ReadonlyMap<string, string>>(new Map());
+
+function SiteIcon({ url, size }: { url: string; size?: number }) {
+  const icons = useContext(SiteIconsContext);
+  return <Favicon url={url} size={size} src={icons.get(hostOf(url))} />;
+}
+
 function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined }) {
   const url = mostCommonHostUrl(item.window.tabs.map((t) => t.url));
   if (!url) return <FolderOutlinedIcon sx={{ color: color ? groupColor(color) : 'action.active' }} />;
   return (
     <Box sx={{ p: 0.25, borderBottom: 3, borderColor: color ? groupColor(color) : 'transparent' }}>
-      <Favicon url={url} size={20} />
+      <SiteIcon url={url} size={20} />
     </Box>
   );
 }
@@ -65,6 +75,10 @@ export function SavedPage() {
   const [query, setQuery] = useState('');
   const [toRemove, setToRemove] = useState<SavedItem | null>(null);
   const [status, setStatus] = useState<{ text: string; error: boolean } | null>(null);
+  const [access, requestAccess] = useSiteAccess();
+  const [titlesPending, setTitlesPending] = useState(0);
+  const allUrls = useMemo(() => items.flatMap((i) => i.window.tabs.map((t) => t.url)), [items]);
+  const { icons, missing: iconsMissing } = useSiteIcons(allUrls, access);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const reload = useCallback(() => void listSaved().then(setItems), []);
@@ -148,7 +162,23 @@ export function SavedPage() {
           }}
         />
       </Stack>
-      <TitleFetcher items={items} onTitle={applyTitle} />
+      {access === false && (titlesPending > 0 || iconsMissing > 0) && (
+        <Alert
+          severity="info"
+          action={
+            <Button color="inherit" size="small" onClick={requestAccess}>
+              Разрешить
+            </Button>
+          }
+        >
+          {[titlesPending > 0 && `у ${titlesPending} вкладок нет заголовка`, iconsMissing > 0 && `у ${iconsMissing} сайтов нет значка`]
+            .filter(Boolean)
+            .join(', ')
+            .replace(/^./, (c) => c.toUpperCase())}
+          . Чтобы загрузить их с сайтов, расширению нужен доступ к сайтам.
+        </Alert>
+      )}
+      <TitleFetcher items={items} access={access} onTitle={applyTitle} onPending={setTitlesPending} />
       <TextField
         placeholder="Поиск по названию, заголовкам и адресам вкладок"
         value={query}
@@ -161,17 +191,19 @@ export function SavedPage() {
         </Alert>
       )}
       {items.length > 0 && shown.length === 0 && <Typography color="text.secondary">Ничего не найдено.</Typography>}
-      <div>
-        {shown.map((item) => (
-          <SavedAccordion
-            key={item.id}
-            item={item}
-            onReturn={() => run(() => returnSaved(item), 'Открыто.')}
-            onRemove={() => setToRemove(item)}
-            onEdit={(next) => void edit(item, next)}
-          />
-        ))}
-      </div>
+      <SiteIconsContext.Provider value={icons}>
+        <div>
+          {shown.map((item) => (
+            <SavedAccordion
+              key={item.id}
+              item={item}
+              onReturn={() => run(() => returnSaved(item), 'Открыто.')}
+              onRemove={() => setToRemove(item)}
+              onEdit={(next) => void edit(item, next)}
+            />
+          ))}
+        </div>
+      </SiteIconsContext.Provider>
 
       <Dialog open={toRemove !== null} onClose={() => setToRemove(null)}>
         <DialogTitle>Убрать из сохранённых?</DialogTitle>
@@ -292,7 +324,7 @@ function SavedAccordion({
               <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense sx={{ borderRadius: 1 }}>
                 <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
                 <Box sx={{ mr: 1.5 }}>
-                  <Favicon url={t.url} />
+                  <SiteIcon url={t.url} />
                 </Box>
                 <ListItemText
                   primary={t.title || t.url}

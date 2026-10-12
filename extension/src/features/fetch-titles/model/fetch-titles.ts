@@ -1,5 +1,4 @@
 import { getSaved, addSaved, type SavedItem } from '@/entities/saved';
-import { browser } from '@/shared/browser';
 import { db } from '@/shared/db';
 import { DAY } from '@/shared/lib';
 import { detectCharset, needsTitle, titleFromHtml } from './needs-title';
@@ -9,20 +8,10 @@ import { detectCharset, needsTitle, titleFromHtml } from './needs-title';
  * страница загружается, заголовок берётся из `<title>`. Нужен доступ к сайтам — необязательное разрешение.
  */
 
-const ORIGINS = ['<all_urls>'];
 const ATTEMPTS_KEY = 'titleAttempts';
 const RETRY_AFTER_MS = 30 * DAY;
 const TIMEOUT_MS = 10_000;
 const PARALLEL = 4;
-
-export function hasSiteAccess(): Promise<boolean> {
-  return browser.permissions.contains({ origins: ORIGINS });
-}
-
-/** Спрашивает доступ к сайтам; вызывать только по нажатию кнопки. */
-export function requestSiteAccess(): Promise<boolean> {
-  return browser.permissions.request({ origins: ORIGINS });
-}
 
 /** Адреса, которым нужен заголовок и которые не запрашивались последние 30 дней. */
 export async function pendingTitleUrls(items: readonly SavedItem[], now = Date.now()): Promise<string[]> {

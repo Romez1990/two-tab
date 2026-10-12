@@ -7,11 +7,12 @@ export function faviconUrl(pageUrl: string, size = 32): string {
   return `${base}?pageUrl=${encodeURIComponent(pageUrl)}&size=${size}`;
 }
 
-export function Favicon({ url, size = 16 }: { url: string; size?: number }) {
+/** `src` — свой значок сайта, если в кеше Chrome его нет. */
+export function Favicon({ url, size = 16, src }: { url: string; size?: number; src?: string }) {
   return (
     <Box
       component="img"
-      src={faviconUrl(url, size * 2)}
+      src={src ?? faviconUrl(url, size * 2)}
       alt=""
       draggable={false}
       sx={{ width: size, height: size, flexShrink: 0, display: 'block' }}
