@@ -1,4 +1,5 @@
 import BookmarksOutlinedIcon from '@mui/icons-material/BookmarksOutlined';
+import DownloadIcon from '@mui/icons-material/Download';
 import HistoryIcon from '@mui/icons-material/History';
 import ViewQuiltOutlinedIcon from '@mui/icons-material/ViewQuiltOutlined';
 import Box from '@mui/material/Box';
@@ -12,8 +13,10 @@ import { useEffect, useState } from 'react';
 import { findSavedByUrl, SavedMatches, type SavedMatch } from '@/entities/saved';
 import { openSavedItem } from '@/features/saved-banner';
 import { useWindows, WindowRow } from '@/entities/window';
+import { openDownloadWindow } from '@/features/download-banner';
 import { SaveCloseButton } from '@/features/save-close';
 import { browser } from '@/shared/browser';
+import { useSettings } from '@/shared/config';
 import { groupColor } from '@/shared/ui';
 
 function openSection(section: string) {
@@ -24,6 +27,8 @@ export function PopupPage() {
   const { windows, reload } = useWindows();
   const [saved, setSaved] = useState<SavedMatch[]>([]);
   const [tabUrl, setTabUrl] = useState('');
+  // «Скачать» — для любой страницы, в том числе сайтов вне шаблонов плашки (docs/extension/pages/site_page.md, раздел 3).
+  const connected = Boolean(useSettings()?.localServiceKey);
   useEffect(() => {
     void browser.tabs
       .query({ active: true, currentWindow: true })
@@ -40,6 +45,13 @@ export function PopupPage() {
         <Typography variant="h6" sx={{ fontWeight: 700, flex: 1 }}>
           Tabsurd
         </Typography>
+        {connected && /^https?:/i.test(tabUrl) && (
+          <Tooltip title="Скачать видео или канал этой страницы">
+            <IconButton onClick={() => void openDownloadWindow(tabUrl).then(() => window.close())}>
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
+        )}
         <Tooltip title="Сохранённые">
           <IconButton onClick={() => openSection('saved')}>
             <BookmarksOutlinedIcon />
