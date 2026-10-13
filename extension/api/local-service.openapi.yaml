@@ -116,6 +116,28 @@ paths:
           description: Wrong field value
       security:
       - HTTPBearer: []
+  /api/presets/sites:
+    get:
+      tags:
+      - presets
+      summary: List Preset Sites
+      operationId: list_preset_sites
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+                title: Response List Preset Sites
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
   /api/presets/{preset_id}:
     put:
       tags:
