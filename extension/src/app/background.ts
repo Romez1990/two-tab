@@ -1,6 +1,7 @@
 import { getSaved } from '@/entities/saved';
 import { AUTO_CLOSE_NOTIFICATION_PREFIX, runAutoClose } from '@/features/auto-close';
 import { onCheckMessage, resumeBackgroundCheck } from '@/features/background-check';
+import { DOWNLOAD_ALARM, SUBSCRIPTION_NOTIFICATION_PREFIX, ensureDownloadAlarm, onDownloadAlarm, onSubscriptionButton } from '@/features/download-watch';
 import { showBannerIfSaved } from '@/features/saved-banner';
 import { restoreTabs, restoreWindows, returnSaved } from '@/features/restore-windows';
 import { saveAndCloseGroup, saveAndCloseWindow } from '@/features/save-close';
@@ -45,13 +46,22 @@ export function startBackground(): void {
 
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === HISTORY_ALARM) void onHistoryAlarm().then(autoClose);
+    if (alarm.name === DOWNLOAD_ALARM) void onDownloadAlarm();
   });
   browser.notifications.onButtonClicked.addListener((id) => {
     if (id === LOSS_NOTIFICATION) void restoreLastLoss();
     if (id.startsWith(AUTO_CLOSE_NOTIFICATION_PREFIX)) void returnAutoClosed(id);
+    if (id.startsWith(SUBSCRIPTION_NOTIFICATION_PREFIX)) void onSubscriptionButton(id);
   });
   browser.notifications.onClicked.addListener((id) => {
-    const section = id === LOSS_NOTIFICATION ? 'recovery' : id.startsWith(AUTO_CLOSE_NOTIFICATION_PREFIX) ? 'saved' : null;
+    const section =
+      id === LOSS_NOTIFICATION
+        ? 'recovery'
+        : id.startsWith(AUTO_CLOSE_NOTIFICATION_PREFIX)
+          ? 'saved'
+          : id.startsWith(SUBSCRIPTION_NOTIFICATION_PREFIX)
+            ? 'downloads/subscriptions'
+            : null;
     if (!section) return;
     void browser.notifications.clear(id);
     void openAppSection(section);
@@ -60,6 +70,7 @@ export function startBackground(): void {
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => onCheckMessage(message, sendResponse));
 
   void ensureHistoryAlarm();
+  void ensureDownloadAlarm();
   void resumeBackgroundCheck();
   void startTracking();
 }
