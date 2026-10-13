@@ -30,6 +30,8 @@ export default defineConfig({
     permissions: ['tabs', 'tabGroups', 'storage', 'unlimitedStorage', 'alarms', 'idle', 'notifications', 'favicon', 'scripting', 'offscreen'],
     // Загрузка настоящих заголовков сохранённых вкладок; спрашивается кнопкой на странице «Сохранённые».
     optional_host_permissions: ['<all_urls>'],
+    // Куки сайта видео для скачивания (docs/extension/pages/downloads.md); спрашиваются по кнопке «Скачать».
+    optional_permissions: ['cookies'],
     // Плашка «Уже сохранено» — страница расширения в iframe на сайтах.
     web_accessible_resources: [{ resources: ['saved-banner.html'], matches: ['<all_urls>'] }],
   },
