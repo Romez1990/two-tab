@@ -2,6 +2,7 @@ import { getSaved } from '@/entities/saved';
 import { AUTO_CLOSE_NOTIFICATION_PREFIX, runAutoClose } from '@/features/auto-close';
 import { onCheckMessage, resumeBackgroundCheck } from '@/features/background-check';
 import { DOWNLOAD_ALARM, SUBSCRIPTION_NOTIFICATION_PREFIX, ensureDownloadAlarm, onDownloadAlarm, onSubscriptionButton } from '@/features/download-watch';
+import { showDownloadBanner } from '@/features/download-banner';
 import { showBannerIfSaved } from '@/features/saved-banner';
 import { restoreTabs, restoreWindows, returnSaved } from '@/features/restore-windows';
 import { saveAndCloseGroup, saveAndCloseWindow } from '@/features/save-close';
@@ -34,6 +35,7 @@ export function startBackground(): void {
     // Сразу при начале загрузки; при полной загрузке — ещё раз, если в начале во вкладке был старый документ.
     if (info.status === 'loading' || info.url) void showBannerIfSaved(id, tab.url, 'start');
     if (info.status === 'complete') void showBannerIfSaved(id, tab.url, 'complete');
+    if (info.status === 'complete' || info.url) void showDownloadBanner(id, tab.url);
   });
   browser.tabs.onRemoved.addListener((id, info) => void onTabRemoved(id, info));
   browser.windows.onCreated.addListener(changed);

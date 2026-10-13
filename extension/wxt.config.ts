@@ -33,6 +33,6 @@ export default defineConfig({
     // Куки сайта видео для скачивания (docs/extension/pages/downloads.md); спрашиваются по кнопке «Скачать».
     optional_permissions: ['cookies'],
     // Плашка «Уже сохранено» — страница расширения в iframe на сайтах.
-    web_accessible_resources: [{ resources: ['saved-banner.html'], matches: ['<all_urls>'] }],
+    web_accessible_resources: [{ resources: ['saved-banner.html', 'download-banner.html'], matches: ['<all_urls>'] }],
   },
 });
