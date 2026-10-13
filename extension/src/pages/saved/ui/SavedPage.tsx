@@ -24,8 +24,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import Pagination from '@mui/material/Pagination';
-import PaginationItem from '@mui/material/PaginationItem';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
@@ -51,7 +49,7 @@ import { useSiteIcons } from '@/features/fetch-favicons';
 import { needsTitle, PageStatus, usePageChecks, type PageCheck } from '@/features/check-pages';
 import { useSiteAccess } from '@/shared/browser';
 import { formatDateTime, hostOf, mostCommonHostUrl } from '@/shared/lib';
-import { Favicon, groupColor } from '@/shared/ui';
+import { Favicon, groupColor, usePaging } from '@/shared/ui';
 
 /** Значки сайтов, загруженные расширением, — для сайтов, которых нет в кеше значков Chrome. */
 const SiteIconsContext = createContext<ReadonlyMap<string, string>>(new Map());
@@ -98,51 +96,8 @@ function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined
   );
 }
 
-/** Записей на странице и сколько добавляется за раз при прокрутке. */
-const PAGE_SIZE = 50;
-
-/** По страницам или по мере прокрутки; выбор запоминается в этом браузере. */
-type Paging = 'pages' | 'scroll';
+/** Режим пагинации списка запоминается под этим ключом. */
 const PAGING_KEY = 'tabsurd.savedPaging';
-
-/** Многоточие в переключателе страниц: нажатие превращает его в поле, номер страницы и Enter — переход. */
-function PageJump({ pages, onJump }: { pages: number; onJump: (page: number) => void }) {
-  const [editing, setEditing] = useState(false);
-  if (!editing) {
-    return (
-      <Tooltip title="Перейти к странице">
-        <Button size="small" onClick={() => setEditing(true)} sx={{ minWidth: 26, height: 26, px: 0.5, color: 'text.primary' }}>
-          …
-        </Button>
-      </Tooltip>
-    );
-  }
-  return (
-    <TextField
-      autoFocus
-      size="small"
-      placeholder={`1–${pages}`}
-      onBlur={() => setEditing(false)}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') setEditing(false);
-        if (e.key !== 'Enter') return;
-        const page = Number((e.target as HTMLInputElement).value);
-        if (Number.isInteger(page) && page >= 1 && page <= pages) onJump(page);
-        setEditing(false);
-      }}
-      slotProps={{ htmlInput: { inputMode: 'numeric', 'aria-label': 'Номер страницы', style: { textAlign: 'center' } } }}
-      sx={{ width: 64, mx: 0.5, '& input': { py: 0.25 } }}
-    />
-  );
-}
-
-function readPaging(): Paging {
-  try {
-    return localStorage.getItem(PAGING_KEY) === 'scroll' ? 'scroll' : 'pages';
-  } catch {
-    return 'pages';
-  }
-}
 
 /** «Сохранённые» (docs/extension/pages/saved.md, раздел 1): сохранённые окна и группы с поиском по вкладкам. */
 export function SavedPage() {
@@ -158,43 +113,10 @@ export function SavedPage() {
   const reload = useCallback(() => void listSaved().then(setItems), []);
   useEffect(reload, [reload]);
   const shown = useMemo(() => items.filter((i) => matchesQuery(i, query)), [items, query]);
-  // Записей может быть тысячи: по страницам или, если включено, по мере прокрутки к концу списка.
-  const [paging, setPaging] = useState<Paging>(readPaging);
-  const [limit, setLimit] = useState(PAGE_SIZE);
-  const [page, setPage] = useState(1);
-  useEffect(() => {
-    setLimit(PAGE_SIZE);
-    setPage(1);
-  }, [query]);
   const openedIndex = opened ? shown.findIndex((i) => i.id === opened.id) : -1;
+  // Записей может быть тысячи: по страницам или, если включено, по мере прокрутки к концу списка.
   // Запись из плашки «Уже сохранено» должна быть на экране.
-  useEffect(() => {
-    if (openedIndex >= 0) setPage(Math.floor(openedIndex / PAGE_SIZE) + 1);
-  }, [openedIndex]);
-  const pages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
-  const visible =
-    paging === 'pages'
-      ? shown.slice((Math.min(page, pages) - 1) * PAGE_SIZE, Math.min(page, pages) * PAGE_SIZE)
-      : shown.slice(0, Math.max(limit, openedIndex + 1));
-  const changePaging = (next: Paging) => {
-    setPaging(next);
-    try {
-      localStorage.setItem(PAGING_KEY, next);
-    } catch {
-      // Без хранилища выбор действует до закрытия страницы.
-    }
-  };
-  const more = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = more.current;
-    if (paging !== 'scroll' || !el) return;
-    const observer = new IntersectionObserver(
-      (entries) => entries.some((e) => e.isIntersecting) && setLimit((n) => n + PAGE_SIZE),
-      { rootMargin: '800px' },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [paging, visible.length, shown.length]);
+  const { visible, footer } = usePaging(shown, { storageKey: PAGING_KEY, resetKey: query, focusIndex: openedIndex });
 
   async function run(action: () => Promise<void>, done: string) {
     try {
@@ -327,61 +249,7 @@ export function SavedPage() {
               />
             ))}
           </div>
-          {/* Невидимая отметка конца списка: когда она близко к экрану, подгружается следующая порция. */}
-          {paging === 'scroll' && visible.length < shown.length && <Box ref={more} sx={{ height: 1 }} />}
-          {shown.length > PAGE_SIZE && (
-            // Тонкая панель всегда прилипает к низу окна: страницы и режим переключаются без прокрутки к концу списка.
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{
-                py: 0.5,
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexWrap: 'wrap',
-                rowGap: 0.5,
-                position: 'sticky',
-                bottom: 0,
-                zIndex: 1,
-                bgcolor: 'background.paper',
-                borderTop: 1,
-                borderColor: 'divider',
-              }}
-            >
-              {paging === 'pages' ? (
-                <Pagination
-                  count={pages}
-                  page={Math.min(page, pages)}
-                  onChange={(_, p) => {
-                    setPage(p);
-                    window.scrollTo({ top: 0 });
-                  }}
-                  color="primary"
-                  size="small"
-                  renderItem={(it) =>
-                    it.type === 'start-ellipsis' || it.type === 'end-ellipsis' ? (
-                      <PageJump
-                        pages={pages}
-                        onJump={(p) => {
-                          setPage(p);
-                          window.scrollTo({ top: 0 });
-                        }}
-                      />
-                    ) : (
-                      <PaginationItem {...it} />
-                    )
-                  }
-                />
-              ) : (
-                <Box sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
-                  Показано {visible.length} из {shown.length}
-                </Box>
-              )}
-              <Button size="small" variant="outlined" onClick={() => changePaging(paging === 'pages' ? 'scroll' : 'pages')}>
-                {paging === 'pages' ? 'Листать прокруткой' : 'По страницам'}
-              </Button>
-            </Stack>
-          )}
+          {footer}
         </SiteIconsContext.Provider>
       </LoaderContext.Provider>
 
