@@ -294,6 +294,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/known:
+    post:
+      tags:
+      - downloads
+      summary: Known Download
+      operationId: known_download
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnownRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnownResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
   /api/downloads/check:
     post:
       tags:
@@ -797,6 +828,12 @@ paths:
       - downloads
       summary: Pick Folder
       operationId: pick_folder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PickRequest'
+        required: true
       responses:
         '200':
           description: Successful Response
@@ -808,6 +845,12 @@ paths:
           description: Wrong key
         '403':
           description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
   /api/subscriptions:
@@ -1404,6 +1447,29 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    KnownRequest:
+      properties:
+        url:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Url
+      type: object
+      required:
+      - url
+      title: KnownRequest
+    KnownResponse:
+      properties:
+        downloaded:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Downloaded
+          description: Where the file is now; none — not downloaded
+      type: object
+      required:
+      - downloaded
+      title: KnownResponse
     ModelRequest:
       properties:
         category:
@@ -1498,6 +1564,16 @@ components:
       required:
       - paused
       title: PauseRequest
+    PickRequest:
+      properties:
+        initial:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Initial
+          description: Open the dialog at this folder
+      type: object
+      title: PickRequest
     PresetRequest:
       properties:
         name:

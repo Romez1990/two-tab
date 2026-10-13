@@ -127,6 +127,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/downloads/known": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Known Download */
+        post: operations["known_download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/downloads/check": {
         parameters: {
             query?: never;
@@ -730,6 +747,19 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** KnownRequest */
+        KnownRequest: {
+            /** Url */
+            url: string;
+        };
+        /** KnownResponse */
+        KnownResponse: {
+            /**
+             * Downloaded
+             * @description Where the file is now; none — not downloaded
+             */
+            downloaded: string | null;
+        };
         /** ModelRequest */
         ModelRequest: {
             /** Category */
@@ -780,6 +810,14 @@ export interface components {
         PauseRequest: {
             /** Paused */
             paused: boolean;
+        };
+        /** PickRequest */
+        PickRequest: {
+            /**
+             * Initial
+             * @description Open the dialog at this folder
+             */
+            initial?: string | null;
         };
         /** PresetRequest */
         PresetRequest: {
@@ -1478,6 +1516,53 @@ export interface operations {
             };
             /** @description The file was moved: indexing is needed */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    known_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KnownRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KnownResponse"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2346,7 +2431,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PickRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -2370,6 +2459,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
