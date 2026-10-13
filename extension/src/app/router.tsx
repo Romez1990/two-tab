@@ -7,11 +7,13 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ComponentType } from 'react';
 import { RecoveryPage } from '@/pages/recovery';
 import { SavedPage } from '@/pages/saved';
+import { SearchPage } from '@/pages/search';
 import { SettingsPage } from '@/pages/settings';
 import { WindowsPage } from '@/pages/windows';
 
 /** Разделы главной страницы расширения по адресу после `#`. */
 const sections: Record<string, { title: string; page: ComponentType }> = {
+  search: { title: 'Поиск', page: SearchPage },
   saved: { title: 'Сохранённые', page: SavedPage },
   windows: { title: 'Окна', page: WindowsPage },
   recovery: { title: 'Восстановление', page: RecoveryPage },
