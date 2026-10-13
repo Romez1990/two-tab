@@ -54,6 +54,7 @@
 | Окна | `pages/windows.md` | все |
 | Восстановление | `pages/recovery.md` | все |
 | Корзина | `pages/trash.md` | все; очередь и подписки — с video-analyzer |
+| Перекодирование | `pages/recompress.md` | очередь перекодирования архива — с video-analyzer |
 | Поиск | `pages/search.md` | все; архив — с video-analyzer |
 | Дубликаты | `pages/duplicates.md` | все |
 | На страницах сайтов | `pages/site_page.md` | все; видео — с video-analyzer |
