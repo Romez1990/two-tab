@@ -5,6 +5,7 @@ import Tabs from '@mui/material/Tabs';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ComponentType } from 'react';
+import { DownloadWindow } from '@/pages/download';
 import { DownloadsPage } from '@/pages/downloads';
 import { DuplicatesPage } from '@/pages/duplicates';
 import { RecoveryPage } from '@/pages/recovery';
@@ -14,11 +15,13 @@ import { SettingsPage } from '@/pages/settings';
 import { WindowsPage } from '@/pages/windows';
 
 /** Разделы главной страницы расширения по адресу после `#`. */
-const sections: Record<string, { title: string; page: ComponentType }> = {
+const sections: Record<string, { title: string; page: ComponentType; hidden?: boolean }> = {
   search: { title: 'Поиск', page: SearchPage },
   saved: { title: 'Сохранённые', page: SavedPage },
   duplicates: { title: 'Дубликаты', page: DuplicatesPage },
   downloads: { title: 'Скачивание', page: DownloadsPage },
+  // Окно «Скачать»: открывается кнопкой на сайте или во всплывающем окне, адрес — после #download/.
+  download: { title: 'Скачать', page: DownloadWindow, hidden: true },
   windows: { title: 'Окна', page: WindowsPage },
   recovery: { title: 'Восстановление', page: RecoveryPage },
   settings: { title: 'Настройки', page: SettingsPage },
@@ -46,8 +49,10 @@ export function AppRouter() {
           <Typography variant="h6" component="span" sx={{ fontWeight: 700 }}>
             Tabsurd
           </Typography>
-          <Tabs value={section} onChange={(_, name: string) => (location.hash = name)}>
-            {Object.entries(sections).map(([name, s]) => (
+          <Tabs value={sections[section]?.hidden ? false : section} onChange={(_, name: string) => (location.hash = name)}>
+            {Object.entries(sections)
+              .filter(([, s]) => !s.hidden)
+              .map(([name, s]) => (
               <Tab key={name} value={name} label={s.title} />
             ))}
           </Tabs>
