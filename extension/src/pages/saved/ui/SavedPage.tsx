@@ -338,7 +338,8 @@ function SavedAccordion({
       sx={opened ? { borderColor: 'primary.main' } : undefined}
       slotProps={{ transition: { unmountOnExit: true } }}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+      {/* minWidth: 0 у содержимого — иначе длинный заголовок растягивает строку и сдвигает иконки. */}
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ '& .MuiAccordionSummary-content': { minWidth: 0 } }}>
         <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', minWidth: 0, width: '100%' }}>
           {/* Открыть можно, не разворачивая запись: нажатие не доходит до заголовка аккордеона. */}
           <Tooltip title="Открыть">
