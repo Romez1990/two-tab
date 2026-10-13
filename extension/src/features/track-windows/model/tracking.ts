@@ -17,7 +17,7 @@ import { captureWindows, type TabInfo } from './capture';
 
 /**
  * Постоянный снимок окон, история снимков, недавно закрытые вкладки и проверка при запуске
- * (docs/extension/specification.md, разделы 2.2 и 2.4). Всё состояние — в IndexedDB и `storage.session`,
+ * (docs/extension/pages/recovery.md, раздел 1; docs/extension/specification.md, раздел 3.1). Всё состояние — в IndexedDB и `storage.session`,
  * потому что фоновый скрипт засыпает.
  */
 

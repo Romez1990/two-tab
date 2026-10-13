@@ -64,7 +64,7 @@ export function startBackground(): void {
   void startTracking();
 }
 
-/** После установки открывается страница «Первый запуск» (docs/extension/specification.md, раздел 1.1). */
+/** После установки открывается страница «Первый запуск» (docs/extension/pages/onboarding.md). */
 async function onExtensionInstalled(details: Browser.runtime.InstalledDetails): Promise<void> {
   if (details.reason !== 'install') return;
   await browser.tabs.create({ url: browser.runtime.getURL('/onboarding.html') });
@@ -79,7 +79,7 @@ async function restoreLastLoss(): Promise<void> {
   for (const { window, tabs } of loss.tabs) await restoreTabs(window, tabs);
 }
 
-/** Автозакрытие (docs/extension/specification.md, раздел 2.5) — вместе с историей снимков, раз в 10 минут. */
+/** Автозакрытие (docs/extension/specification.md, раздел 3.2) — вместе с историей снимков, раз в 10 минут. */
 function autoClose(): Promise<void> {
   return runAutoClose({
     window: (id) => saveAndCloseWindow(id, 'auto'),

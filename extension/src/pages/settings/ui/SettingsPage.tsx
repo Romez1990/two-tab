@@ -14,7 +14,7 @@ import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
 
-/** Настройки (docs/extension/specification.md, раздел 1.3): автозакрытие, «Не закрывать», профиль, video-analyzer, сервер синхронизации. */
+/** Настройки (docs/extension/specification.md, раздел 1.2): автозакрытие, «Не закрывать», профиль, video-analyzer, сервер синхронизации. */
 export function SettingsPage() {
   const settings = useSettings();
   if (!settings) return null;
@@ -95,7 +95,7 @@ function DbUsage() {
 
 /**
  * Окна, которые не закрываются: открытые сейчас — с галочками, отмеченные запоминаются по постоянному номеру
- * окна (docs/extension/specification.md, раздел 2.4). Отмеченные, но закрытые сейчас окна тоже в списке.
+ * окна (docs/extension/specification.md, раздел 3.1). Отмеченные, но закрытые сейчас окна тоже в списке.
  */
 function KeepWindows({ settings }: { settings: Settings }) {
   const { windows, uids, reload } = useWindows();

@@ -2,7 +2,7 @@ import { browser } from '@/shared/browser';
 import { db } from '@/shared/db';
 import { DAY } from '@/shared/lib';
 
-/** Вкладка, закрытая обычным способом (крестик, Ctrl+W); хранится 30 дней (docs/extension/specification.md, раздел 2.2). */
+/** Вкладка, закрытая обычным способом (крестик, Ctrl+W); хранится 30 дней (docs/extension/pages/recovery.md, раздел 1). */
 export interface ClosedTab {
   id?: number;
   url: string;

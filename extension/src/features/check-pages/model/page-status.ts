@@ -1,4 +1,4 @@
-/** Результат проверки страницы GET-запросом (docs/extension/specification.md, раздел 2.1). */
+/** Результат проверки страницы GET-запросом (docs/extension/pages/saved.md, раздел 1). */
 export interface PageCheck {
   url: string;
   /** Когда проверяли. */

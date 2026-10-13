@@ -144,7 +144,7 @@ function readPaging(): Paging {
   }
 }
 
-/** «Сохранённые» (docs/extension/specification.md, раздел 2.1): сохранённые окна и группы с поиском по вкладкам. */
+/** «Сохранённые» (docs/extension/pages/saved.md, раздел 1): сохранённые окна и группы с поиском по вкладкам. */
 export function SavedPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
   const [query, setQuery] = useState('');

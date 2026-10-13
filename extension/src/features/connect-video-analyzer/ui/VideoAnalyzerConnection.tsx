@@ -16,7 +16,7 @@ function sinceText(since: string): string {
 }
 
 /**
- * Блок «video-analyzer» для «Первого запуска» и настроек (docs/extension/specification.md, раздел 1.2).
+ * Блок «video-analyzer» для «Первого запуска» и настроек (docs/extension/pages/settings.md, раздел 1).
  * `disabled` — подключаться пока нельзя (на «Первом запуске» не заполнено название профиля).
  */
 export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boolean }) {

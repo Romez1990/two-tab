@@ -10,7 +10,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { VideoAnalyzerConnection } from '@/features/connect-video-analyzer';
 import { updateSettings, useSettings } from '@/shared/config';
 
-/** Первый запуск (docs/extension/specification.md, раздел 1.1). Синхронизация появится на этапе 6. */
+/** Первый запуск (docs/extension/pages/onboarding.md). Синхронизация появится на этапе 6. */
 export function OnboardingPage() {
   const settings = useSettings();
   const [name, setName] = useState<string>();

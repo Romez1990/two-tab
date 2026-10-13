@@ -17,7 +17,7 @@ export interface StaleInputWindow {
 export type StaleTarget = { kind: 'window'; windowId: number } | { kind: 'group'; groupId: number };
 
 /**
- * Что закрыть автозакрытием (docs/extension/specification.md, раздел 2.5). Окно или группа устарели, если со дня
+ * Что закрыть автозакрытием (docs/extension/specification.md, раздел 3.2). Окно или группа устарели, если со дня
  * последнего перехода на любую их вкладку Chrome работал `limitDays` суток или больше. Окно с самой недавней
  * активностью не закрывается никогда — в нём сейчас работают. Окно, устаревшее целиком, закрывается одной записью,
  * иначе закрываются его устаревшие группы.

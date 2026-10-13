@@ -5,7 +5,7 @@ import { planMoves } from './plan-moves';
 /**
  * Пересоздаёт окно: открывает новое окно на том же месте и переносит в него вкладки и группы.
  * Windows сортирует окна на панели задач по времени создания, поэтому пересозданное окно становится последним
- * (docs/extension/specification.md, раздел 2.3). Старое окно закрывается само, когда из него уходит последняя вкладка.
+ * (docs/extension/pages/windows.md, раздел 1). Старое окно закрывается само, когда из него уходит последняя вкладка.
  */
 export async function recreateWindow(window: BrowserWindow): Promise<void> {
   const plan = planMoves(window.tabs);
@@ -30,7 +30,7 @@ export async function recreateWindow(window: BrowserWindow): Promise<void> {
 }
 
 /**
- * Новый порядок окон на панели задач (docs/extension/specification.md, раздел 2.3): окна до первого изменения
+ * Новый порядок окон на панели задач (docs/extension/pages/windows.md, раздел 1): окна до первого изменения
  * остаются, остальные пересоздаются по очереди и встают в конец в нужном порядке.
  */
 export async function reorderWindows(current: readonly BrowserWindow[], next: readonly BrowserWindow[]): Promise<void> {

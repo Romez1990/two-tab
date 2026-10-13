@@ -1,7 +1,7 @@
 import { parseBetterOneTab, parseSupaTabs } from './import-other';
 import type { SavedItem } from './types';
 
-/** Файл экспорта «Сохранённых» (docs/extension/specification.md, раздел 2.1). */
+/** Файл экспорта «Сохранённых» (docs/extension/pages/saved.md, раздел 1). */
 export interface SavedExport {
   format: typeof FORMAT;
   version: typeof VERSION;

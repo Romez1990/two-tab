@@ -1,6 +1,6 @@
 import type { SavedItem } from './types';
 
-/** Сохранённое окно или группа, где есть вкладка с этим адресом (docs/extension/specification.md, раздел 2.1). */
+/** Сохранённое окно или группа, где есть вкладка с этим адресом (docs/extension/pages/saved.md, раздел 1). */
 export interface SavedMatch {
   id: string;
   kind: SavedItem['kind'];

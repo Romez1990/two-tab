@@ -17,7 +17,7 @@ import { SnapshotDetails } from './SnapshotDetails';
 
 export type RunAction = (action: () => Promise<void>, done: string) => Promise<void>;
 
-/** «Восстановление»: история снимков и недавно закрытые вкладки (docs/extension/specification.md, раздел 2.2). */
+/** «Восстановление»: история снимков и недавно закрытые вкладки (docs/extension/pages/recovery.md, раздел 1). */
 export function RecoveryPage() {
   const [tab, setTab] = useState<'snapshots' | 'closed'>('snapshots');
   const [history, setHistory] = useState<Snapshot[]>([]);

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { browser } from '@/shared/browser';
 
 /**
- * Настройки (docs/extension/specification.md, раздел 1.3): общие для компьютеров — в `storage.sync`,
+ * Настройки (docs/extension/specification.md, раздел 1.2): общие для компьютеров — в `storage.sync`,
  * только для этого компьютера — в `storage.local`. Изменения сразу видят все части расширения.
  */
 export interface SyncSettings {

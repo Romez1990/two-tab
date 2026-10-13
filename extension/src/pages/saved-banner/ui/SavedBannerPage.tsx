@@ -14,7 +14,7 @@ function post(message: BannerFrameMessage) {
   parent.postMessage(message, '*');
 }
 
-/** Плашка «Уже сохранено» в iframe на сайте (docs/extension/specification.md, раздел 2.1); найденные записи — в `?matches=`, адрес сайта — в `&url=`. */
+/** Плашка «Уже сохранено» в iframe на сайте (docs/extension/pages/saved.md, раздел 1); найденные записи — в `?matches=`, адрес сайта — в `&url=`. */
 export function SavedBannerPage() {
   const [matches] = useState<SavedMatch[]>(readMatches);
   const box = useRef<HTMLDivElement>(null);

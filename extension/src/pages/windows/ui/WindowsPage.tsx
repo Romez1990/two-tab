@@ -22,7 +22,7 @@ import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { groupColor } from '@/shared/ui';
 
 /**
- * «Окна» (docs/extension/specification.md, раздел 2.3): имена окон, порядок перетаскиванием (окна пересоздаются,
+ * «Окна» (docs/extension/pages/windows.md, раздел 1): имена окон, порядок перетаскиванием (окна пересоздаются,
  * чтобы Windows показала их в этом порядке), «Не закрывать», сохранение окон и групп.
  */
 export function WindowsPage() {

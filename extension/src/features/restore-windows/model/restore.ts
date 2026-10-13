@@ -4,7 +4,7 @@ import { getWindowUids, newWindowUid, setWindowUid } from '@/entities/window';
 import { browser, type Browser } from '@/shared/browser';
 
 /**
- * Восстанавливает окна из снимка (docs/extension/specification.md, раздел 2.2). Перед восстановлением текущие окна
+ * Восстанавливает окна из снимка (docs/extension/pages/recovery.md, раздел 1). Перед восстановлением текущие окна
  * уходят в историю, чтобы восстановление можно было отменить. Вкладки, кроме первой в окне, открываются выгруженными.
  */
 export async function restoreWindows(windows: readonly SnapshotWindow[]): Promise<void> {

@@ -14,7 +14,7 @@ export interface SnapshotGroup {
 }
 
 export interface SnapshotWindow {
-  /** Постоянный номер окна (docs/extension/specification.md, раздел 2.4). */
+  /** Постоянный номер окна (docs/extension/specification.md, раздел 3.1). */
   uid: string;
   focused: boolean;
   state: string;

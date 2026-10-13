@@ -3,7 +3,7 @@ import { DAY, hostOf, siteFetch, SiteSkippedError } from '@/shared/lib';
 import { faviconUrl } from '@/shared/ui';
 
 /**
- * Значки сайтов, которых нет в кеше Chrome (docs/extension/specification.md, раздел 2.1): расширение загружает
+ * Значки сайтов, которых нет в кеше Chrome (docs/extension/pages/saved.md, раздел 1): расширение загружает
  * страницу сайта, находит в ней `<link rel="icon">` (или берёт `/favicon.ico`) и хранит значок у себя.
  */
 

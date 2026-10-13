@@ -1,7 +1,7 @@
 import { browser } from '@/shared/browser';
 
 /**
- * Постоянные номера окон по номерам Chrome (docs/extension/specification.md, раздел 2.4).
+ * Постоянные номера окон по номерам Chrome (docs/extension/specification.md, раздел 3.1).
  * Хранятся в `storage.session`: переживают сон фонового скрипта и стираются при перезапуске Chrome,
  * когда номера Chrome всё равно другие.
  */

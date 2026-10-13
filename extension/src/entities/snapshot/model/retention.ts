@@ -1,7 +1,7 @@
 import { DAY, dayKey, hourKey, monthKey } from '@/shared/lib';
 
 /**
- * Какие снимки истории удалить (docs/extension/specification.md, раздел 2.2):
+ * Какие снимки истории удалить (docs/extension/pages/recovery.md, раздел 1):
  * до суток — все, до 7 дней — один за час, до 30 дней — один за день, старше — один за месяц.
  * В каждом промежутке остаётся самый поздний снимок.
  */

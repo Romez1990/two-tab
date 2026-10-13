@@ -3,7 +3,7 @@ import { browser } from 'wxt/browser';
 
 /**
  * Необязательный доступ к сайтам: нужен, чтобы загружать заголовки и значки сохранённых вкладок
- * (docs/extension/specification.md, раздел 2.1). Спрашивается только по нажатию кнопки.
+ * (docs/extension/pages/saved.md, раздел 1). Спрашивается только по нажатию кнопки.
  */
 const ORIGINS = ['<all_urls>'];
 

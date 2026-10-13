@@ -1,7 +1,7 @@
 import type { SavedItem } from './types';
 
 /**
- * Импорт из BetterOneTab и SupaTabs (docs/extension/specification.md, раздел 2.1): каждая группа файла — сохранённая
+ * Импорт из BetterOneTab и SupaTabs (docs/extension/pages/saved.md, раздел 1): каждая группа файла — сохранённая
  * группа с названием из файла (или пустым), временем из файла и без цвета. Номер записи вычисляется из содержимого,
  * чтобы повторный импорт ничего не удваивал.
  */

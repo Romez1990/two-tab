@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { db } from '@/shared/db';
 
-/** Состояние фоновой проверки сохранённых (docs/extension/specification.md, раздел 2.1). */
+/** Состояние фоновой проверки сохранённых (docs/extension/pages/saved.md, раздел 1). */
 export interface CheckState {
   running: boolean;
   /** Проверено из `total`; `total` 0 — проверка ещё считает, что проверять. */

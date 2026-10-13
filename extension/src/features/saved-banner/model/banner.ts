@@ -2,7 +2,7 @@ import { savedItemPageUrl, findSavedByUrl, type SavedMatch } from '@/entities/sa
 import { browser, hasSiteAccess } from '@/shared/browser';
 
 /**
- * Плашка «Уже сохранено» на сайте (docs/extension/specification.md, раздел 2.1). Её скрипт не прописан
+ * Плашка «Уже сохранено» на сайте (docs/extension/pages/saved.md, раздел 1). Её скрипт не прописан
  * в манифесте: фоновый скрипт вставляет его, только когда адрес вкладки есть в сохранённых и есть доступ к сайтам.
  * Сама плашка — страница расширения `saved-banner.html` в iframe; найденные записи ей передаются в адресе,
  * чтобы не читать базу второй раз. Плашка вставляется, как только у вкладки начал загружаться новый адрес,

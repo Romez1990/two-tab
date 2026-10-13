@@ -2,7 +2,7 @@ import { localServiceClient } from '@/shared/api';
 import { getSettings, updateSettings } from '@/shared/config';
 
 /**
- * Подключение профиля к локальному сервису video-analyzer (docs/extension/specification.md, раздел 1.2):
+ * Подключение профиля к локальному сервису video-analyzer (docs/extension/pages/settings.md, раздел 1):
  * регистрация с номером и названием профиля, проверка связи, отключение. Ключ хранится в `storage.local`.
  */
 

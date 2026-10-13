@@ -5,7 +5,7 @@ import { detectCharset, needsTitle, titleFromHtml } from './needs-title';
 import type { PageCheck } from './page-status';
 
 /**
- * Проверка сохранённых вкладок (docs/extension/specification.md, раздел 2.1): один GET-запрос на адрес даёт
+ * Проверка сохранённых вкладок (docs/extension/pages/saved.md, раздел 1): один GET-запрос на адрес даёт
  * код ответа, адрес после перенаправлений и заголовок из `<title>`. Нужен доступ к сайтам. Результаты —
  * в таблице `pageChecks`, по записи на адрес.
  */

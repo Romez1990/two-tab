@@ -4,7 +4,7 @@ import { checkPage, checkPages, getChecks, pendingCheckUrls } from './check-page
 import type { PageCheck } from './page-status';
 
 /**
- * Проверки страниц для «Сохранённых» (docs/extension/specification.md, раздел 2.1). `loadItem` — для развёрнутой
+ * Проверки страниц для «Сохранённых» (docs/extension/pages/saved.md, раздел 1). `loadItem` — для развёрнутой
  * записи: показывает сохранённые проверки и проверяет непроверенное (возвращает отмену); `recheck` — нажатие
  * на метку. Найденные заголовки передаются в `onTitle`. Без доступа к сайтам только показывается сохранённое.
  */

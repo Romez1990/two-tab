@@ -4,7 +4,7 @@ import { fillIcons, missingIconSites } from '@/features/fetch-favicons';
 import { checkPages, pendingCheckUrls } from '@/features/check-pages';
 
 /**
- * Служебная скрытая страница фоновой проверки сохранённых (docs/extension/specification.md, раздел 2.1):
+ * Служебная скрытая страница фоновой проверки сохранённых (docs/extension/pages/saved.md, раздел 1):
  * сначала страницы вкладок (статус и заголовок), потом значки сайтов.
  */
 export function startOffscreen(): void {
