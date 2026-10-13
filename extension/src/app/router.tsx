@@ -5,6 +5,7 @@ import Tabs from '@mui/material/Tabs';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ComponentType } from 'react';
+import { DownloadsPage } from '@/pages/downloads';
 import { DuplicatesPage } from '@/pages/duplicates';
 import { RecoveryPage } from '@/pages/recovery';
 import { SavedPage } from '@/pages/saved';
@@ -17,6 +18,7 @@ const sections: Record<string, { title: string; page: ComponentType }> = {
   search: { title: 'Поиск', page: SearchPage },
   saved: { title: 'Сохранённые', page: SavedPage },
   duplicates: { title: 'Дубликаты', page: DuplicatesPage },
+  downloads: { title: 'Скачивание', page: DownloadsPage },
   windows: { title: 'Окна', page: WindowsPage },
   recovery: { title: 'Восстановление', page: RecoveryPage },
   settings: { title: 'Настройки', page: SettingsPage },
