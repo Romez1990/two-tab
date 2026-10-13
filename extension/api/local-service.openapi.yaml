@@ -64,8 +64,1030 @@ paths:
           description: Not the connected extension
       security:
       - HTTPBearer: []
+  /api/presets:
+    get:
+      tags:
+      - presets
+      summary: List Presets
+      operationId: list_presets
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PresetResponse'
+                type: array
+                title: Response List Presets
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - presets
+      summary: Create Preset
+      operationId: create_preset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresetRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such preset
+        '409':
+          description: Name or site taken, or the default preset
+        '422':
+          description: Wrong field value
+      security:
+      - HTTPBearer: []
+  /api/presets/{preset_id}:
+    put:
+      tags:
+      - presets
+      summary: Replace Preset
+      operationId: replace_preset
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: preset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Preset Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresetRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such preset
+        '409':
+          description: Name or site taken, or the default preset
+        '422':
+          description: Wrong field value
+    delete:
+      tags:
+      - presets
+      summary: Delete Preset
+      operationId: delete_preset
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: preset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Preset Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such preset
+        '409':
+          description: Name or site taken, or the default preset
+        '422':
+          description: Wrong field value
+  /api/archive/search:
+    post:
+      tags:
+      - archive
+      summary: Search Archive
+      operationId: search_archive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/archive/files/{file_id}/open:
+    post:
+      tags:
+      - archive
+      summary: Open Video
+      operationId: open_video
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: file_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: File Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: 'The file was moved: indexing is needed'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/archive/files/{file_id}/show:
+    post:
+      tags:
+      - archive
+      summary: Show Video
+      operationId: show_video
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: file_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: File Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: 'The file was moved: indexing is needed'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/check:
+    post:
+      tags:
+      - downloads
+      summary: Check Download
+      operationId: check_download
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '502':
+          description: The site did not answer
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/downloads:
+    get:
+      tags:
+      - downloads
+      summary: List Downloads
+      operationId: list_downloads
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GroupModel'
+                type: array
+                title: Response List Downloads
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - downloads
+      summary: Enqueue Download
+      operationId: enqueue_download
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnqueueRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Wrong folder or preset edit
+      security:
+      - HTTPBearer: []
+  /api/downloads/channel/check:
+    post:
+      tags:
+      - downloads
+      summary: Check Channel
+      operationId: check_channel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelCheckResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '502':
+          description: The site did not answer
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/downloads/channel:
+    post:
+      tags:
+      - downloads
+      summary: Enqueue Channel
+      operationId: enqueue_channel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '409':
+          description: Nothing new to download
+        '422':
+          description: Wrong folder, filter or preset edit
+        '502':
+          description: The site did not answer
+      security:
+      - HTTPBearer: []
+  /api/downloads/cookies:
+    post:
+      tags:
+      - downloads
+      summary: Give Cookies
+      operationId: give_cookies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CookiesRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/downloads/groups/{group_id}/move:
+    post:
+      tags:
+      - downloads
+      summary: Move Group
+      operationId: move_group
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Group Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepsRequest'
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/groups/{group_id}/pause:
+    post:
+      tags:
+      - downloads
+      summary: Pause Group
+      operationId: pause_group
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Group Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PauseRequest'
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/groups/{group_id}/cancel:
+    post:
+      tags:
+      - downloads
+      summary: Cancel Group
+      operationId: cancel_group
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Group Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/move:
+    post:
+      tags:
+      - downloads
+      summary: Move Download
+      operationId: move_download
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepsRequest'
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/cancel:
+    post:
+      tags:
+      - downloads
+      summary: Cancel Download
+      operationId: cancel_download
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/retry:
+    post:
+      tags:
+      - downloads
+      summary: Retry Download
+      operationId: retry_download
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/open:
+    post:
+      tags:
+      - downloads
+      summary: Open Download
+      operationId: open_download
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/show:
+    post:
+      tags:
+      - downloads
+      summary: Show Download
+      operationId: show_download
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/categories:
+    get:
+      tags:
+      - downloads
+      summary: List Categories
+      operationId: list_categories
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+                title: Response List Categories
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+  /api/downloads/models:
+    post:
+      tags:
+      - downloads
+      summary: Create Model
+      operationId: create_model
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '409':
+          description: The folder exists
+        '422':
+          description: Wrong category or name
+      security:
+      - HTTPBearer: []
+  /api/downloads/folders/pick:
+    post:
+      tags:
+      - downloads
+      summary: Pick Folder
+      operationId: pick_folder
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+  /api/subscriptions:
+    get:
+      tags:
+      - subscriptions
+      summary: List Subscriptions
+      operationId: list_subscriptions
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubscriptionModel'
+                type: array
+                title: Response List Subscriptions
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - subscriptions
+      summary: Subscribe
+      operationId: subscribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such subscription
+        '422':
+          description: Wrong folder, filter or preset edit
+        '502':
+          description: The site did not answer
+      security:
+      - HTTPBearer: []
+  /api/subscriptions/{subscription_id}:
+    put:
+      tags:
+      - subscriptions
+      summary: Update Subscription
+      operationId: update_subscription
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: subscription_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Subscription Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such subscription
+        '422':
+          description: Wrong folder, filter or preset edit
+    delete:
+      tags:
+      - subscriptions
+      summary: Unsubscribe
+      operationId: unsubscribe
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: subscription_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Subscription Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such subscription
+        '422':
+          description: Wrong folder, filter or preset edit
+  /api/subscriptions/check:
+    post:
+      tags:
+      - subscriptions
+      summary: Check Now
+      operationId: check_now
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckNowRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such subscription
+        '422':
+          description: Wrong folder, filter or preset edit
+      security:
+      - HTTPBearer: []
 components:
   schemas:
+    AndNode:
+      properties:
+        op:
+          type: string
+          const: and
+          title: Op
+        items:
+          items:
+            $ref: '#/components/schemas/Node'
+          type: array
+          maxItems: 50
+          title: Items
+      type: object
+      required:
+      - op
+      - items
+      title: AndNode
+    ChannelCheckResponse:
+      properties:
+        title:
+          type: string
+          title: Title
+        videos:
+          type: integer
+          title: Videos
+        downloaded:
+          type: integer
+          title: Downloaded
+        models:
+          items:
+            type: string
+          type: array
+          title: Models
+        found_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Found By
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+        recent:
+          items:
+            type: string
+          type: array
+          title: Recent
+      type: object
+      required:
+      - title
+      - videos
+      - downloaded
+      - models
+      - found_by
+      - folder
+      - recent
+      title: ChannelCheckResponse
+    ChannelRequest:
+      properties:
+        url:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Url
+        cookies:
+          items:
+            $ref: '#/components/schemas/Cookie'
+          type: array
+          title: Cookies
+          default: []
+        folder:
+          type: string
+          minLength: 3
+          title: Folder
+          description: Full path of the folder
+        filters:
+          $ref: '#/components/schemas/FiltersModel'
+          default:
+            from_end: false
+            music_only: false
+        preset_edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Preset Edits
+      type: object
+      required:
+      - url
+      - folder
+      title: ChannelRequest
+    CheckNowRequest:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+          description: One subscription; none — all
+      type: object
+      title: CheckNowRequest
+    CheckRequest:
+      properties:
+        url:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Url
+        cookies:
+          items:
+            $ref: '#/components/schemas/Cookie'
+          type: array
+          title: Cookies
+          default: []
+      type: object
+      required:
+      - url
+      title: CheckRequest
+    CheckResponse:
+      properties:
+        video:
+          $ref: '#/components/schemas/VideoInfoModel'
+        downloaded:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Downloaded
+          description: 'Already downloaded: where the file is now'
+        models:
+          items:
+            type: string
+          type: array
+          title: Models
+        found_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Found By
+          description: links, account or name
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+          description: New of the model if no choice is needed
+        recent:
+          items:
+            type: string
+          type: array
+          title: Recent
+      type: object
+      required:
+      - video
+      - downloaded
+      - models
+      - found_by
+      - folder
+      - recent
+      title: CheckResponse
     Connection:
       properties:
         profile_id:
@@ -103,6 +1125,254 @@ components:
       - profile_id
       - name
       title: ConnectionRequest
+    Cookie:
+      properties:
+        domain:
+          type: string
+          title: Domain
+        name:
+          type: string
+          title: Name
+        value:
+          type: string
+          title: Value
+        path:
+          type: string
+          title: Path
+          default: /
+        secure:
+          type: boolean
+          title: Secure
+          default: false
+        expirationDate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Expirationdate
+      type: object
+      required:
+      - domain
+      - name
+      - value
+      title: Cookie
+      description: A cookie as chrome.cookies gives it; other fields are ignored.
+    CookiesRequest:
+      properties:
+        sites:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/Cookie'
+            type: array
+          type: object
+          title: Sites
+          description: Address of a video → cookies of its site
+      type: object
+      required:
+      - sites
+      title: CookiesRequest
+    DownloadModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        url:
+          type: string
+          title: Url
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        channel:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Channel
+        published_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Published At
+        state:
+          type: string
+          title: State
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        progress:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Progress
+        folder:
+          type: string
+          title: Folder
+        file_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Path
+      type: object
+      required:
+      - id
+      - url
+      - title
+      - channel
+      - published_at
+      - state
+      - error
+      - progress
+      - folder
+      - file_path
+      title: DownloadModel
+    EnqueueRequest:
+      properties:
+        url:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Url
+        cookies:
+          items:
+            $ref: '#/components/schemas/Cookie'
+          type: array
+          title: Cookies
+          default: []
+        folder:
+          type: string
+          minLength: 3
+          title: Folder
+          description: Full path of the folder
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        preset_edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Preset Edits
+      type: object
+      required:
+      - url
+      - folder
+      title: EnqueueRequest
+    FiltersModel:
+      properties:
+        date_from:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date From
+          description: YYYY-MM-DD
+        date_to:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date To
+        number_from:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Number From
+        number_to:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Number To
+        from_end:
+          type: boolean
+          title: From End
+          default: false
+        min_duration:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Min Duration
+          description: Seconds
+        max_duration:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Max Duration
+        music_only:
+          type: boolean
+          title: Music Only
+          default: false
+      type: object
+      title: FiltersModel
+      description: downloader.md, section 6.1; music_only is refused until the music recognition (P-3).
+    FolderResponse:
+      properties:
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+      type: object
+      required:
+      - folder
+      title: FolderResponse
+    FoundVideo:
+      properties:
+        id:
+          type: integer
+          title: Id
+        path:
+          type: string
+          title: Path
+          description: From the archive root, or absolute for a flat category
+        size:
+          type: integer
+          title: Size
+        modified_at_ns:
+          type: integer
+          title: Modified At Ns
+        shortcuts:
+          items:
+            type: string
+          type: array
+          title: Shortcuts
+          description: Paths of the shortcuts to the video
+      type: object
+      required:
+      - id
+      - path
+      - size
+      - modified_at_ns
+      - shortcuts
+      title: FoundVideo
+    GroupModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        kind:
+          type: string
+          title: Kind
+        paused:
+          type: boolean
+          title: Paused
+        downloads:
+          items:
+            $ref: '#/components/schemas/DownloadModel'
+          type: array
+          title: Downloads
+      type: object
+      required:
+      - id
+      - title
+      - kind
+      - paused
+      - downloads
+      title: GroupModel
     HTTPValidationError:
       properties:
         detail:
@@ -112,6 +1382,25 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    ModelRequest:
+      properties:
+        category:
+          type: string
+          title: Category
+        channel_url:
+          type: string
+          title: Channel Url
+        name:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Name
+      type: object
+      required:
+      - category
+      - channel_url
+      - name
+      title: ModelRequest
     NewConnection:
       properties:
         profile_id:
@@ -135,6 +1424,311 @@ components:
       - connected_at
       - key
       title: NewConnection
+    Node:
+      oneOf:
+      - $ref: '#/components/schemas/TermNode'
+      - $ref: '#/components/schemas/AndNode'
+      - $ref: '#/components/schemas/OrNode'
+      - $ref: '#/components/schemas/NotNode'
+      discriminator:
+        propertyName: op
+        mapping:
+          and: '#/components/schemas/AndNode'
+          not: '#/components/schemas/NotNode'
+          or: '#/components/schemas/OrNode'
+          term: '#/components/schemas/TermNode'
+    NotNode:
+      properties:
+        op:
+          type: string
+          const: not
+          title: Op
+        item:
+          $ref: '#/components/schemas/Node'
+      type: object
+      required:
+      - op
+      - item
+      title: NotNode
+    OrNode:
+      properties:
+        op:
+          type: string
+          const: or
+          title: Op
+        items:
+          items:
+            $ref: '#/components/schemas/Node'
+          type: array
+          maxItems: 50
+          title: Items
+      type: object
+      required:
+      - op
+      - items
+      title: OrNode
+    PauseRequest:
+      properties:
+        paused:
+          type: boolean
+          title: Paused
+      type: object
+      required:
+      - paused
+      title: PauseRequest
+    PresetRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+        sites:
+          items:
+            type: string
+          type: array
+          title: Sites
+          description: 'Site labels: web_links.md, section 4'
+          default: []
+        fields:
+          additionalProperties: true
+          type: object
+          title: Fields
+          description: 'Only the fields the preset sets: compression.md, section 3'
+      type: object
+      required:
+      - name
+      - fields
+      title: PresetRequest
+    PresetResponse:
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+        sites:
+          items:
+            type: string
+          type: array
+          title: Sites
+          description: 'Site labels: web_links.md, section 4'
+          default: []
+        fields:
+          additionalProperties: true
+          type: object
+          title: Fields
+          description: 'Only the fields the preset sets: compression.md, section 3'
+        id:
+          type: integer
+          title: Id
+        is_default:
+          type: boolean
+          title: Is Default
+      type: object
+      required:
+      - name
+      - fields
+      - id
+      - is_default
+      title: PresetResponse
+    SearchRequest:
+      properties:
+        query:
+          $ref: '#/components/schemas/Node'
+          description: 'The condition tree: local_service.md, section 7.2'
+        sort:
+          $ref: '#/components/schemas/Sort'
+          default: relevance
+        page:
+          type: integer
+          minimum: 0.0
+          title: Page
+          default: 0
+        page_size:
+          type: integer
+          maximum: 200.0
+          minimum: 1.0
+          title: Page Size
+          default: 50
+      type: object
+      required:
+      - query
+      title: SearchRequest
+    SearchResponse:
+      properties:
+        videos:
+          items:
+            $ref: '#/components/schemas/FoundVideo'
+          type: array
+          title: Videos
+        total:
+          type: integer
+          title: Total
+      type: object
+      required:
+      - videos
+      - total
+      title: SearchResponse
+    Sort:
+      type: string
+      enum:
+      - relevance
+      - date
+      title: Sort
+    StepsRequest:
+      properties:
+        steps:
+          type: integer
+          maximum: 1000.0
+          minimum: -1000.0
+          title: Steps
+          description: Minus is up
+      type: object
+      required:
+      - steps
+      title: StepsRequest
+    SubscribeRequest:
+      properties:
+        channel_url:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Channel Url
+        cookies:
+          items:
+            $ref: '#/components/schemas/Cookie'
+          type: array
+          title: Cookies
+          default: []
+        folder:
+          type: string
+          minLength: 3
+          title: Folder
+          description: Full path of the folder
+        filters:
+          $ref: '#/components/schemas/FiltersModel'
+          default:
+            from_end: false
+            music_only: false
+        preset_edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Preset Edits
+        only_new:
+          type: boolean
+          title: Only New
+          description: The videos on the channel now are skipped
+          default: false
+      type: object
+      required:
+      - channel_url
+      - folder
+      title: SubscribeRequest
+    SubscriptionModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        channel_url:
+          type: string
+          title: Channel Url
+        title:
+          type: string
+          title: Title
+        filters:
+          additionalProperties: true
+          type: object
+          title: Filters
+        preset_edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Preset Edits
+        folder:
+          type: string
+          title: Folder
+        paused:
+          type: boolean
+          title: Paused
+        checked_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Checked At
+        last_found:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Last Found
+          description: New videos found by the last check
+      type: object
+      required:
+      - id
+      - channel_url
+      - title
+      - filters
+      - preset_edits
+      - folder
+      - paused
+      - checked_at
+      - last_found
+      title: SubscriptionModel
+    TermNode:
+      properties:
+        op:
+          type: string
+          const: term
+          title: Op
+        field:
+          type: string
+          enum:
+          - name
+          - path
+          - url
+          title: Field
+        text:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Text
+        phrase:
+          type: boolean
+          title: Phrase
+          default: false
+      type: object
+      required:
+      - op
+      - field
+      - text
+      title: TermNode
+    UpdateRequest:
+      properties:
+        filters:
+          anyOf:
+          - $ref: '#/components/schemas/FiltersModel'
+          - type: 'null'
+        preset_edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Preset Edits
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+        paused:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Paused
+      type: object
+      title: UpdateRequest
     ValidationError:
       properties:
         loc:
@@ -161,6 +1755,57 @@ components:
       - msg
       - type
       title: ValidationError
+    VideoInfoModel:
+      properties:
+        url:
+          type: string
+          title: Url
+        site:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Site
+        video_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Video Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        channel:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Channel
+        channel_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Channel Url
+        published_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Published At
+        duration:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Duration
+      type: object
+      required:
+      - url
+      - site
+      - video_id
+      - title
+      - channel
+      - channel_url
+      - published_at
+      - duration
+      title: VideoInfoModel
   securitySchemes:
     HTTPBearer:
       type: http
