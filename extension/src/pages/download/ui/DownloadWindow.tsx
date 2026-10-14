@@ -164,7 +164,7 @@ function FiltersForm({ filters, onChange }: { filters: Filters; onChange: (f: Fi
         <TextField size="small" type="number" label="Длительность от, мин" value={filters.min_duration ? filters.min_duration / 60 : ''} onChange={(e) => onChange({ ...filters, min_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 200 }} />
         <TextField size="small" type="number" label="до, мин" value={filters.max_duration ? filters.max_duration / 60 : ''} onChange={(e) => onChange({ ...filters, max_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 140 }} />
       </Stack>
-      <FormControlLabel disabled control={<Checkbox size="small" />} label="Только с музыкой — после распознавания музыки в video-analyzer" />
+      <FormControlLabel disabled control={<Checkbox size="small" />} label="Только с музыкой — после распознавания музыки в Tidy Reel" />
     </Stack>
   );
 }

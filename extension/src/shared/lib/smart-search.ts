@@ -1,7 +1,7 @@
 /**
  * «Умный поиск» (docs/extension/pages/search.md, раздел 2): запрос разбирается в дерево условий один
  * раз. Вкладки расширение проверяет само, а дерево архива отправляет локальному сервису — формат тот
- * же, что у `POST /api/archive/search` (video-analyzer/docs/local_service/local_service.md, раздел 7.2).
+ * же, что у `POST /api/archive/search` (tidy-reel/docs/local_service/local_service.md, раздел 7.2).
  */
 
 export type Field = 'name' | 'path' | 'url';

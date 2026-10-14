@@ -1,6 +1,6 @@
 import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/api';
 
-/** Пресеты сжатия в локальном сервисе (video-analyzer/docs/local_service/local_service.md, раздел 7.3). */
+/** Пресеты сжатия в локальном сервисе (tidy-reel/docs/local_service/local_service.md, раздел 7.3). */
 export type Preset = LocalServiceSchemas['PresetResponse'];
 export type PresetInput = LocalServiceSchemas['PresetRequest'];
 
@@ -8,7 +8,7 @@ export class PresetsUnavailableError extends Error {}
 
 async function client() {
   const c = await connectedClient();
-  if (!c) throw new PresetsUnavailableError('Профиль не подключён к video-analyzer');
+  if (!c) throw new PresetsUnavailableError('Профиль не подключён к Tidy Reel');
   return c;
 }
 

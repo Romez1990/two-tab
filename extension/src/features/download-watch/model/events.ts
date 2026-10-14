@@ -13,7 +13,7 @@ export type WatchEvent =
 const FINISHED = new Set(['done', 'cancelled', 'error', 'no_music']);
 
 /**
- * Уведомления подписок (video-analyzer/docs/downloader.md, раздел 7): проверка нашла новое; группа
+ * Уведомления подписок (tidy-reel/docs/downloader.md, раздел 7): проверка нашла новое; группа
  * подписки скачалась целиком. Первый запуск только запоминает состояние, без уведомлений о прошлом.
  */
 export function watchEvents(subscriptions: readonly Subscription[], groups: readonly Group[], state: WatchState | undefined): { events: WatchEvent[]; state: WatchState } {

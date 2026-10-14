@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ReactNode } from 'react';
-import { VideoAnalyzerConnection } from '@/features/connect-video-analyzer';
+import { TidyReelConnection } from '@/features/connect-tidy-reel';
 import { updateSettings, useSettings } from '@/shared/config';
 
 /** Первый запуск (docs/extension/pages/onboarding.md). Синхронизация появится на этапе 6. */
@@ -45,15 +45,15 @@ export function OnboardingPage() {
                 }}
                 required
                 error={!named}
-                helperText={named ? 'Его видно в video-analyzer.' : 'Обязательно: его видно в video-analyzer.'}
+                helperText={named ? 'Его видно в Tidy Reel.' : 'Обязательно: его видно в Tidy Reel.'}
                 fullWidth
               />
             </Step>
             <Step
-              title="2. Подключить к video-analyzer?"
-              hint="Если на этом компьютере стоит video-analyzer: время просмотра, оценки, скачивание. Подключён может быть только один профиль Chrome."
+              title="2. Подключить к Tidy Reel?"
+              hint="Если на этом компьютере стоит Tidy Reel: время просмотра, оценки, скачивание. Подключён может быть только один профиль Chrome."
             >
-              <VideoAnalyzerConnection disabled={!named} />
+              <TidyReelConnection disabled={!named} />
             </Step>
             <Step title="3. Синхронизация" hint="Синхронизация списка через сервер появится позже, на этапе 6." />
             <Button variant="contained" disabled={!named} onClick={() => window.close()} sx={{ alignSelf: 'flex-end' }}>

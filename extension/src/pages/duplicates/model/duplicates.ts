@@ -2,7 +2,7 @@ import type { SavedItem } from '@/entities/saved';
 
 /**
  * «Дубликаты» (docs/extension/pages/duplicates.md): открытые и сохранённые вкладки с одинаковым адресом.
- * Одинаковые — по ключу страницы, как `page_key` в video-analyzer/docs/web_links.md, раздел 5.
+ * Одинаковые — по ключу страницы, как `page_key` в tidy-reel/docs/web_links.md, раздел 5.
  */
 
 /** Метки и хвосты адреса, которые не меняют страницу (как TRACKING_KEYS в web_links.py). */

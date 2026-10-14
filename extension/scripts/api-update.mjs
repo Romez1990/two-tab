@@ -1,6 +1,6 @@
 // Обновляет договор локального сервиса (docs/extension/technologies.md, раздел 2.6): копирует
-// api/openapi.yaml из video-analyzer и заново строит из него типы. Путь к video-analyzer — в
-// extension/.env.local (не в git): VIDEO_ANALYZER_DIR=D:/.../video-analyzer. Прямые слэши: обратные
+// api/openapi.yaml из Tidy Reel и заново строит из него типы. Путь к Tidy Reel — в
+// extension/.env.local (не в git): TIDY_REEL_DIR=D:/.../tidy-reel. Прямые слэши: обратные
 // в .env-файле Node читает как экранирование (\v — вертикальная табуляция).
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync } from 'node:fs';
@@ -11,14 +11,14 @@ const CONTRACT = 'api/local-service.openapi.yaml';
 const TYPES = 'src/shared/api/local-service/schema.d.ts';
 
 if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
-const dir = process.env.VIDEO_ANALYZER_DIR;
+const dir = process.env.TIDY_REEL_DIR;
 if (!dir) {
-  console.error(`Задайте путь к video-analyzer в extension/${ENV_FILE}:\nVIDEO_ANALYZER_DIR=D:/.../video-analyzer (образец — extension/.env.local.example)`);
+  console.error(`Задайте путь к Tidy Reel в extension/${ENV_FILE}:\nTIDY_REEL_DIR=D:/.../tidy-reel (образец — extension/.env.local.example)`);
   process.exit(1);
 }
 const source = join(dir, 'api', 'openapi.yaml');
 if (!existsSync(source)) {
-  console.error(`Нет файла ${source}: проверьте VIDEO_ANALYZER_DIR или выгрузите договор в video-analyzer (export_openapi.py).`);
+  console.error(`Нет файла ${source}: проверьте TIDY_REEL_DIR или выгрузите договор в Tidy Reel (export_openapi.py).`);
   process.exit(1);
 }
 copyFileSync(source, CONTRACT);

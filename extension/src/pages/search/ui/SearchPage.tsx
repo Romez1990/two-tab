@@ -55,7 +55,7 @@ async function archiveAction(fileId: number, action: 'open' | 'show'): Promise<s
     if (response.ok) return undefined;
     return response.status === 404 ? 'Файл переместили, нужна индексация' : `Ошибка ${response.status}: ${JSON.stringify(error)}`;
   } catch {
-    return 'Локальный сервис video-analyzer не отвечает';
+    return 'Локальный сервис Tidy Reel не отвечает';
   }
 }
 
@@ -242,7 +242,7 @@ export function SearchPage() {
       </Stack>
       {!connected && (
         <Typography variant="body2" color="text.secondary">
-          Архив ищется, когда профиль подключён к video-analyzer (Настройки).
+          Архив ищется, когда профиль подключён к Tidy Reel (Настройки).
         </Typography>
       )}
       {busy && <LinearProgress />}

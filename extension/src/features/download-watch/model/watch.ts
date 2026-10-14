@@ -5,7 +5,7 @@ import { watchEvents, type WatchState } from './events';
 
 /**
  * Скачивание в фоне: раз в минуту куки сайтов очереди уходят сервису (после его перезапуска видео ждут
- * их, video-analyzer/docs/downloader.md, раздел 3.2) и показываются уведомления подписок (раздел 7).
+ * их, tidy-reel/docs/downloader.md, раздел 3.2) и показываются уведомления подписок (раздел 7).
  */
 export const DOWNLOAD_ALARM = 'download-watch';
 export const SUBSCRIPTION_NOTIFICATION_PREFIX = 'subscription:';

@@ -10,12 +10,12 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useWindows } from '@/entities/window';
 import { BackgroundCheck } from '@/features/background-check';
 import { CompressionPresets } from '@/features/compression-presets';
-import { VideoAnalyzerConnection } from '@/features/connect-video-analyzer';
+import { TidyReelConnection } from '@/features/connect-tidy-reel';
 import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
 
-/** Настройки (docs/extension/specification.md, раздел 1.2): автозакрытие, «Не закрывать», профиль, video-analyzer, сервер синхронизации. */
+/** Настройки (docs/extension/specification.md, раздел 1.2): автозакрытие, «Не закрывать», профиль, Tidy Reel, сервер синхронизации. */
 export function SettingsPage() {
   const settings = useSettings();
   if (!settings) return null;
@@ -56,16 +56,16 @@ export function SettingsPage() {
           defaultValue={settings.profileName}
           onBlur={(e) => void updateSettings({ profileName: e.target.value.trim() })}
           error={!settings.profileName}
-          helperText={settings.profileName ? undefined : 'Заполните название: его видно в video-analyzer'}
+          helperText={settings.profileName ? undefined : 'Заполните название: его видно в Tidy Reel'}
           sx={{ width: 320 }}
         />
       </Section>
 
       <Section
-        title="video-analyzer"
-        hint="Локальный сервис video-analyzer на этом компьютере: время просмотра, оценки, скачивание. Подключён может быть только один профиль Chrome."
+        title="Tidy Reel"
+        hint="Локальный сервис Tidy Reel на этом компьютере: время просмотра, оценки, скачивание. Подключён может быть только один профиль Chrome."
       >
-        <VideoAnalyzerConnection />
+        <TidyReelConnection />
       </Section>
 
       {settings.localServiceKey && (

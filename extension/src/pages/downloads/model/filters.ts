@@ -1,4 +1,4 @@
-/** Фильтры канала и подписки словами (video-analyzer/docs/downloader.md, раздел 6.1). */
+/** Фильтры канала и подписки словами (tidy-reel/docs/downloader.md, раздел 6.1). */
 export function describeFilters(filters: Record<string, unknown>): string {
   const parts: string[] = [];
   const { date_from, date_to, number_from, number_to, from_end, min_duration, max_duration } = filters as {

@@ -36,7 +36,7 @@ export function SubscriptionsPage() {
       )}
       <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="body2" color="text.secondary">
-          Каналы проверяются раз в 3 дня, пока работает video-analyzer. Подписаться — на странице канала.
+          Каналы проверяются раз в 3 дня, пока работает Tidy Reel. Подписаться — на странице канала.
         </Typography>
         <Button onClick={() => run(() => checkSubscriptionsNow(), 'Подписки будут проверены в ближайшие секунды')}>Проверить все сейчас</Button>
       </Stack>

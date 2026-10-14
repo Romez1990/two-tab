@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { downloadAction, feedCookies, groupAction, listQueue, type Download, type DownloadAction, type Group, type GroupAction } from '@/entities/download';
 
-/** Состояния очереди по-русски (video-analyzer/docs/downloader.md, раздел 9). */
+/** Состояния очереди по-русски (tidy-reel/docs/downloader.md, раздел 9). */
 const STATES: Record<string, { label: string; color: 'default' | 'primary' | 'success' | 'error' | 'warning' }> = {
   queued: { label: 'в очереди', color: 'default' },
   paused: { label: 'на паузе', color: 'default' },
@@ -119,7 +119,7 @@ function GroupItem({ group, runGroup, runDownload }: { group: Group; runGroup: (
       )}
     </Stack>
   );
-  // Группа из одного видео выглядит как обычная строка (video-analyzer/docs/downloader.md, раздел 2.1).
+  // Группа из одного видео выглядит как обычная строка (tidy-reel/docs/downloader.md, раздел 2.1).
   if (group.kind === 'video' && group.downloads.length === 1) {
     return (
       <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, px: 1.5 }}>
@@ -166,7 +166,7 @@ export function QueuePage() {
         setError('');
         if (tick++ % COOKIES_EVERY === 0) await feedCookies(next);
       } catch (e) {
-        if (alive) setError(e instanceof Error ? e.message : 'Локальный сервис video-analyzer не отвечает');
+        if (alive) setError(e instanceof Error ? e.message : 'Локальный сервис Tidy Reel не отвечает');
       }
     };
     void poll();

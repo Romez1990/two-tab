@@ -19,7 +19,7 @@ export interface LocalSettings {
   profileName: string;
   /** Случайный номер профиля для локального сервиса; создаётся при первом подключении. */
   profileId: string;
-  /** Порт локального сервиса video-analyzer на 127.0.0.1. */
+  /** Порт локального сервиса Tidy Reel на 127.0.0.1. */
   localServicePort: number;
   /** Ключ доступа к локальному сервису; пустой — профиль не подключён. */
   localServiceKey: string;

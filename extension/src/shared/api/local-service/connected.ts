@@ -1,7 +1,7 @@
 import { getSettings } from '@/shared/config';
 import { localServiceClient, type LocalServiceClient } from './client';
 
-/** Клиент с портом и ключом из настроек; `undefined` — профиль не подключён к video-analyzer. */
+/** Клиент с портом и ключом из настроек; `undefined` — профиль не подключён к Tidy Reel. */
 export async function connectedClient(): Promise<LocalServiceClient | undefined> {
   const { localServicePort, localServiceKey } = await getSettings();
   return localServiceKey ? localServiceClient(localServicePort, localServiceKey) : undefined;

@@ -5,21 +5,21 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { useSettings } from '@/shared/config';
-import { checkConnection, connectVideoAnalyzer, disconnectVideoAnalyzer, type ConnectionStatus } from '../model/connection';
+import { checkConnection, connectTidyReel, disconnectTidyReel, type ConnectionStatus } from '../model/connection';
 
 type Message = { severity: 'success' | 'info' | 'warning' | 'error'; text: string };
 
-const MENU_HINT = 'Отключить его можно в его настройках или командой «Отключить профиль Tabsurd» в меню video-analyzer.';
+const MENU_HINT = 'Отключить его можно в его настройках или командой «Отключить профиль Tabsurd» в меню Tidy Reel.';
 
 function sinceText(since: string): string {
   return new Date(since).toLocaleDateString('ru-RU');
 }
 
 /**
- * Блок «video-analyzer» для «Первого запуска» и настроек (docs/extension/pages/settings.md, раздел 1).
+ * Блок «Tidy Reel» для «Первого запуска» и настроек (docs/extension/pages/settings.md, раздел 1).
  * `disabled` — подключаться пока нельзя (на «Первом запуске» не заполнено название профиля).
  */
-export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boolean }) {
+export function TidyReelConnection({ disabled = false }: { disabled?: boolean }) {
   const settings = useSettings();
   const [port, setPort] = useState('');
   const [status, setStatus] = useState<ConnectionStatus>();
@@ -35,7 +35,7 @@ export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boole
   useEffect(() => {
     if (key === undefined) return;
     let alive = true;
-    // «Отключён в video-analyzer» остаётся, пока не подключились снова: после него ключ пуст, и проверка вернёт «нет».
+    // «Отключён в Tidy Reel» остаётся, пока не подключились снова: после него ключ пуст, и проверка вернёт «нет».
     void checkConnection().then((s) => alive && setStatus((prev) => (prev?.state === 'revoked' && s.state === 'none' ? prev : s)));
     return () => {
       alive = false;
@@ -49,13 +49,13 @@ export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boole
   const connect = async () => {
     setBusy(true);
     setMessage(undefined);
-    const result = await connectVideoAnalyzer(portNumber);
+    const result = await connectTidyReel(portNumber);
     setBusy(false);
     if (result.ok) return;
     if (result.reason === 'taken') {
-      setMessage({ severity: 'warning', text: `В video-analyzer уже подключён профиль «${result.name}». ${MENU_HINT}` });
+      setMessage({ severity: 'warning', text: `В Tidy Reel уже подключён профиль «${result.name}». ${MENU_HINT}` });
     } else if (result.reason === 'unreachable') {
-      setMessage({ severity: 'error', text: `video-analyzer не отвечает на порту ${portNumber}: запущен ли локальный сервис?` });
+      setMessage({ severity: 'error', text: `tidy-reel не отвечает на порту ${portNumber}: запущен ли локальный сервис?` });
     } else {
       setMessage({ severity: 'error', text: `Не удалось подключиться: ${result.message}` });
     }
@@ -64,12 +64,12 @@ export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boole
   const disconnect = async () => {
     setBusy(true);
     setMessage(undefined);
-    const forgotten = await disconnectVideoAnalyzer();
+    const forgotten = await disconnectTidyReel();
     setBusy(false);
     if (!forgotten) {
       setMessage({
         severity: 'warning',
-        text: 'video-analyzer не ответил: подключение забыто только здесь. В video-analyzer отключите профиль командой «Отключить профиль Tabsurd» в меню.',
+        text: 'Tidy Reel не ответил: подключение забыто только здесь. В Tidy Reel отключите профиль командой «Отключить профиль Tabsurd» в меню.',
       });
     }
   };
@@ -84,10 +84,10 @@ export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boole
       )}
       {status.state === 'unreachable' && (
         <Alert severity="warning">
-          Профиль подключён, но video-analyzer не отвечает на порту {settings.localServicePort}: запущен ли локальный сервис?
+          Профиль подключён, но Tidy Reel не отвечает на порту {settings.localServicePort}: запущен ли локальный сервис?
         </Alert>
       )}
-      {status.state === 'revoked' && <Alert severity="info">Отключён в video-analyzer. Можно подключиться снова.</Alert>}
+      {status.state === 'revoked' && <Alert severity="info">Отключён в Tidy Reel. Можно подключиться снова.</Alert>}
       {message && <Alert severity={message.severity}>{message.text}</Alert>}
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <TextField
@@ -101,7 +101,7 @@ export function VideoAnalyzerConnection({ disabled = false }: { disabled?: boole
         />
         {connected ? (
           <Button variant="outlined" color="warning" disabled={busy} onClick={() => void disconnect()}>
-            Отключиться от video-analyzer
+            Отключиться от Tidy Reel
           </Button>
         ) : (
           <Button variant="contained" disabled={disabled || busy || !portValid} onClick={() => void connect()}>

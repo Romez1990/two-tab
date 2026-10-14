@@ -2,7 +2,7 @@ import { localServiceClient } from '@/shared/api';
 import { getSettings, updateSettings } from '@/shared/config';
 
 /**
- * Подключение профиля к локальному сервису video-analyzer (docs/extension/pages/settings.md, раздел 1):
+ * Подключение профиля к локальному сервису Tidy Reel (docs/extension/pages/settings.md, раздел 1):
  * регистрация с номером и названием профиля, проверка связи, отключение. Ключ хранится в `storage.local`.
  */
 
@@ -27,7 +27,7 @@ export function takenBy(detail: unknown): string {
   return typeof detail === 'string' && detail.startsWith(TAKEN_PREFIX) ? detail.slice(TAKEN_PREFIX.length) : '';
 }
 
-export async function connectVideoAnalyzer(port: number): Promise<ConnectResult> {
+export async function connectTidyReel(port: number): Promise<ConnectResult> {
   const settings = await getSettings();
   const profileId = settings.profileId || crypto.randomUUID();
   if (!settings.profileId) await updateSettings({ profileId });
@@ -57,7 +57,7 @@ export async function checkConnection(): Promise<ConnectionStatus> {
     return { state: 'unreachable' };
   }
   if (result.data) return { state: 'connected', name: result.data.name, since: result.data.connected_at };
-  // 401 — сервис не знает этот ключ: профиль отключили в video-analyzer.
+  // 401 — сервис не знает этот ключ: профиль отключили в Tidy Reel.
   if (result.response.status === 401) {
     await updateSettings({ localServiceKey: '' });
     return { state: 'revoked' };
@@ -65,8 +65,8 @@ export async function checkConnection(): Promise<ConnectionStatus> {
   return { state: 'unreachable' };
 }
 
-/** Забывает подключение; `false` — сервис не ответил, и в video-analyzer профиль надо отключить командой меню. */
-export async function disconnectVideoAnalyzer(): Promise<boolean> {
+/** Забывает подключение; `false` — сервис не ответил, и в Tidy Reel профиль надо отключить командой меню. */
+export async function disconnectTidyReel(): Promise<boolean> {
   const { localServicePort, localServiceKey } = await getSettings();
   let forgotten = false;
   try {

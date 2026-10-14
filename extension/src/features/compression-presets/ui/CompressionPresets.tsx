@@ -45,7 +45,7 @@ export function CompressionPresets() {
         setDrafts(presets.map(toDraft));
         setSites(sites);
       })
-      .catch((e: unknown) => setUnavailable(e instanceof PresetsUnavailableError ? e.message : 'Локальный сервис video-analyzer не отвечает'));
+      .catch((e: unknown) => setUnavailable(e instanceof PresetsUnavailableError ? e.message : 'Локальный сервис Tidy Reel не отвечает'));
   }, []);
   useEffect(reload, [reload]);
 

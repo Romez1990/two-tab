@@ -41,7 +41,7 @@ export const SMART_SEARCH_HINT = [
   ['url:tiktok', 'слово в адресе'],
 ] as const;
 
-/** Варианты «Умного момента времени» (video-analyzer/docs/compression.md, раздел 2.7). */
+/** Варианты «Умного момента времени» (tidy-reel/docs/compression.md, раздел 2.7). */
 export const SMART_TIME_HINT = [
   ['94f', 'начало: отрезать первые 94 кадра'],
   ['12.5, 0:12.5, 1:02:03.25', 'начало: начать с этого момента'],

@@ -2,7 +2,7 @@ import { connectedClient, errorText, type LocalServiceClient, type LocalServiceS
 import { browser } from '@/shared/browser';
 
 /**
- * Скачивание через локальный сервис (video-analyzer/docs/local_service/local_service.md, раздел 7.4).
+ * Скачивание через локальный сервис (tidy-reel/docs/local_service/local_service.md, раздел 7.4).
  * Куки сайта расширение передаёт всегда: заранее не известно, закрыто ли видео (docs/extension/pages/downloads.md).
  */
 
@@ -17,7 +17,7 @@ export type Subscription = S['SubscriptionModel'];
 
 export class NotConnectedError extends Error {
   constructor() {
-    super('Профиль не подключён к video-analyzer (Настройки)');
+    super('Профиль не подключён к Tidy Reel (Настройки)');
   }
 }
 
