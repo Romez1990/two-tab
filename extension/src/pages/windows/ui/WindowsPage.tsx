@@ -1,6 +1,4 @@
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -19,7 +17,7 @@ import { reorderWindows } from '@/features/recreate-window';
 import { SaveCloseButton } from '@/features/save-close';
 import { browser } from '@/shared/browser';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
-import { groupColor } from '@/shared/ui';
+import { groupColor, KeepLockButton } from '@/shared/ui';
 
 /**
  * «Окна» (docs/extension/pages/windows.md, раздел 1): имена окон, порядок перетаскиванием (окна пересоздаются,
@@ -163,11 +161,7 @@ function WindowCard({
             <OpenInBrowserIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title={kept ? 'Не закрывать автоматически — включено' : 'Не закрывать это окно автоматически'}>
-          <IconButton onClick={() => void toggleKeep()} color={kept ? 'primary' : 'default'} disabled={!uid}>
-            {kept ? <LockIcon /> : <LockOpenIcon />}
-          </IconButton>
-        </Tooltip>
+        <KeepLockButton kept={kept} onToggle={() => void toggleKeep()} disabled={!uid} />
         <SaveCloseButton windowId={window.id} onDone={onChanged} />
       </Stack>
       {window.groups.length > 0 && (

@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -14,6 +12,7 @@ import { TidyReelConnection } from '@/features/connect-tidy-reel';
 import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
+import { KeepLockButton } from '@/shared/ui';
 
 /** Настройки (docs/extension/specification.md, раздел 1.2): автозакрытие, «Не закрывать», профиль, Tidy Reel, сервер синхронизации. */
 export function SettingsPage() {
@@ -125,36 +124,33 @@ function KeepWindows({ settings }: { settings: Settings }) {
       {open.map(({ uid, window: w }) => {
         const first = w.tabs[0];
         return (
-          <FormControlLabel
-            key={uid}
-            control={<Checkbox checked={keep.has(uid)} onChange={(e) => toggle(uid, e.target.checked)} />}
-            label={
-              <Typography noWrap>
-                {settings.windowNames[uid] || first?.title || first?.url || 'Окно'}
-                <Typography component="span" variant="body2" color="text.secondary">
-                  {' '}· {w.tabs.length} вкладок{w.focused ? ' · текущее окно' : ''}
-                </Typography>
-              </Typography>
-            }
-            sx={{ minWidth: 0, mr: 0 }}
-          />
+          <KeepRow key={uid} kept={keep.has(uid)} onToggle={() => toggle(uid, !keep.has(uid))}>
+            {settings.windowNames[uid] || first?.title || first?.url || 'Окно'}
+            <Typography component="span" variant="body2" color="text.secondary">
+              {' '}· {w.tabs.length} вкладок{w.focused ? ' · текущее окно' : ''}
+            </Typography>
+          </KeepRow>
         );
       })}
       {closed.map((uid) => (
-        <FormControlLabel
-          key={uid}
-          control={<Checkbox checked onChange={() => toggle(uid, false)} />}
-          label={
-            <Typography noWrap>
-              {settings.windowNames[uid] || `Окно ${uid.slice(0, 6)}`}
-              <Typography component="span" variant="body2" color="text.secondary">
-                {' '}· сейчас закрыто
-              </Typography>
-            </Typography>
-          }
-          sx={{ minWidth: 0, mr: 0 }}
-        />
+        <KeepRow key={uid} kept onToggle={() => toggle(uid, false)}>
+          {settings.windowNames[uid] || `Окно ${uid.slice(0, 6)}`}
+          <Typography component="span" variant="body2" color="text.secondary">
+            {' '}· сейчас закрыто
+          </Typography>
+        </KeepRow>
       ))}
+    </Stack>
+  );
+}
+
+function KeepRow({ kept, onToggle, children }: { kept: boolean; onToggle: () => void; children: ReactNode }) {
+  return (
+    <Stack direction="row" sx={{ alignItems: 'center', minWidth: 0 }}>
+      <KeepLockButton kept={kept} onToggle={onToggle} />
+      <Typography noWrap sx={{ minWidth: 0 }}>
+        {children}
+      </Typography>
     </Stack>
   );
 }
