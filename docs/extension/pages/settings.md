@@ -1,7 +1,7 @@
 # Страница «Настройки»
 
 Часть требований расширения Tabsurd, общее — `docs/extension/specification.md`.
-Связанные документы: `docs/extension/specification.md` (раздел 1.2 — где хранятся настройки), `tidy-reel/docs/local_service/local_service.md`, `tidy-reel/docs/compression.md`.
+Связанные документы: `docs/extension/specification.md` (раздел 1.2 — где хранятся настройки), `tidy-reel/docs/local_service/local_service.md`, `tidy-reel/docs/recompress.md`.
 
 ---
 
@@ -30,4 +30,4 @@
 
 ## 4. Сжатие видео
 
-Пресеты сжатия: «По умолчанию» и пресеты сайтов (`tidy-reel/docs/compression.md`, разделы 2–3). Хранятся в локальном сервисе; только в профиле, подключённом к Tidy Reel.
+Пресеты сжатия: «По умолчанию» и пресеты сайтов (`tidy-reel/docs/recompress.md`, разделы 2–3). Хранятся в локальном сервисе; только в профиле, подключённом к Tidy Reel.

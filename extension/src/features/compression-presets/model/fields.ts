@@ -1,5 +1,5 @@
 /**
- * Поля пресета сжатия и подписи ползунков (tidy-reel/docs/compression.md, разделы 2–3). Значения
+ * Поля пресета сжатия и подписи ползунков (tidy-reel/docs/recompress.md, разделы 2–3). Значения
  * в процентах — из тестов на PMV: 100% — значение по умолчанию, справа самая большая экономия места.
  */
 
@@ -140,7 +140,7 @@ export function describeStep(def: SliderDef, step: SliderStep): string {
 
 const TIME = /^(?:(?:(\d+):)?(\d+):)?(\d+(?:\.\d+)?)$/;
 
-/** «Умный момент времени»: ошибка — текст для подсветки поля, пусто — верно (compression.md, раздел 2.7). */
+/** «Умный момент времени»: ошибка — текст для подсветки поля, пусто — верно (recompress.md, раздел 2.7). */
 export function trimError(text: string, end: boolean): string {
   let value = text.trim().toLowerCase();
   if (!value) return '';

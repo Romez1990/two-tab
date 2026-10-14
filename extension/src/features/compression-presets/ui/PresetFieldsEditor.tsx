@@ -10,7 +10,7 @@ import { SMART_TIME_HINT, SmartHint } from '@/shared/ui';
 import { DEFAULT_FIELDS, SLIDERS, describeStep, trimError, type PresetFields, type SliderDef } from '../model/fields';
 
 /**
- * Поля пресета (tidy-reel/docs/compression.md, раздел 2). `base` — «По умолчанию»: у пресета сайта
+ * Поля пресета (tidy-reel/docs/recompress.md, раздел 2). `base` — «По умолчанию»: у пресета сайта
  * поле без галочки «своё» берётся оттуда. Тот же редактор — в окне «Скачать» для правок на этот раз.
  */
 export function PresetFieldsEditor({

@@ -831,7 +831,7 @@ export interface components {
             sites: string[];
             /**
              * Fields
-             * @description Only the fields the preset sets: compression.md, section 3
+             * @description Only the fields the preset sets: recompress.md, section 3
              */
             fields: {
                 [key: string]: unknown;
@@ -849,7 +849,7 @@ export interface components {
             sites: string[];
             /**
              * Fields
-             * @description Only the fields the preset sets: compression.md, section 3
+             * @description Only the fields the preset sets: recompress.md, section 3
              */
             fields: {
                 [key: string]: unknown;
