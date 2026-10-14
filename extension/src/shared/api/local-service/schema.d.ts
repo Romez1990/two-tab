@@ -213,6 +213,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/downloads/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Pause Downloads
+         * @description Pause the whole queue or go on (recompress.md, section 6.3).
+         */
+        put: operations["pause_downloads"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/downloads/cookies": {
         parameters: {
             query?: never;
@@ -281,6 +301,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/downloads/groups/{group_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Group
+         * @description Into the trash (tabsurd/docs/extension/pages/trash.md).
+         */
+        delete: operations["delete_group"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/downloads/{download_id}/move": {
         parameters: {
             query?: never;
@@ -332,6 +372,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/downloads/{download_id}/skip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Skip Download
+         * @description «Пропустить» a video with an error: it stays so, the queue goes on (recompress.md, 6.3).
+         */
+        post: operations["skip_download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/downloads/{download_id}/open": {
         parameters: {
             query?: never;
@@ -366,6 +426,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/downloads/{download_id}/original/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Open Original */
+        post: operations["open_original"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/{download_id}/original/done": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Original Done
+         * @description «Готово»: the original is deleted for good, a censored version goes into the queue.
+         */
+        post: operations["original_done"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/downloads/categories": {
         parameters: {
             query?: never;
@@ -394,6 +491,26 @@ export interface paths {
         put?: never;
         /** Create Model */
         post: operations["create_model"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/folders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Folders
+         * @description Subfolders for the folder browser of the form (downloader.md, section 4).
+         */
+        get: operations["list_folders"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -470,6 +587,261 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/recompress/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check Recompress */
+        post: operations["check_recompress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Recompress */
+        get: operations["list_recompress"];
+        put?: never;
+        /** Create Recompress */
+        post: operations["create_recompress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Pause Recompress Queue
+         * @description Pause the whole queue or go on (recompress.md, section 6.3).
+         */
+        put: operations["pause_recompress_queue"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress/{job_id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Retry Recompress
+         * @description «Повторить» the video that stopped the queue with an error (strict order).
+         */
+        post: operations["retry_recompress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress/{job_id}/skip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Skip Recompress
+         * @description «Пропустить»: the video stays with its error, the job goes on.
+         */
+        post: operations["skip_recompress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress/{job_id}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move Recompress */
+        post: operations["move_recompress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress/{job_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pause Recompress */
+        post: operations["pause_recompress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress/{job_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Recompress */
+        post: operations["cancel_recompress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Attention
+         * @description The cases the queues need the user for; empty — nothing (the banner is hidden).
+         */
+        get: operations["get_attention"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attention/mute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mute Attention
+         * @description «Заглушить» the cases there are now; a new case rings again.
+         */
+        post: operations["mute_attention"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Settings */
+        get: operations["get_settings"];
+        /** Put Settings */
+        put: operations["put_settings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Trash */
+        get: operations["list_trash"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trash/groups/{group_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Trashed Group */
+        post: operations["restore_trashed_group"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trash/subscriptions/{subscription_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Trashed Subscription */
+        post: operations["restore_trashed_subscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -483,6 +855,28 @@ export interface components {
             op: "and";
             /** Items */
             items: components["schemas"]["Node"][];
+        };
+        /** CaseModel */
+        CaseModel: {
+            /**
+             * Queue
+             * @description download or recompress
+             */
+            queue: string;
+            /**
+             * Reason
+             * @description no_space, error or need_cookies
+             */
+            reason: string;
+            /** Text */
+            text: string;
+            /** Since */
+            since: string;
+            /**
+             * Muted
+             * @description «Заглушить» was pressed for this case
+             */
+            muted: boolean;
         };
         /** ChannelCheckResponse */
         ChannelCheckResponse: {
@@ -526,6 +920,18 @@ export interface components {
             preset_edits?: {
                 [key: string]: unknown;
             } | null;
+            /**
+             * Keep Original
+             * @description downloader.md, section 2.2
+             * @default false
+             */
+            keep_original: boolean;
+            /**
+             * Start
+             * @description False — the queue is paused (user), recompress.md section 6.3
+             * @default true
+             */
+            start: boolean;
         };
         /** CheckNowRequest */
         CheckNowRequest: {
@@ -534,39 +940,6 @@ export interface components {
              * @description One subscription; none — all
              */
             id?: number | null;
-        };
-        /** CheckRequest */
-        CheckRequest: {
-            /** Url */
-            url: string;
-            /**
-             * Cookies
-             * @default []
-             */
-            cookies: components["schemas"]["Cookie"][];
-        };
-        /** CheckResponse */
-        CheckResponse: {
-            video: components["schemas"]["VideoInfoModel"];
-            /**
-             * Downloaded
-             * @description Already downloaded: where the file is now
-             */
-            downloaded: string | null;
-            /** Models */
-            models: string[];
-            /**
-             * Found By
-             * @description links, account or name
-             */
-            found_by: string | null;
-            /**
-             * Folder
-             * @description New of the model if no choice is needed
-             */
-            folder: string | null;
-            /** Recent */
-            recent: string[];
         };
         /** Connection */
         Connection: {
@@ -649,6 +1022,28 @@ export interface components {
             folder: string;
             /** File Path */
             file_path: string | null;
+            /**
+             * Original Path
+             * @description The original kept for now: «waits for the original to be deleted», downloader.md section 2.2
+             */
+            original_path?: string | null;
+            /**
+             * Compress Seconds
+             * @description Recompression time estimate, recompress.md section 2.12
+             */
+            compress_seconds?: number | null;
+            /**
+             * Compress Approximate
+             * @default false
+             */
+            compress_approximate: boolean;
+        };
+        /** DownloadQueueModel */
+        DownloadQueueModel: {
+            /** @description The pause of the whole queue, None — it goes */
+            pause: components["schemas"]["PauseModel"] | null;
+            /** Groups */
+            groups: components["schemas"]["GroupModel"][];
         };
         /** EnqueueRequest */
         EnqueueRequest: {
@@ -670,10 +1065,45 @@ export interface components {
             preset_edits?: {
                 [key: string]: unknown;
             } | null;
+            /**
+             * Music Only
+             * @description downloader.md, section 8
+             * @default false
+             */
+            music_only: boolean;
+            /**
+             * Keep Original
+             * @description downloader.md, section 2.2
+             * @default false
+             */
+            keep_original: boolean;
+            /**
+             * Start
+             * @description False — the queue is paused (user), recompress.md section 6.3
+             * @default true
+             */
+            start: boolean;
+        };
+        /** FileCheckModel */
+        FileCheckModel: {
+            /** Path */
+            path: string;
+            /**
+             * Action
+             * @description recompress, sound (only the sound) or skip
+             */
+            action: string;
+            /** Notices */
+            notices: components["schemas"]["NoticeModel"][];
+            /**
+             * Needs Confirmation
+             * @description Without a confirmation in the job the file is left as it is
+             */
+            needs_confirmation: boolean;
         };
         /**
          * FiltersModel
-         * @description downloader.md, section 6.1; music_only is refused until the music recognition (P-3).
+         * @description downloader.md, sections 6.1 and 8.
          */
         FiltersModel: {
             /**
@@ -728,6 +1158,11 @@ export interface components {
              * @description Paths of the shortcuts to the video
              */
             shortcuts: string[];
+            /**
+             * Page Url
+             * @description The page it was downloaded from
+             */
+            page_url?: string | null;
         };
         /** GroupModel */
         GroupModel: {
@@ -746,6 +1181,75 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** JobModel */
+        JobModel: {
+            /** Id */
+            id: number;
+            /** Folder */
+            folder: string;
+            /** Preset */
+            preset: string;
+            /** Edits */
+            edits: {
+                [key: string]: unknown;
+            } | null;
+            /** Mode */
+            mode: string | null;
+            /** State */
+            state: string;
+            /** Total */
+            total: number | null;
+            /** Done */
+            done: number;
+            /** Compressed */
+            compressed: number;
+            /** Kept */
+            kept: number;
+            /** Saved Bytes */
+            saved_bytes: number;
+            /** Errors */
+            errors: string[][];
+            /** Current */
+            current: string | null;
+            /** Progress */
+            progress: number | null;
+            /** Error */
+            error: string | null;
+            /** Created At */
+            created_at: string;
+            /** Finished At */
+            finished_at: string | null;
+        };
+        /** JobRequest */
+        JobRequest: {
+            /**
+             * Folder
+             * @description Full path of the folder
+             */
+            folder: string;
+            /** Preset */
+            preset: string;
+            /** Edits */
+            edits?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Mode
+             * @description Normalization mode
+             */
+            mode?: string | null;
+            /**
+             * Confirmed
+             * @description Paths of the files whose warnings the user accepted
+             */
+            confirmed?: string[];
+            /**
+             * Start
+             * @description False — the queue is paused (user), recompress.md section 6.3
+             * @default true
+             */
+            start: boolean;
         };
         /** KnownRequest */
         KnownRequest: {
@@ -796,6 +1300,16 @@ export interface components {
             op: "not";
             item: components["schemas"]["Node"];
         };
+        /** NoticeModel */
+        NoticeModel: {
+            /**
+             * Kind
+             * @description ours (yellow, no confirmation), worse (red), checked, no_settings, mismatch, unchanged, trim
+             */
+            kind: string;
+            /** Text */
+            text: string;
+        };
         /** OrNode */
         OrNode: {
             /**
@@ -805,6 +1319,16 @@ export interface components {
             op: "or";
             /** Items */
             items: components["schemas"]["Node"][];
+        };
+        /** PauseModel */
+        PauseModel: {
+            /**
+             * Reason
+             * @description user (the user paused it) or no_space (the disk is full)
+             */
+            reason: string;
+            /** Since */
+            since: string;
         };
         /** PauseRequest */
         PauseRequest: {
@@ -859,6 +1383,21 @@ export interface components {
             /** Is Default */
             is_default: boolean;
         };
+        /** QueuePauseRequest */
+        QueuePauseRequest: {
+            /**
+             * Paused
+             * @description True — pause the whole queue (user), false — go on
+             */
+            paused: boolean;
+        };
+        /** RecompressQueueModel */
+        RecompressQueueModel: {
+            /** @description The pause of the whole queue, None — it goes */
+            pause: components["schemas"]["PauseModel"] | null;
+            /** Jobs */
+            jobs: components["schemas"]["JobModel"][];
+        };
         /** SearchRequest */
         SearchRequest: {
             /** @description The condition tree: local_service.md, section 7.2 */
@@ -883,18 +1422,42 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** SettingsModel */
+        SettingsModel: {
+            /**
+             * Notify Every Minutes
+             * @description How often the notification rings
+             */
+            notify_every_minutes: number;
+            /**
+             * Strict Order
+             * @description The queues go strictly in order: an error or missing cookies pause the whole queue
+             */
+            strict_order: boolean;
+        };
         /**
          * Sort
          * @enum {string}
          */
         Sort: "relevance" | "date";
-        /** StepsRequest */
-        StepsRequest: {
+        /** SubfolderModel */
+        SubfolderModel: {
+            /** Name */
+            name: string;
+            /** Path */
+            path: string;
+            /** Tag */
+            tag: boolean;
+        };
+        /** SubfoldersResponse */
+        SubfoldersResponse: {
             /**
-             * Steps
-             * @description Minus is up
+             * Parent
+             * @description The parent inside the categories, if any
              */
-            steps: number;
+            parent: string | null;
+            /** Folders */
+            folders: components["schemas"]["SubfolderModel"][];
         };
         /** SubscribeRequest */
         SubscribeRequest: {
@@ -976,6 +1539,37 @@ export interface components {
              */
             phrase: boolean;
         };
+        /** TrashResponse */
+        TrashResponse: {
+            /** Groups */
+            groups: components["schemas"]["TrashedGroupModel"][];
+            /** Subscriptions */
+            subscriptions: components["schemas"]["TrashedSubscriptionModel"][];
+        };
+        /** TrashedGroupModel */
+        TrashedGroupModel: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Kind */
+            kind: string;
+            /** Videos */
+            videos: number;
+            /** Deleted At */
+            deleted_at: string;
+        };
+        /** TrashedSubscriptionModel */
+        TrashedSubscriptionModel: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Channel Url */
+            channel_url: string;
+            /** Deleted At */
+            deleted_at: string;
+        };
         /** UpdateRequest */
         UpdateRequest: {
             filters?: components["schemas"]["FiltersModel"] | null;
@@ -1019,6 +1613,76 @@ export interface components {
             published_at: string | null;
             /** Duration */
             duration: number | null;
+        };
+        /** CheckRequest */
+        local_service__routes__recompress__CheckRequest: {
+            /**
+             * Folder
+             * @description Full path of the folder
+             */
+            folder: string;
+            /** Preset */
+            preset: string;
+            /** Edits */
+            edits?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** CheckResponse */
+        local_service__routes__recompress__CheckResponse: {
+            /**
+             * Files
+             * @description recompress.md, sections 6.1 and 6.2
+             */
+            files: components["schemas"]["FileCheckModel"][];
+            /** Not Indexed */
+            not_indexed: number;
+        };
+        /** StepsRequest */
+        local_service__routes__recompress__StepsRequest: {
+            /** Steps */
+            steps: number;
+        };
+        /** CheckRequest */
+        local_service__schemas__downloads__CheckRequest: {
+            /** Url */
+            url: string;
+            /**
+             * Cookies
+             * @default []
+             */
+            cookies: components["schemas"]["Cookie"][];
+        };
+        /** CheckResponse */
+        local_service__schemas__downloads__CheckResponse: {
+            video: components["schemas"]["VideoInfoModel"];
+            /**
+             * Downloaded
+             * @description Already downloaded: where the file is now
+             */
+            downloaded: string | null;
+            /** Models */
+            models: string[];
+            /**
+             * Found By
+             * @description links, account or name
+             */
+            found_by: string | null;
+            /**
+             * Folder
+             * @description New of the model if no choice is needed
+             */
+            folder: string | null;
+            /** Recent */
+            recent: string[];
+        };
+        /** StepsRequest */
+        local_service__schemas__downloads__StepsRequest: {
+            /**
+             * Steps
+             * @description Minus is up
+             */
+            steps: number;
         };
     };
     responses: never;
@@ -1588,7 +2252,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CheckRequest"];
+                "application/json": components["schemas"]["local_service__schemas__downloads__CheckRequest"];
             };
         };
         responses: {
@@ -1598,7 +2262,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CheckResponse"];
+                    "application/json": components["schemas"]["local_service__schemas__downloads__CheckResponse"];
                 };
             };
             /** @description Wrong key */
@@ -1648,7 +2312,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GroupModel"][];
+                    "application/json": components["schemas"]["DownloadQueueModel"];
                 };
             };
             /** @description Wrong key */
@@ -1721,7 +2385,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CheckRequest"];
+                "application/json": components["schemas"]["local_service__schemas__downloads__CheckRequest"];
             };
         };
         responses: {
@@ -1825,6 +2489,51 @@ export interface operations {
             };
         };
     };
+    pause_downloads: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueuePauseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     give_cookies: {
         parameters: {
             query?: never;
@@ -1881,7 +2590,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["StepsRequest"];
+                "application/json": components["schemas"]["local_service__schemas__downloads__StepsRequest"];
             };
         };
         responses: {
@@ -2049,6 +2758,63 @@ export interface operations {
             };
         };
     };
+    delete_group: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such group or download, or no file */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The action does not fit the state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     move_download: {
         parameters: {
             query?: never;
@@ -2060,7 +2826,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["StepsRequest"];
+                "application/json": components["schemas"]["local_service__schemas__downloads__StepsRequest"];
             };
         };
         responses: {
@@ -2168,6 +2934,63 @@ export interface operations {
         };
     };
     retry_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                download_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such group or download, or no file */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The action does not fit the state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    skip_download: {
         parameters: {
             query?: never;
             header?: never;
@@ -2338,6 +3161,120 @@ export interface operations {
             };
         };
     };
+    open_original: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                download_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such group or download, or no file */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The action does not fit the state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    original_done: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                download_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such group or download, or no file */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The action does not fit the state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_categories: {
         parameters: {
             query?: never;
@@ -2421,6 +3358,51 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_folders: {
+        parameters: {
+            query?: {
+                path?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubfoldersResponse"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -2713,6 +3695,730 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    check_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["local_service__routes__recompress__CheckRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["local_service__routes__recompress__CheckResponse"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecompressQueueModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JobRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pause_recompress_queue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueuePauseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    retry_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The job did not stop the queue */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    skip_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The job did not stop the queue */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    move_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["local_service__routes__recompress__StepsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pause_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PauseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_recompress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_attention: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseModel"][];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mute_attention: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    put_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingsModel"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong value */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_trash: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrashResponse"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    restore_trashed_group: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not in the trash */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_trashed_subscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subscription_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not in the trash */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

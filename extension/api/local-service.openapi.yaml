@@ -335,7 +335,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CheckRequest'
+              $ref: '#/components/schemas/local_service__schemas__downloads__CheckRequest'
         required: true
       responses:
         '200':
@@ -343,7 +343,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CheckResponse'
+                $ref: '#/components/schemas/local_service__schemas__downloads__CheckResponse'
         '401':
           description: Wrong key
         '403':
@@ -370,10 +370,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/GroupModel'
-                type: array
-                title: Response List Downloads
+                $ref: '#/components/schemas/DownloadQueueModel'
         '401':
           description: Wrong key
         '403':
@@ -416,7 +413,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CheckRequest'
+              $ref: '#/components/schemas/local_service__schemas__downloads__CheckRequest'
         required: true
       responses:
         '200':
@@ -470,6 +467,34 @@ paths:
           description: The site did not answer
       security:
       - HTTPBearer: []
+  /api/downloads/pause:
+    put:
+      tags:
+      - downloads
+      summary: Pause Downloads
+      description: Pause the whole queue or go on (recompress.md, section 6.3).
+      operationId: pause_downloads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueuePauseRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
   /api/downloads/cookies:
     post:
       tags:
@@ -517,7 +542,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StepsRequest'
+              $ref: '#/components/schemas/local_service__schemas__downloads__StepsRequest'
       responses:
         '204':
           description: Successful Response
@@ -605,6 +630,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/groups/{group_id}:
+    delete:
+      tags:
+      - downloads
+      summary: Delete Group
+      description: Into the trash (tabsurd/docs/extension/pages/trash.md).
+      operationId: delete_group
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Group Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/downloads/{download_id}/move:
     post:
       tags:
@@ -625,7 +683,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StepsRequest'
+              $ref: '#/components/schemas/local_service__schemas__downloads__StepsRequest'
       responses:
         '204':
           description: Successful Response
@@ -681,6 +739,40 @@ paths:
       - downloads
       summary: Retry Download
       operationId: retry_download
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/skip:
+    post:
+      tags:
+      - downloads
+      summary: Skip Download
+      description: '«Пропустить» a video with an error: it stays so, the queue goes on (recompress.md,
+        6.3).'
+      operationId: skip_download
       security:
       - HTTPBearer: []
       parameters:
@@ -771,6 +863,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/original/open:
+    post:
+      tags:
+      - downloads
+      summary: Open Original
+      operationId: open_original
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/original/done:
+    post:
+      tags:
+      - downloads
+      summary: Original Done
+      description: '«Готово»: the original is deleted for good, a censored version goes into the queue.'
+      operationId: original_done
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/downloads/categories:
     get:
       tags:
@@ -822,6 +979,41 @@ paths:
           description: Wrong category or name
       security:
       - HTTPBearer: []
+  /api/downloads/folders:
+    get:
+      tags:
+      - downloads
+      summary: List Folders
+      description: Subfolders for the folder browser of the form (downloader.md, section 4).
+      operationId: list_folders
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: path
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubfoldersResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/downloads/folders/pick:
     post:
       tags:
@@ -991,6 +1183,445 @@ paths:
           description: Wrong folder, filter or preset edit
       security:
       - HTTPBearer: []
+  /api/recompress/check:
+    post:
+      tags:
+      - recompress
+      summary: Check Recompress
+      operationId: check_recompress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/local_service__routes__recompress__CheckRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/local_service__routes__recompress__CheckResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/recompress:
+    get:
+      tags:
+      - recompress
+      summary: List Recompress
+      operationId: list_recompress
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecompressQueueModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+    post:
+      tags:
+      - recompress
+      summary: Create Recompress
+      operationId: create_recompress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/recompress/pause:
+    put:
+      tags:
+      - recompress
+      summary: Pause Recompress Queue
+      description: Pause the whole queue or go on (recompress.md, section 6.3).
+      operationId: pause_recompress_queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueuePauseRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/recompress/{job_id}/retry:
+    post:
+      tags:
+      - recompress
+      summary: Retry Recompress
+      description: «Повторить» the video that stopped the queue with an error (strict order).
+      operationId: retry_recompress
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Job Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such job
+        '409':
+          description: The job did not stop the queue
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recompress/{job_id}/skip:
+    post:
+      tags:
+      - recompress
+      summary: Skip Recompress
+      description: '«Пропустить»: the video stays with its error, the job goes on.'
+      operationId: skip_recompress
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Job Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such job
+        '409':
+          description: The job did not stop the queue
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recompress/{job_id}/move:
+    post:
+      tags:
+      - recompress
+      summary: Move Recompress
+      operationId: move_recompress
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Job Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/local_service__routes__recompress__StepsRequest'
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such job
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recompress/{job_id}/pause:
+    post:
+      tags:
+      - recompress
+      summary: Pause Recompress
+      operationId: pause_recompress
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Job Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PauseRequest'
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such job
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recompress/{job_id}/cancel:
+    post:
+      tags:
+      - recompress
+      summary: Cancel Recompress
+      operationId: cancel_recompress
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Job Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such job
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/attention:
+    get:
+      tags:
+      - attention
+      summary: Get Attention
+      description: The cases the queues need the user for; empty — nothing (the banner is hidden).
+      operationId: get_attention
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CaseModel'
+                type: array
+                title: Response Get Attention
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+  /api/attention/mute:
+    post:
+      tags:
+      - attention
+      summary: Mute Attention
+      description: «Заглушить» the cases there are now; a new case rings again.
+      operationId: mute_attention
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+  /api/settings:
+    get:
+      tags:
+      - attention
+      summary: Get Settings
+      operationId: get_settings
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+    put:
+      tags:
+      - attention
+      summary: Put Settings
+      operationId: put_settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsModel'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Wrong value
+      security:
+      - HTTPBearer: []
+  /api/trash:
+    get:
+      tags:
+      - trash
+      summary: List Trash
+      operationId: list_trash
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrashResponse'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+      security:
+      - HTTPBearer: []
+  /api/trash/groups/{group_id}/restore:
+    post:
+      tags:
+      - trash
+      summary: Restore Trashed Group
+      operationId: restore_trashed_group
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Group Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: Not in the trash
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/trash/subscriptions/{subscription_id}/restore:
+    post:
+      tags:
+      - trash
+      summary: Restore Trashed Subscription
+      operationId: restore_trashed_subscription
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: subscription_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Subscription Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: Not in the trash
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     AndNode:
@@ -1010,6 +1641,34 @@ components:
       - op
       - items
       title: AndNode
+    CaseModel:
+      properties:
+        queue:
+          type: string
+          title: Queue
+          description: download or recompress
+        reason:
+          type: string
+          title: Reason
+          description: no_space, error or need_cookies
+        text:
+          type: string
+          title: Text
+        since:
+          type: string
+          title: Since
+        muted:
+          type: boolean
+          title: Muted
+          description: «Заглушить» was pressed for this case
+      type: object
+      required:
+      - queue
+      - reason
+      - text
+      - since
+      - muted
+      title: CaseModel
     ChannelCheckResponse:
       properties:
         title:
@@ -1080,6 +1739,16 @@ components:
             type: object
           - type: 'null'
           title: Preset Edits
+        keep_original:
+          type: boolean
+          title: Keep Original
+          description: downloader.md, section 2.2
+          default: false
+        start:
+          type: boolean
+          title: Start
+          description: False — the queue is paused (user), recompress.md section 6.3
+          default: true
       type: object
       required:
       - url
@@ -1095,64 +1764,6 @@ components:
           description: One subscription; none — all
       type: object
       title: CheckNowRequest
-    CheckRequest:
-      properties:
-        url:
-          type: string
-          maxLength: 2000
-          minLength: 1
-          title: Url
-        cookies:
-          items:
-            $ref: '#/components/schemas/Cookie'
-          type: array
-          title: Cookies
-          default: []
-      type: object
-      required:
-      - url
-      title: CheckRequest
-    CheckResponse:
-      properties:
-        video:
-          $ref: '#/components/schemas/VideoInfoModel'
-        downloaded:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Downloaded
-          description: 'Already downloaded: where the file is now'
-        models:
-          items:
-            type: string
-          type: array
-          title: Models
-        found_by:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Found By
-          description: links, account or name
-        folder:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder
-          description: New of the model if no choice is needed
-        recent:
-          items:
-            type: string
-          type: array
-          title: Recent
-      type: object
-      required:
-      - video
-      - downloaded
-      - models
-      - found_by
-      - folder
-      - recent
-      title: CheckResponse
     Connection:
       properties:
         profile_id:
@@ -1279,6 +1890,23 @@ components:
           - type: string
           - type: 'null'
           title: File Path
+        original_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Original Path
+          description: 'The original kept for now: «waits for the original to be deleted», downloader.md
+            section 2.2'
+        compress_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Compress Seconds
+          description: Recompression time estimate, recompress.md section 2.12
+        compress_approximate:
+          type: boolean
+          title: Compress Approximate
+          default: false
       type: object
       required:
       - id
@@ -1292,6 +1920,23 @@ components:
       - folder
       - file_path
       title: DownloadModel
+    DownloadQueueModel:
+      properties:
+        pause:
+          anyOf:
+          - $ref: '#/components/schemas/PauseModel'
+          - type: 'null'
+          description: The pause of the whole queue, None — it goes
+        groups:
+          items:
+            $ref: '#/components/schemas/GroupModel'
+          type: array
+          title: Groups
+      type: object
+      required:
+      - pause
+      - groups
+      title: DownloadQueueModel
     EnqueueRequest:
       properties:
         url:
@@ -1321,11 +1966,51 @@ components:
             type: object
           - type: 'null'
           title: Preset Edits
+        music_only:
+          type: boolean
+          title: Music Only
+          description: downloader.md, section 8
+          default: false
+        keep_original:
+          type: boolean
+          title: Keep Original
+          description: downloader.md, section 2.2
+          default: false
+        start:
+          type: boolean
+          title: Start
+          description: False — the queue is paused (user), recompress.md section 6.3
+          default: true
       type: object
       required:
       - url
       - folder
       title: EnqueueRequest
+    FileCheckModel:
+      properties:
+        path:
+          type: string
+          title: Path
+        action:
+          type: string
+          title: Action
+          description: recompress, sound (only the sound) or skip
+        notices:
+          items:
+            $ref: '#/components/schemas/NoticeModel'
+          type: array
+          title: Notices
+        needs_confirmation:
+          type: boolean
+          title: Needs Confirmation
+          description: Without a confirmation in the job the file is left as it is
+      type: object
+      required:
+      - path
+      - action
+      - notices
+      - needs_confirmation
+      title: FileCheckModel
     FiltersModel:
       properties:
         date_from:
@@ -1370,7 +2055,7 @@ components:
           default: false
       type: object
       title: FiltersModel
-      description: downloader.md, section 6.1; music_only is refused until the music recognition (P-3).
+      description: downloader.md, sections 6.1 and 8.
     FolderResponse:
       properties:
         folder:
@@ -1403,6 +2088,12 @@ components:
           type: array
           title: Shortcuts
           description: Paths of the shortcuts to the video
+        page_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Url
+          description: The page it was downloaded from
       type: object
       required:
       - id
@@ -1447,6 +2138,136 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    JobModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        folder:
+          type: string
+          title: Folder
+        preset:
+          type: string
+          title: Preset
+        edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Edits
+        mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mode
+        state:
+          type: string
+          title: State
+        total:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total
+        done:
+          type: integer
+          title: Done
+        compressed:
+          type: integer
+          title: Compressed
+        kept:
+          type: integer
+          title: Kept
+        saved_bytes:
+          type: integer
+          title: Saved Bytes
+        errors:
+          items:
+            items:
+              type: string
+            type: array
+          type: array
+          title: Errors
+        current:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Current
+        progress:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Progress
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        created_at:
+          type: string
+          title: Created At
+        finished_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Finished At
+      type: object
+      required:
+      - id
+      - folder
+      - preset
+      - edits
+      - mode
+      - state
+      - total
+      - done
+      - compressed
+      - kept
+      - saved_bytes
+      - errors
+      - current
+      - progress
+      - error
+      - created_at
+      - finished_at
+      title: JobModel
+    JobRequest:
+      properties:
+        folder:
+          type: string
+          minLength: 3
+          title: Folder
+          description: Full path of the folder
+        preset:
+          type: string
+          title: Preset
+        edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Edits
+        mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mode
+          description: Normalization mode
+        confirmed:
+          items:
+            type: string
+          type: array
+          title: Confirmed
+          description: Paths of the files whose warnings the user accepted
+        start:
+          type: boolean
+          title: Start
+          description: False — the queue is paused (user), recompress.md section 6.3
+          default: true
+      type: object
+      required:
+      - folder
+      - preset
+      title: JobRequest
     KnownRequest:
       properties:
         url:
@@ -1538,6 +2359,21 @@ components:
       - op
       - item
       title: NotNode
+    NoticeModel:
+      properties:
+        kind:
+          type: string
+          title: Kind
+          description: ours (yellow, no confirmation), worse (red), checked, no_settings, mismatch, unchanged,
+            trim
+        text:
+          type: string
+          title: Text
+      type: object
+      required:
+      - kind
+      - text
+      title: NoticeModel
     OrNode:
       properties:
         op:
@@ -1555,6 +2391,20 @@ components:
       - op
       - items
       title: OrNode
+    PauseModel:
+      properties:
+        reason:
+          type: string
+          title: Reason
+          description: user (the user paused it) or no_space (the disk is full)
+        since:
+          type: string
+          title: Since
+      type: object
+      required:
+      - reason
+      - since
+      title: PauseModel
     PauseRequest:
       properties:
         paused:
@@ -1630,6 +2480,33 @@ components:
       - id
       - is_default
       title: PresetResponse
+    QueuePauseRequest:
+      properties:
+        paused:
+          type: boolean
+          title: Paused
+          description: True — pause the whole queue (user), false — go on
+      type: object
+      required:
+      - paused
+      title: QueuePauseRequest
+    RecompressQueueModel:
+      properties:
+        pause:
+          anyOf:
+          - $ref: '#/components/schemas/PauseModel'
+          - type: 'null'
+          description: The pause of the whole queue, None — it goes
+        jobs:
+          items:
+            $ref: '#/components/schemas/JobModel'
+          type: array
+          title: Jobs
+      type: object
+      required:
+      - pause
+      - jobs
+      title: RecompressQueueModel
     SearchRequest:
       properties:
         query:
@@ -1668,24 +2545,64 @@ components:
       - videos
       - total
       title: SearchResponse
+    SettingsModel:
+      properties:
+        notify_every_minutes:
+          type: integer
+          maximum: 1440.0
+          minimum: 1.0
+          title: Notify Every Minutes
+          description: How often the notification rings
+        strict_order:
+          type: boolean
+          title: Strict Order
+          description: 'The queues go strictly in order: an error or missing cookies pause the whole queue'
+      type: object
+      required:
+      - notify_every_minutes
+      - strict_order
+      title: SettingsModel
     Sort:
       type: string
       enum:
       - relevance
       - date
       title: Sort
-    StepsRequest:
+    SubfolderModel:
       properties:
-        steps:
-          type: integer
-          maximum: 1000.0
-          minimum: -1000.0
-          title: Steps
-          description: Minus is up
+        name:
+          type: string
+          title: Name
+        path:
+          type: string
+          title: Path
+        tag:
+          type: boolean
+          title: Tag
       type: object
       required:
-      - steps
-      title: StepsRequest
+      - name
+      - path
+      - tag
+      title: SubfolderModel
+    SubfoldersResponse:
+      properties:
+        parent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent
+          description: The parent inside the categories, if any
+        folders:
+          items:
+            $ref: '#/components/schemas/SubfolderModel'
+          type: array
+          title: Folders
+      type: object
+      required:
+      - parent
+      - folders
+      title: SubfoldersResponse
     SubscribeRequest:
       properties:
         channel_url:
@@ -1803,6 +2720,69 @@ components:
       - field
       - text
       title: TermNode
+    TrashResponse:
+      properties:
+        groups:
+          items:
+            $ref: '#/components/schemas/TrashedGroupModel'
+          type: array
+          title: Groups
+        subscriptions:
+          items:
+            $ref: '#/components/schemas/TrashedSubscriptionModel'
+          type: array
+          title: Subscriptions
+      type: object
+      required:
+      - groups
+      - subscriptions
+      title: TrashResponse
+    TrashedGroupModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        kind:
+          type: string
+          title: Kind
+        videos:
+          type: integer
+          title: Videos
+        deleted_at:
+          type: string
+          title: Deleted At
+      type: object
+      required:
+      - id
+      - title
+      - kind
+      - videos
+      - deleted_at
+      title: TrashedGroupModel
+    TrashedSubscriptionModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        channel_url:
+          type: string
+          title: Channel Url
+        deleted_at:
+          type: string
+          title: Deleted At
+      type: object
+      required:
+      - id
+      - title
+      - channel_url
+      - deleted_at
+      title: TrashedSubscriptionModel
     UpdateRequest:
       properties:
         filters:
@@ -1904,6 +2884,122 @@ components:
       - published_at
       - duration
       title: VideoInfoModel
+    local_service__routes__recompress__CheckRequest:
+      properties:
+        folder:
+          type: string
+          minLength: 3
+          title: Folder
+          description: Full path of the folder
+        preset:
+          type: string
+          title: Preset
+        edits:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Edits
+      type: object
+      required:
+      - folder
+      - preset
+      title: CheckRequest
+    local_service__routes__recompress__CheckResponse:
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/FileCheckModel'
+          type: array
+          title: Files
+          description: recompress.md, sections 6.1 and 6.2
+        not_indexed:
+          type: integer
+          title: Not Indexed
+      type: object
+      required:
+      - files
+      - not_indexed
+      title: CheckResponse
+    local_service__routes__recompress__StepsRequest:
+      properties:
+        steps:
+          type: integer
+          title: Steps
+      type: object
+      required:
+      - steps
+      title: StepsRequest
+    local_service__schemas__downloads__CheckRequest:
+      properties:
+        url:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Url
+        cookies:
+          items:
+            $ref: '#/components/schemas/Cookie'
+          type: array
+          title: Cookies
+          default: []
+      type: object
+      required:
+      - url
+      title: CheckRequest
+    local_service__schemas__downloads__CheckResponse:
+      properties:
+        video:
+          $ref: '#/components/schemas/VideoInfoModel'
+        downloaded:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Downloaded
+          description: 'Already downloaded: where the file is now'
+        models:
+          items:
+            type: string
+          type: array
+          title: Models
+        found_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Found By
+          description: links, account or name
+        folder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder
+          description: New of the model if no choice is needed
+        recent:
+          items:
+            type: string
+          type: array
+          title: Recent
+      type: object
+      required:
+      - video
+      - downloaded
+      - models
+      - found_by
+      - folder
+      - recent
+      title: CheckResponse
+    local_service__schemas__downloads__StepsRequest:
+      properties:
+        steps:
+          type: integer
+          maximum: 1000.0
+          minimum: -1000.0
+          title: Steps
+          description: Minus is up
+      type: object
+      required:
+      - steps
+      title: StepsRequest
   securitySchemes:
     HTTPBearer:
       type: http
