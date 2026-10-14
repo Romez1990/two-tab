@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useWindows } from '@/entities/window';
 import { BackgroundCheck } from '@/features/background-check';
-import { CompressionPresets } from '@/features/compression-presets';
+import { RecompressPresets } from '@/features/recompress-presets';
 import { TidyReelConnection } from '@/features/connect-tidy-reel';
 import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
@@ -70,7 +70,7 @@ export function SettingsPage() {
 
       {settings.localServiceKey && (
         <Section title="Сжатие видео" hint="Пресеты сжатия в AV1 после скачивания. «По умолчанию» действует на все сайты, пресет сайта задаёт только то, что отличается.">
-          <CompressionPresets />
+          <RecompressPresets />
         </Section>
       )}
 

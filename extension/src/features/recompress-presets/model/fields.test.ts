@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_FIELDS, SLIDERS, describeStep, trimError } from './fields';
 
-describe('compression preset fields', () => {
+describe('recompress preset fields', () => {
   it('every slider has its default value', () => {
     for (const def of SLIDERS) {
       const step = def.steps.find((s) => s.value === DEFAULT_FIELDS[def.field]);

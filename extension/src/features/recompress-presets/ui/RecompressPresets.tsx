@@ -33,7 +33,7 @@ function summary(draft: Draft): string {
 }
 
 /** Пресеты сжатия (docs/extension/pages/settings.md, раздел 4): «По умолчанию» и пресеты сайтов. */
-export function CompressionPresets() {
+export function RecompressPresets() {
   const [drafts, setDrafts] = useState<Draft[] | null>(null);
   const [sites, setSites] = useState<string[]>([]);
   const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);
