@@ -3,6 +3,7 @@ import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/a
 /** Archive compression queue in the local service (tidy-reel/docs/local_service/local_service.md, section 7.5). */
 
 type S = LocalServiceSchemas;
+export type RecompressSnapshot = S['RecompressSnapshot'];
 export type RecompressQueue = S['RecompressQueueModel'];
 export type Job = S['JobModel'];
 export type JobFile = S['JobFileModel'];
@@ -30,14 +31,6 @@ async function client() {
 
 export async function createJob(folder: string, preset: string, edits: Record<string, unknown> | null, confirmed: string[], start: boolean): Promise<Job> {
   return unwrap(await (await client()).POST('/api/recompress', { body: { folder, preset, edits, confirmed, start } }));
-}
-
-export async function getQueue(): Promise<RecompressQueue> {
-  return unwrap(await (await client()).GET('/api/recompress'));
-}
-
-export async function listItems(filters: readonly string[], page: number): Promise<JobFiles> {
-  return unwrap(await (await client()).GET('/api/recompress/items', { params: { query: { filter: filters.join(','), page } } }));
 }
 
 export async function nextItem(kind: string, after: number | null, filters: readonly string[]): Promise<{ id: number; page: number } | null> {

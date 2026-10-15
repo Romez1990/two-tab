@@ -3,27 +3,22 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useCallback, useEffect, useState } from 'react';
-import { checkSubscriptionsNow, listSubscriptions, unsubscribe, updateSubscription, type Subscription } from '@/entities/download';
+import { useState } from 'react';
+import { checkSubscriptionsNow, unsubscribe, updateSubscription } from '@/entities/download';
+import { useServiceTopic } from '@/shared/api';
 import { formatDateTime } from '@/shared/lib';
 import { describeFilters } from '../model/filters';
 
 /** "Subscriptions" (docs/extension/pages/downloads.md, section 2): filters, pause, "Check now". */
 export function SubscriptionsPage() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(null);
+  // The list comes over the WebSocket: after an action the service sends a new snapshot itself.
+  const { snapshot: subscriptions, online } = useServiceTopic('subscriptions', true);
   const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);
-  const reload = useCallback(() => {
-    listSubscriptions()
-      .then(setSubscriptions)
-      .catch((e: unknown) => setMessage({ text: e instanceof Error ? e.message : String(e), error: true }));
-  }, []);
-  useEffect(reload, [reload]);
 
   const run = (action: () => Promise<unknown>, done?: string) =>
     void action()
       .then(() => {
         if (done) setMessage({ text: done, error: false });
-        reload();
       })
       .catch((e: unknown) => setMessage({ text: e instanceof Error ? e.message : String(e), error: true }));
 
@@ -40,6 +35,7 @@ export function SubscriptionsPage() {
         </Typography>
         <Button onClick={() => run(() => checkSubscriptionsNow(), 'Подписки будут проверены в ближайшие секунды')}>Проверить все сейчас</Button>
       </Stack>
+      {!online && <Alert severity="warning">Локальный сервис Tidy Reel не отвечает</Alert>}
       {subscriptions?.length === 0 && <Typography color="text.secondary">Подписок нет.</Typography>}
       {subscriptions?.map((s) => (
         <Paper key={s.id} variant="outlined" sx={{ px: 1.5, py: 1 }}>

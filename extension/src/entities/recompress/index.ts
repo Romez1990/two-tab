@@ -2,9 +2,7 @@ export {
   checkJob,
   createJob,
   fileAction,
-  getQueue,
   jobAction,
-  listItems,
   nextItem,
   pauseQueue,
   readMessage,
@@ -15,4 +13,5 @@ export {
   type JobFile,
   type JobFiles,
   type RecompressQueue,
+  type RecompressSnapshot,
 } from './api/recompress';

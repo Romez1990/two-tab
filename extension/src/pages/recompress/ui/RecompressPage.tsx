@@ -38,9 +38,7 @@ import {
   checkJob,
   createJob,
   fileAction,
-  getQueue,
   jobAction,
-  listItems,
   nextItem,
   pauseQueue,
   readMessage,
@@ -49,12 +47,10 @@ import {
   type JobAction,
   type JobCheck,
   type JobFile,
-  type JobFiles,
-  type RecompressQueue,
 } from '@/entities/recompress';
 import { DEFAULT_FIELDS, listPresets, PresetFieldsEditor, type Preset, type PresetFields } from '@/features/recompress-presets';
+import { useServiceTopic } from '@/shared/api';
 
-const POLL_MS = 1000;
 
 type Run = (action: () => Promise<void>) => void;
 
@@ -83,33 +79,12 @@ const ACTIONS: Record<string, string> = { recompress: 'сжать', sound: 'то
 /** "Compression queue" (docs/extension/pages/recompress.md): jobs in order, files in pages by filters. */
 export function RecompressPage() {
   const [address, setAddress] = useQueueAddress('recompress');
-  const [queue, setQueue] = useState<RecompressQueue | null>(null);
-  const [items, setItems] = useState<JobFiles | null>(null);
-  const [error, setError] = useState('');
+  const { snapshot, online, error } = useServiceTopic('recompress', { filter: address.filters, page: address.page - 1 });
+  const queue = snapshot?.queue ?? null;
+  const items = snapshot?.items ?? null;
   const [message, setMessage] = useState('');
   const { target, setTarget } = useScrollTarget((items?.items ?? []).map((f) => f.id));
   const lastJump = useRef<Partial<Record<CounterKind, number>>>({});
-
-  useEffect(() => {
-    let alive = true;
-    const poll = async () => {
-      try {
-        const [nextQueue, nextItems] = await Promise.all([getQueue(), listItems(address.filters, address.page - 1)]);
-        if (!alive) return;
-        setQueue(nextQueue);
-        setItems(nextItems);
-        setError('');
-      } catch (e) {
-        if (alive) setError(e instanceof Error ? e.message : 'Локальный сервис Tidy Reel не отвечает');
-      }
-    };
-    void poll();
-    const timer = setInterval(() => void poll(), POLL_MS);
-    return () => {
-      alive = false;
-      clearInterval(timer);
-    };
-  }, [address]);
 
   const run: Run = (action) => void action().catch((e: unknown) => setMessage(e instanceof Error ? e.message : String(e)));
 
@@ -129,6 +104,7 @@ export function RecompressPage() {
   return (
     <Stack spacing={1}>
       {queue && <QueueCounters counters={queue.counters} onJump={jump} />}
+      {!online && <Alert severity="warning">Локальный сервис Tidy Reel не отвечает</Alert>}
       {error && <Alert severity="warning">{error}</Alert>}
       {message && (
         <Alert severity="error" onClose={() => setMessage('')}>

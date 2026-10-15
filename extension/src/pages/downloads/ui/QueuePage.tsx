@@ -12,22 +12,17 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   decideDuplicate,
   downloadAction,
-  feedCookies,
-  getQueue,
   groupAction,
-  listItems,
   messageAction,
   nextItem,
   pauseQueue,
   readMessage,
   type DownloadAction,
   type DownloadItem,
-  type DownloadItems,
-  type DownloadQueue,
   type GroupAction,
   type GroupSummary,
 } from '@/entities/download';
@@ -45,6 +40,7 @@ import {
   type CounterKind,
   type QueueMessage,
 } from '@/entities/queue';
+import { useServiceTopic } from '@/shared/api';
 
 /** Queue states in Russian (tidy-reel/docs/downloader.md, sections 2 and 9). */
 const STATES: Record<string, { label: string; color: 'default' | 'primary' | 'success' | 'error' | 'warning' }> = {
@@ -65,47 +61,21 @@ const STATES: Record<string, { label: string; color: 'default' | 'primary' | 'su
 const ACTIVE = new Set(['counting', 'queued', 'paused', 'downloading', 'checking_music', 'checking_duplicates', 'compressing']);
 /** The new video is compressed: its path is final, "Keep the new one" is available (tidy-reel/docs/downloader.md, section 5.1). */
 const COMPRESSED = new Set(['done', 'original_waiting']);
-const POLL_MS = 1000;
-/** Queue site cookies are sent less often than the queue is polled. */
-const COOKIES_EVERY = 30;
 
 type Run = (action: () => Promise<void>) => void;
 
 /**
  * "Download queue" (docs/extension/pages/downloads.md, section 1; docs/extension/queues.md):
- * polled every second while the page is open; videos come in pages by filters, by groups.
+ * snapshots over the WebSocket while the tab is visible; videos come in pages by filters, by groups.
  */
 export function QueuePage() {
   const [address, setAddress] = useQueueAddress('downloads');
-  const [queue, setQueue] = useState<DownloadQueue | null>(null);
-  const [items, setItems] = useState<DownloadItems | null>(null);
-  const [error, setError] = useState('');
+  const { snapshot, online, error } = useServiceTopic('downloads', { filter: address.filters, page: address.page - 1 });
+  const queue = snapshot?.queue ?? null;
+  const items = snapshot?.items ?? null;
   const [message, setMessage] = useState('');
   const { target, setTarget } = useScrollTarget((items?.items ?? []).map((d) => d.id));
   const lastJump = useRef<Partial<Record<CounterKind, number>>>({});
-
-  useEffect(() => {
-    let alive = true;
-    let tick = 0;
-    const poll = async () => {
-      try {
-        const [nextQueue, nextItems] = await Promise.all([getQueue(), listItems(address.filters, address.page - 1)]);
-        if (!alive) return;
-        setQueue(nextQueue);
-        setItems(nextItems);
-        setError('');
-        if (tick++ % COOKIES_EVERY === 0) await feedCookies(nextItems.items);
-      } catch (e) {
-        if (alive) setError(e instanceof Error ? e.message : 'Локальный сервис Tidy Reel не отвечает');
-      }
-    };
-    void poll();
-    const timer = setInterval(() => void poll(), POLL_MS);
-    return () => {
-      alive = false;
-      clearInterval(timer);
-    };
-  }, [address]);
 
   const run: Run = (action) => void action().catch((e: unknown) => setMessage(e instanceof Error ? e.message : String(e)));
 
@@ -126,6 +96,7 @@ export function QueuePage() {
   return (
     <Stack spacing={1}>
       {queue && <QueueCounters counters={queue.counters} onJump={jump} />}
+      {!online && <Alert severity="warning">Локальный сервис Tidy Reel не отвечает</Alert>}
       {error && <Alert severity="warning">{error}</Alert>}
       {message && (
         <Alert severity="error" onClose={() => setMessage('')}>
@@ -229,11 +200,11 @@ function DownloadRow({ download, target, run }: { download: DownloadItem; target
             {below}
           </Typography>
         </Box>
-        {times && (
-          <Typography variant="body2" color="text.secondary">
-            {times}
+        {times.map((time) => (
+          <Typography key={time} variant="body2" color="text.secondary">
+            {time}
           </Typography>
-        )}
+        ))}
         {download.published_at && (
           <Typography variant="body2" color="text.secondary">
             {download.published_at}
@@ -293,15 +264,15 @@ function DownloadRow({ download, target, run }: { download: DownloadItem; target
 }
 
 /** Video time: while downloading, the remainder from yt-dlp; the compression estimate comes from the site duration. */
-function videoTimes(d: DownloadItem): string {
-  const parts: string[] = [];
-  if (d.state === 'downloading' && d.eta_seconds != null) parts.push(`скачается ${formatDuration(d.eta_seconds)}`);
-  if (ACTIVE.has(d.state) && d.compress_seconds != null) {
-    parts.push(`сжатие ${formatDuration(d.compress_seconds)}`);
-    if (d.compress_bytes != null) parts.push(`≈ ${formatSize(d.compress_bytes)}`);
-    if (d.compress_approximate) parts.push('(приблизительно)');
+function videoTimes(d: DownloadItem): string[] {
+  const times: string[] = [];
+  if (d.state === 'downloading' && d.eta_seconds != null) times.push(`скачается ${formatDuration(d.eta_seconds)}`);
+  if (ACTIVE.has(d.state) && d.compress_seconds != null && d.compress_bytes != null) {
+    const time = formatDuration(d.compress_seconds);
+    const size = formatSize(d.compress_bytes);
+    times.push(d.compress_approximate ? `сжатие ${time}, ≈ ${size} (приблизительно)` : `сжатие ${time}, ≈ ${size}`);
   }
-  return parts.join(' · ');
+  return times;
 }
 
 /** Buttons of a duplicate or part message (tidy-reel/docs/downloader.md, section 5.1). */
