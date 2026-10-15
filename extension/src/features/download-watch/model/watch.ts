@@ -1,4 +1,4 @@
-import { downloadAction, feedCookies, listQueue, listSubscriptions } from '@/entities/download';
+import { downloadAction, feedCookies, getQueue, listItems, listSubscriptions } from '@/entities/download';
 import { connectedClient } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { watchEvents, type WatchState } from './events';
@@ -21,8 +21,11 @@ export async function onDownloadAlarm(): Promise<void> {
   let groups;
   let subscriptions;
   try {
-    [groups, subscriptions] = await Promise.all([listQueue(), listSubscriptions()]);
-    await feedCookies(groups);
+    const [queue, active] = await Promise.all([getQueue(), listItems(['active'], 0)]);
+    groups = queue.groups;
+    subscriptions = await listSubscriptions();
+    // Первая страница активных — те видео, что пойдут скоро: им и нужны куки.
+    await feedCookies(active.items);
   } catch {
     return; // сервис не запущен: попробуем через минуту
   }
@@ -38,7 +41,9 @@ export async function onDownloadAlarm(): Promise<void> {
         message: `У канала «${event.title}» новых видео: ${event.count}`,
       });
     } else {
-      await browser.notifications.create(`${DOWNLOADED_PREFIX}${event.downloadId}`, {
+      const downloadId = await doneVideoOf(event.groupId);
+      if (downloadId === null) continue;
+      await browser.notifications.create(`${DOWNLOADED_PREFIX}${downloadId}`, {
         type: 'basic',
         iconUrl: browser.runtime.getURL('/icon/128.png'),
         title: 'Скачано',
@@ -46,6 +51,16 @@ export async function onDownloadAlarm(): Promise<void> {
         buttons: [{ title: 'Показать в папке' }],
       });
     }
+  }
+}
+
+/** Скачанное видео группы — для «Показать в папке»: история страницами, группа встречается редко. */
+async function doneVideoOf(groupId: number): Promise<number | null> {
+  for (let page = 0; ; page++) {
+    const { items, total, page_size } = await listItems(['done'], page).catch(() => ({ items: [], total: 0, page_size: 1 }));
+    const found = items.find((d) => d.group_id === groupId && d.state === 'done');
+    if (found) return found.id;
+    if ((page + 1) * page_size >= total) return null;
   }
 }
 

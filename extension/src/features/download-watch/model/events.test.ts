@@ -1,10 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import type { Group, Subscription } from '@/entities/download';
+import type { GroupSummary, Subscription } from '@/entities/download';
 import { watchEvents } from './events';
 
 const subscription = (checked: string, found: number) => ({ id: 1, title: 'Chan', checked_at: checked, last_found: found }) as Subscription;
 const group = (states: string[]) =>
-  ({ id: 7, title: 'Chan — новые видео', kind: 'subscription', paused: false, downloads: states.map((state, i) => ({ id: i + 1, state })) }) as unknown as Group;
+  ({
+    id: 7,
+    title: 'Chan — новые видео',
+    kind: 'subscription',
+    paused: false,
+    videos: states.length,
+    finished: states.filter((s) => s === 'done').length,
+    remaining: { count: states.filter((s) => s !== 'done').length, counting: false, approximate: false },
+  }) as GroupSummary;
 
 describe('watchEvents', () => {
   it('first run only remembers', () => {
@@ -16,7 +24,7 @@ describe('watchEvents', () => {
     const second = watchEvents([subscription('t2', 2)], [group(['done', 'done'])], first);
     expect(second.events).toEqual([
       { kind: 'found', subscriptionId: 1, title: 'Chan', count: 2 },
-      { kind: 'downloaded', groupId: 7, title: 'Chan — новые видео', count: 2, downloadId: 1 },
+      { kind: 'downloaded', groupId: 7, title: 'Chan — новые видео', count: 2 },
     ]);
     expect(watchEvents([subscription('t2', 2)], [group(['done', 'done'])], second.state).events).toEqual([]);
   });

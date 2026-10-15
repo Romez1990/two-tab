@@ -1,4 +1,4 @@
-import type { Group, Subscription } from '@/entities/download';
+import type { GroupSummary, Subscription } from '@/entities/download';
 
 /** Что фоновый скрипт уже показал: проверки подписок по времени и скачанные группы. */
 export interface WatchState {
@@ -8,15 +8,13 @@ export interface WatchState {
 
 export type WatchEvent =
   | { kind: 'found'; subscriptionId: number; title: string; count: number }
-  | { kind: 'downloaded'; groupId: number; title: string; count: number; downloadId: number };
-
-const FINISHED = new Set(['done', 'cancelled', 'error', 'no_music']);
+  | { kind: 'downloaded'; groupId: number; title: string; count: number };
 
 /**
  * Уведомления подписок (tidy-reel/docs/downloader.md, раздел 7): проверка нашла новое; группа
  * подписки скачалась целиком. Первый запуск только запоминает состояние, без уведомлений о прошлом.
  */
-export function watchEvents(subscriptions: readonly Subscription[], groups: readonly Group[], state: WatchState | undefined): { events: WatchEvent[]; state: WatchState } {
+export function watchEvents(subscriptions: readonly Subscription[], groups: readonly GroupSummary[], state: WatchState | undefined): { events: WatchEvent[]; state: WatchState } {
   const next: WatchState = { checks: {}, groupsDone: [] };
   const events: WatchEvent[] = [];
   for (const s of subscriptions) {
@@ -26,11 +24,10 @@ export function watchEvents(subscriptions: readonly Subscription[], groups: read
       events.push({ kind: 'found', subscriptionId: s.id, title: s.title, count: s.last_found ?? 0 });
   }
   for (const g of groups) {
-    if (g.kind !== 'subscription' || !g.downloads.every((d) => FINISHED.has(d.state))) continue;
+    // Ничего не осталось: всё скачано, отменено или с ошибкой.
+    if (g.kind !== 'subscription' || g.remaining.count > 0 || g.remaining.counting) continue;
     next.groupsDone.push(g.id);
-    const done = g.downloads.filter((d) => d.state === 'done');
-    if (state && !state.groupsDone.includes(g.id) && done.length > 0)
-      events.push({ kind: 'downloaded', groupId: g.id, title: g.title, count: done.length, downloadId: done[0]!.id });
+    if (state && !state.groupsDone.includes(g.id) && g.finished > 0) events.push({ kind: 'downloaded', groupId: g.id, title: g.title, count: g.finished });
   }
   return { events, state: next };
 }

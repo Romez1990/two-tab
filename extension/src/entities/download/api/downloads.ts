@@ -8,10 +8,14 @@ import { browser } from '@/shared/browser';
 
 type S = LocalServiceSchemas;
 export type Cookie = S['Cookie'];
-export type Check = S['CheckResponse'];
+export type Check = S['local_service__schemas__downloads__CheckResponse'];
 export type ChannelCheck = S['ChannelCheckResponse'];
 export type Group = S['GroupModel'];
 export type Download = S['DownloadModel'];
+export type DownloadQueue = S['DownloadQueueModel'];
+export type GroupSummary = S['GroupSummaryModel'];
+export type DownloadItem = S['DownloadItemModel'];
+export type DownloadItems = S['DownloadItemsModel'];
 export type Filters = S['FiltersModel'];
 export type Subscription = S['SubscriptionModel'];
 
@@ -62,17 +66,35 @@ export async function checkVideo(url: string): Promise<Check> {
   return unwrap(await (await client()).POST('/api/downloads/check', { body: { url, cookies: await siteCookies(url) } }));
 }
 
-export async function checkChannel(url: string): Promise<ChannelCheck> {
-  return unwrap(await (await client()).POST('/api/downloads/channel/check', { body: { url, cookies: await siteCookies(url) } }));
+/** Канал до постановки: число видео и сколько скачается при фильтрах; список канала сервис держит 10 минут (tidy-reel/docs/downloader.md, раздел 6.0). */
+export async function checkChannel(url: string, filters: Filters = { from_end: false, music_only: false }): Promise<ChannelCheck> {
+  return unwrap(await (await client()).POST('/api/downloads/channel/check', { body: { url, cookies: await siteCookies(url), filters } }));
 }
 
-export async function enqueueVideo(url: string, folder: string, title: string | null, presetEdits: Record<string, unknown> | null): Promise<Group> {
-  const body = { url, folder, title, preset_edits: presetEdits, cookies: await siteCookies(url) };
+/** Как ставить в очередь: «Временно сохранить оригинал» и «Запустить очередь» (docs/extension/pages/downloads.md, раздел 0). */
+export interface EnqueueOptions {
+  keepOriginal: boolean;
+  start: boolean;
+  musicOnly?: boolean;
+}
+
+export async function enqueueVideo(url: string, folder: string, title: string | null, presetEdits: Record<string, unknown> | null, options: EnqueueOptions): Promise<Group> {
+  const body = {
+    url,
+    folder,
+    title,
+    preset_edits: presetEdits,
+    cookies: await siteCookies(url),
+    music_only: options.musicOnly ?? false,
+    keep_original: options.keepOriginal,
+    start: options.start,
+  };
   return unwrap(await (await client()).POST('/api/downloads', { body }));
 }
 
-export async function enqueueChannel(url: string, folder: string, filters: Filters, presetEdits: Record<string, unknown> | null): Promise<Group> {
-  const body = { url, folder, filters, preset_edits: presetEdits, cookies: await siteCookies(url) };
+/** Канал встаёт в очередь сразу, без ожидания списка: группа с «подсчитывается…». */
+export async function enqueueChannel(url: string, folder: string, filters: Filters, presetEdits: Record<string, unknown> | null, options: EnqueueOptions): Promise<Group> {
+  const body = { url, folder, filters, preset_edits: presetEdits, cookies: await siteCookies(url), keep_original: options.keepOriginal, start: options.start };
   return unwrap(await (await client()).POST('/api/downloads/channel', { body }));
 }
 
@@ -81,30 +103,62 @@ export async function subscribe(url: string, folder: string, filters: Filters, p
   return unwrap(await (await client()).POST('/api/subscriptions', { body }));
 }
 
-export async function listQueue(): Promise<Group[]> {
+/** Пауза, счётчики, остаток и группы без видео: видео — страницами (`listItems`). */
+export async function getQueue(): Promise<DownloadQueue> {
   return unwrap(await (await client()).GET('/api/downloads'));
 }
 
+/** Страница видео по фильтрам (`active`, `decision`, `unread`, `errors`, `done`), страницы с 0. */
+export async function listItems(filters: readonly string[], page: number): Promise<DownloadItems> {
+  return unwrap(await (await client()).GET('/api/downloads/items', { params: { query: { filter: filters.join(','), page } } }));
+}
+
+/** Следующее видео с сообщением вида `kind` (`decision`, `unread`, `errors`) после `after`, по кругу. */
+export async function nextItem(kind: string, after: number | null, filters: readonly string[]): Promise<{ id: number; page: number } | null> {
+  return unwrap(await (await client()).GET('/api/downloads/items/next', { params: { query: { kind, after: after ?? undefined, filter: filters.join(',') } } }));
+}
+
+export async function pauseQueue(paused: boolean): Promise<void> {
+  done(await (await client()).PUT('/api/downloads/pause', { body: { paused } }));
+}
+
+export async function readMessage(id: number): Promise<void> {
+  done(await (await client()).POST('/api/downloads/messages/{message_id}/read', { params: { path: { message_id: id } } }));
+}
+
+/** Видео архива из сообщения о дубликате: открыть, показать в папке, VLC с таймкода. */
+export async function messageAction(id: number, action: 'open' | 'show' | 'play'): Promise<void> {
+  const c = await client();
+  const path = { params: { path: { message_id: id } } };
+  if (action === 'open') return done(await c.POST('/api/downloads/messages/{message_id}/open', path));
+  if (action === 'show') return done(await c.POST('/api/downloads/messages/{message_id}/show', path));
+  done(await c.POST('/api/downloads/messages/{message_id}/play', path));
+}
+
+/** Решение у «Найден дубликат» (tidy-reel/docs/downloader.md, раздел 5.1). */
+export async function decideDuplicate(id: number, keep: 'old' | 'new' | 'both'): Promise<void> {
+  done(await (await client()).POST('/api/downloads/{download_id}/duplicate', { params: { path: { download_id: id } }, body: { keep } }));
+}
+
 /** Куки сайтов видео очереди: сервис держит их только в памяти и забывает при перезапуске. */
-export async function feedCookies(groups: readonly Group[]): Promise<void> {
+export async function feedCookies(items: readonly { url: string; state: string }[]): Promise<void> {
   const urls = new Map<string, string>();
-  for (const group of groups)
-    for (const d of group.downloads)
-      if (d.state === 'queued' || d.state === 'downloading') {
-        try {
-          urls.set(new URL(d.url).origin, d.url);
-        } catch {
-          // Адрес без сайта: куки не нужны.
-        }
+  for (const d of items)
+    if (d.state === 'queued' || d.state === 'downloading' || d.state === 'counting') {
+      try {
+        urls.set(new URL(d.url).origin, d.url);
+      } catch {
+        // Адрес без сайта: куки не нужны.
       }
+    }
   if (urls.size === 0) return;
   const sites: Record<string, Cookie[]> = {};
   for (const url of urls.values()) sites[url] = await siteCookies(url);
   done(await (await client()).POST('/api/downloads/cookies', { body: { sites } }));
 }
 
-export type GroupAction = 'pause' | 'resume' | 'cancel' | 'up' | 'down';
-export type DownloadAction = 'cancel' | 'retry' | 'open' | 'show' | 'up' | 'down';
+export type GroupAction = 'pause' | 'resume' | 'cancel' | 'up' | 'down' | 'delete';
+export type DownloadAction = 'cancel' | 'retry' | 'skip' | 'open' | 'show' | 'up' | 'down' | 'original-open' | 'original-done';
 
 export async function groupAction(id: number, action: GroupAction): Promise<void> {
   const c = await client();
@@ -112,6 +166,7 @@ export async function groupAction(id: number, action: GroupAction): Promise<void
   if (action === 'pause' || action === 'resume')
     return done(await c.POST('/api/downloads/groups/{group_id}/pause', { ...path, body: { paused: action === 'pause' } }));
   if (action === 'cancel') return done(await c.POST('/api/downloads/groups/{group_id}/cancel', path));
+  if (action === 'delete') return done(await c.DELETE('/api/downloads/groups/{group_id}', path));
   done(await c.POST('/api/downloads/groups/{group_id}/move', { ...path, body: { steps: action === 'up' ? -1 : 1 } }));
 }
 
@@ -122,8 +177,11 @@ export async function downloadAction(id: number, action: DownloadAction): Promis
   const routes = {
     cancel: '/api/downloads/{download_id}/cancel',
     retry: '/api/downloads/{download_id}/retry',
+    skip: '/api/downloads/{download_id}/skip',
     open: '/api/downloads/{download_id}/open',
     show: '/api/downloads/{download_id}/show',
+    'original-open': '/api/downloads/{download_id}/original/open',
+    'original-done': '/api/downloads/{download_id}/original/done',
   } as const;
   done(await c.POST(routes[action], path));
 }
