@@ -9,11 +9,11 @@ describe('search history', () => {
     expect(editDistance('rain', 'snow')).toBe(3);
   });
 
-  it('starts with, contains, typos, layout', () => {
+  it('starts with, contains, typos', () => {
     expect(similarity('Rain dance', 'rain')).toBe(3);
     expect(similarity('Rain dance', 'dance')).toBe(2);
     expect(similarity('Rain dance', 'rian')).toBe(1);
-    expect(similarity('maria', 'ьфкш')).toBe(3);
+    expect(similarity('maria', 'ьфкш')).toBe(0); // раскладка не исправляется
     expect(similarity('snow', 'rain')).toBe(0);
   });
 

@@ -64,17 +64,22 @@ export interface PagingOptions {
   /** Запись, которая должна быть на экране (номер в списке), или -1. */
   focusIndex?: number;
   pageSize?: number;
+  /** Номер страницы снаружи (например, в адресе страницы): тогда переход сообщается в `onPageChange`. */
+  page?: number;
+  onPageChange?: (page: number) => void;
 }
 
 /** Видимая часть списка и подвал: невидимая отметка для прокрутки и панель, прилипшая к низу окна. */
 export function usePaging<T>(items: readonly T[], options: PagingOptions): { visible: T[]; footer: ReactNode } {
-  const { storageKey, resetKey, focusIndex = -1, pageSize = PAGE_SIZE } = options;
+  const { storageKey, resetKey, focusIndex = -1, pageSize = PAGE_SIZE, onPageChange } = options;
   const [mode, setMode] = useState<Mode>(() => readMode(storageKey));
   const [limit, setLimit] = useState(pageSize);
-  const [page, setPage] = useState(1);
+  const [ownPage, setOwnPage] = useState(1);
+  const page = options.page ?? ownPage;
+  const setPage = onPageChange ?? setOwnPage;
   useEffect(() => {
     setLimit(pageSize);
-    setPage(1);
+    if (options.page === undefined) setOwnPage(1);
   }, [resetKey, pageSize]);
   useEffect(() => {
     if (focusIndex >= 0) setPage(Math.floor(focusIndex / pageSize) + 1);

@@ -29,7 +29,7 @@ const sections: Record<string, { title: string; page: ComponentType; hidden?: bo
 const DEFAULT_SECTION = 'windows';
 
 function currentSection(): string {
-  const name = location.hash.slice(1).split('/')[0] ?? '';
+  const name = location.hash.slice(1).split(/[/?]/)[0] ?? '';
   return name in sections ? name : DEFAULT_SECTION;
 }
 

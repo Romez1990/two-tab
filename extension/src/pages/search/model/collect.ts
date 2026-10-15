@@ -4,10 +4,10 @@ import { listHistory } from '@/entities/snapshot';
 import { localServiceClient, type LocalServiceSchemas } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
-import { matches, relevance, type Condition, type SearchDoc } from '@/shared/lib';
+import { matches, relevance, type Condition, type SearchDoc, type SearchSource } from '@/shared/lib';
 
 /** Источники поиска (docs/extension/pages/search.md, раздел 1). */
-export type Source = 'open' | 'saved' | 'archive' | 'closed' | 'snapshot';
+export type Source = SearchSource;
 
 export const SOURCE_TITLES: Record<Source, string> = {
   open: 'Открытые вкладки',
@@ -40,21 +40,21 @@ export type Sort = 'relevance' | 'date';
 const ARCHIVE_LIMIT = 1000;
 const ARCHIVE_PAGE = 200;
 
-function tabDoc(title: string, url: string, extra = ''): SearchDoc {
-  return { name: extra ? `${title} ${extra}` : title, url };
+function tabDoc(source: Source, title: string, url: string, group?: string): SearchDoc {
+  return { source, name: title, url, group };
 }
 
 async function openTabs(query: Condition): Promise<Found[]> {
   const tabs = await browser.tabs.query({});
   return tabs
-    .filter((tab) => tab.id !== undefined && matches(query, tabDoc(tab.title ?? '', tab.url ?? '')))
+    .filter((tab) => tab.id !== undefined && matches(query, tabDoc('open', tab.title ?? '', tab.url ?? '')))
     .map((tab) => ({
       source: 'open' as const,
       key: `open:${tab.id}`,
       title: tab.title ?? tab.url ?? '',
       url: tab.url ?? '',
       date: tab.lastAccessed ?? 0,
-      rank: relevance(query, tabDoc(tab.title ?? '', tab.url ?? '')),
+      rank: relevance(query, { name: tab.title ?? '' }),
       tabId: tab.id!,
       windowId: tab.windowId,
     }));
@@ -65,7 +65,7 @@ async function savedTabs(query: Condition): Promise<Found[]> {
   for (const item of await listSaved()) {
     item.window.tabs.forEach((tab, index) => {
       const group = tab.group >= 0 ? (item.window.groups[tab.group]?.title ?? '') : item.title;
-      const doc = tabDoc(tab.title, tab.url, group);
+      const doc = tabDoc('saved', tab.title, tab.url, group);
       if (!matches(query, doc)) return;
       found.push({
         source: 'saved',
@@ -84,14 +84,14 @@ async function savedTabs(query: Condition): Promise<Found[]> {
 
 async function closedTabs(query: Condition): Promise<Found[]> {
   return (await listClosedTabs())
-    .filter((tab) => matches(query, tabDoc(tab.title, tab.url)))
+    .filter((tab) => matches(query, tabDoc('closed', tab.title, tab.url)))
     .map((tab) => ({
       source: 'closed' as const,
       key: `closed:${tab.id}`,
       title: tab.title || tab.url,
       url: tab.url,
       date: tab.closedAt,
-      rank: relevance(query, tabDoc(tab.title, tab.url)),
+      rank: relevance(query, { name: tab.title }),
     }));
 }
 
@@ -101,14 +101,14 @@ async function snapshotTabs(query: Condition): Promise<Found[]> {
   for (const snapshot of await listHistory()) {
     for (const window of snapshot.windows) {
       for (const tab of window.tabs) {
-        if (byUrl.has(tab.url) || !matches(query, tabDoc(tab.title, tab.url))) continue;
+        if (byUrl.has(tab.url) || !matches(query, tabDoc('snapshot', tab.title, tab.url))) continue;
         byUrl.set(tab.url, {
           source: 'snapshot',
           key: `snapshot:${tab.url}`,
           title: tab.title || tab.url,
           url: tab.url,
           date: snapshot.takenAt,
-          rank: relevance(query, tabDoc(tab.title, tab.url)),
+          rank: relevance(query, { name: tab.title }),
         });
       }
     }

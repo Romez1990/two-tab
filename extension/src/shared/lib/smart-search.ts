@@ -4,21 +4,44 @@
  * же, что у `POST /api/archive/search` (tidy-reel/docs/local_service/local_service.md, раздел 7.2).
  */
 
-export type Field = 'name' | 'path' | 'url';
+export type Field = 'name' | 'path' | 'url' | 'title' | 'channel' | 'song' | 'group' | 'any';
+
+/** Источники поиска (docs/extension/pages/search.md, раздел 1) — значения `source:`. */
+export type SearchSource = 'open' | 'saved' | 'archive' | 'closed' | 'snapshot';
+
+export const SEARCH_SOURCES: readonly SearchSource[] = ['open', 'saved', 'archive', 'closed', 'snapshot'];
 
 export type Condition =
   | { op: 'term'; field: Field; text: string; phrase: boolean }
+  | { op: 'source'; source: SearchSource }
   | { op: 'and'; items: Condition[] }
   | { op: 'or'; items: Condition[] }
   | { op: 'not'; item: Condition };
 
 export class SearchSyntaxError extends Error {}
 
-type Token =
-  | { kind: 'open' | 'close' | 'or' | 'not' }
-  | { kind: 'word'; text: string; phrase: boolean; field: Field };
+/** Префикс слова или группы в скобках; `null` — без префикса. */
+type Prefix = Field | 'source' | null;
 
-const PREFIXES: Record<string, Field> = { 'path:': 'path', 'url:': 'url' };
+const FIELDS: readonly Field[] = ['name', 'path', 'url', 'title', 'channel', 'song', 'group', 'any'];
+const PREFIXES: readonly string[] = [...FIELDS, 'source'];
+
+type Token =
+  | { kind: 'close' | 'or' | 'not' }
+  | { kind: 'open'; prefix: Prefix }
+  | { kind: 'word'; text: string; phrase: boolean; prefix: Prefix };
+
+function readPrefix(query: string, i: number): { prefix: Prefix; length: number } {
+  const match = /^([^\s()|":-][^\s()|":]*):/.exec(query.slice(i));
+  if (!match) return { prefix: null, length: 0 };
+  const name = match[1]!.toLowerCase();
+  if (!PREFIXES.includes(name)) {
+    throw new SearchSyntaxError(
+      `Неизвестный префикс «${match[0]}». Есть: ${PREFIXES.map((p) => `${p}:`).join(', ')}. Двоеточие в тексте — в кавычках: "12:30"`,
+    );
+  }
+  return { prefix: name as Prefix, length: match[0].length };
+}
 
 function tokenize(query: string): Token[] {
   const tokens: Token[] = [];
@@ -27,121 +50,132 @@ function tokenize(query: string): Token[] {
     const c = query[i]!;
     if (/\s/.test(c)) {
       i++;
-    } else if (c === '(' || c === ')' || c === '|') {
-      tokens.push({ kind: c === '(' ? 'open' : c === ')' ? 'close' : 'or' });
+    } else if (c === '(') {
+      tokens.push({ kind: 'open', prefix: null });
+      i++;
+    } else if (c === ')' || c === '|') {
+      tokens.push({ kind: c === ')' ? 'close' : 'or' });
       i++;
     } else if (c === '-' && (tokens.length === 0 || /[\s(|]/.test(query[i - 1] ?? ' '))) {
       tokens.push({ kind: 'not' });
       i++;
     } else {
-      let field: Field = 'name';
-      const rest = query.slice(i).toLowerCase();
-      const prefix = Object.keys(PREFIXES).find((p) => rest.startsWith(p));
-      if (prefix) {
-        field = PREFIXES[prefix]!;
-        i += prefix.length;
-      }
-      if (query[i] === '"') {
+      const { prefix, length } = readPrefix(query, i);
+      i += length;
+      if (prefix && query[i] === '(') {
+        tokens.push({ kind: 'open', prefix });
+        i++;
+      } else if (query[i] === '"') {
         const end = query.indexOf('"', i + 1);
         if (end < 0) throw new SearchSyntaxError('Нет закрывающей кавычки');
         const text = query.slice(i + 1, end).trim();
-        if (text) tokens.push({ kind: 'word', text, phrase: true, field });
+        if (text) tokens.push({ kind: 'word', text, phrase: true, prefix });
         i = end + 1;
       } else {
         const start = i;
         while (i < query.length && !/[\s()|]/.test(query[i]!)) i++;
         const text = query.slice(start, i);
-        if (!text) throw new SearchSyntaxError(`После «${prefix}» нет слова`);
-        tokens.push({ kind: 'word', text, phrase: false, field });
+        if (!text) throw new SearchSyntaxError(`После «${prefix}:» нет слова`);
+        tokens.push({ kind: 'word', text, phrase: false, prefix });
       }
     }
   }
   return tokens;
 }
 
-/** Разбирает запрос; пустой запрос — `null`. Ошибка синтаксиса — `SearchSyntaxError`. */
+function word(text: string, phrase: boolean, prefix: Prefix): Condition {
+  if (prefix !== 'source') return { op: 'term', field: prefix ?? 'name', text, phrase };
+  const source = text.toLowerCase();
+  if (!SEARCH_SOURCES.includes(source as SearchSource)) {
+    throw new SearchSyntaxError(`Неизвестный источник «source:${text}». Есть: ${SEARCH_SOURCES.join(', ')}`);
+  }
+  return { op: 'source', source: source as SearchSource };
+}
+
+/**
+ * Разбирает запрос; пустой запрос — `null`. Ошибка синтаксиса — `SearchSyntaxError`.
+ * Префикс перед скобками действует на слова группы без своего префикса: `any:(a | path:b)`.
+ */
 export function parseQuery(query: string): Condition | null {
   const tokens = tokenize(query);
   if (tokens.length === 0) return null;
   let pos = 0;
   const peek = () => tokens[pos];
 
-  function or(): Condition {
-    const items = [and()];
+  function or(context: Prefix): Condition {
+    const items = [and(context)];
     while (peek()?.kind === 'or') {
       pos++;
-      items.push(and());
+      items.push(and(context));
     }
     return items.length === 1 ? items[0]! : { op: 'or', items };
   }
-  function and(): Condition {
+  function and(context: Prefix): Condition {
     const items: Condition[] = [];
-    while (pos < tokens.length && peek()!.kind !== 'or' && peek()!.kind !== 'close') items.push(unary());
+    while (pos < tokens.length && peek()!.kind !== 'or' && peek()!.kind !== 'close') items.push(unary(context));
     if (items.length === 0) throw new SearchSyntaxError('Пустое условие: проверьте «|» и скобки');
     return items.length === 1 ? items[0]! : { op: 'and', items };
   }
-  function unary(): Condition {
+  function unary(context: Prefix): Condition {
     const token = peek();
     if (token?.kind === 'not') {
       pos++;
       if (pos >= tokens.length) throw new SearchSyntaxError('После «-» нет слова');
-      return { op: 'not', item: unary() };
+      return { op: 'not', item: unary(context) };
     }
-    return primary();
+    return primary(context);
   }
-  function primary(): Condition {
+  function primary(context: Prefix): Condition {
     const token = tokens[pos++];
     if (!token) throw new SearchSyntaxError('Запрос оборвался');
     if (token.kind === 'open') {
-      const inner = or();
+      const inner = or(token.prefix ?? context);
       if (tokens[pos++]?.kind !== 'close') throw new SearchSyntaxError('Нет закрывающей скобки');
       return inner;
     }
-    if (token.kind === 'word') return { op: 'term', field: token.field, text: token.text, phrase: token.phrase };
+    if (token.kind === 'word') return word(token.text, token.phrase, token.prefix ?? context);
     throw new SearchSyntaxError(token.kind === 'close' ? 'Лишняя закрывающая скобка' : 'Неожиданный «|»');
   }
 
-  const tree = or();
+  const tree = or(null);
   if (pos < tokens.length) throw new SearchSyntaxError('Лишняя закрывающая скобка');
   return tree;
 }
-
-const EN = "qwertyuiop[]asdfghjkl;'zxcvbnm,.`";
-const RU = 'йцукенгшщзхъфывапролджэячсмитьбюё';
 
 /** Регистр и `ё` не важны. */
 export function normalize(text: string): string {
   return text.toLowerCase().replaceAll('ё', 'е');
 }
 
-/** Те же клавиши в другой раскладке: `ьфкшф` → `maria`. */
-export function otherLayout(text: string): string {
-  let out = '';
-  for (const c of text.toLowerCase()) {
-    const en = EN.indexOf(c);
-    const ru = RU.indexOf(c);
-    out += en >= 0 ? RU[en] : ru >= 0 ? EN[ru] : c;
-  }
-  return normalize(out);
-}
-
-/** Что проверяется у вкладки или файла: `name` — заголовок или имя файла. */
+/**
+ * Что проверяется у вкладки или файла: `name` — заголовок или имя файла. Поля, которого у источника
+ * нет, нет и в документе: условие с ним ложно, а под НЕ — истинно (строгая логика).
+ */
 export interface SearchDoc {
+  source: SearchSource;
   name: string;
   path?: string;
   url?: string;
+  title?: string;
+  channel?: string;
+  song?: string;
+  group?: string;
 }
 
+const ANY_FIELDS = ['name', 'path', 'url', 'title', 'channel', 'song', 'group'] as const;
+
 export function contains(text: string | undefined, word: string): boolean {
-  if (!text) return false;
-  const t = normalize(text);
-  return t.includes(normalize(word)) || t.includes(otherLayout(word));
+  return !!text && normalize(text).includes(normalize(word));
 }
 
 export function matches(condition: Condition, doc: SearchDoc): boolean {
   switch (condition.op) {
     case 'term':
-      return contains(doc[condition.field], condition.text);
+      return condition.field === 'any'
+        ? ANY_FIELDS.some((field) => contains(doc[field], condition.text))
+        : contains(doc[condition.field], condition.text);
+    case 'source':
+      return doc.source === condition.source;
     case 'and':
       return condition.items.every((item) => matches(item, doc));
     case 'or':
@@ -156,6 +190,8 @@ export function positiveTerms(condition: Condition, negated = false): Extract<Co
   switch (condition.op) {
     case 'term':
       return negated ? [] : [condition];
+    case 'source':
+      return [];
     case 'and':
     case 'or':
       return condition.items.flatMap((item) => positiveTerms(item, negated));
@@ -164,12 +200,27 @@ export function positiveTerms(condition: Condition, negated = false): Extract<Co
   }
 }
 
+/** Источники, которые запрос упоминает в `source:` (для подсказки о выключенных). */
+export function mentionedSources(condition: Condition): SearchSource[] {
+  switch (condition.op) {
+    case 'term':
+      return [];
+    case 'source':
+      return [condition.source];
+    case 'and':
+    case 'or':
+      return [...new Set(condition.items.flatMap(mentionedSources))];
+    case 'not':
+      return mentionedSources(condition.item);
+  }
+}
+
 /** Ранг «по совпадению», как у сервиса: фраза в названии, слово в названии, название начинается со слова. */
-export function relevance(condition: Condition, doc: SearchDoc): number {
-  const names = positiveTerms(condition).filter((t) => t.field === 'name');
+export function relevance(condition: Condition, doc: { name: string }): number {
+  const names = positiveTerms(condition).filter((t) => t.field === 'name' || t.field === 'any');
   const name = normalize(doc.name);
   const phrase = names.some((t) => t.phrase && contains(doc.name, t.text));
   const inName = names.some((t) => contains(doc.name, t.text));
-  const starts = names.some((t) => name.startsWith(normalize(t.text)) || name.startsWith(otherLayout(t.text)));
+  const starts = names.some((t) => name.startsWith(normalize(t.text)));
   return (phrase ? 4 : 0) + (inName ? 2 : 0) + (starts ? 1 : 0);
 }

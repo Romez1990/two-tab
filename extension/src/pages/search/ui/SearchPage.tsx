@@ -16,17 +16,27 @@ import TextField from '@mui/material/TextField';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { savedItemPageUrl } from '@/entities/saved';
 import { forgetSearch, listSearchHistory, rememberSearch, suggest, type SearchQuery } from '@/entities/search-query';
 import { localServiceClient } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
-import { SearchSyntaxError, formatDateTime, parseQuery } from '@/shared/lib';
+import { SEARCH_SOURCES, SearchSyntaxError, formatDateTime, mentionedSources, parseQuery } from '@/shared/lib';
 import { Favicon, SMART_SEARCH_HINT, SmartHint, usePaging } from '@/shared/ui';
-import { ARCHIVE_SHOWN_LIMIT, DEFAULT_SOURCES, SOURCE_TITLES, search, type Found, type Sort, type Source } from '../model/collect';
+import { ARCHIVE_SHOWN_LIMIT, SOURCE_TITLES, search, type Found, type Sort, type Source } from '../model/collect';
+import { EMPTY_STATE, readState, writeState, type SearchState } from '../model/url-state';
 
-const SOURCES: Source[] = ['open', 'saved', 'archive', 'closed', 'snapshot'];
+/** Поиск в адресе после `#search` (docs/extension/pages/search.md, раздел 4). */
+function stateOfAddress(): SearchState {
+  const at = location.hash.indexOf('?');
+  return at < 0 ? EMPTY_STATE : readState(location.hash.slice(at));
+}
+
+function pushAddress(state: SearchState) {
+  const hash = `#search${writeState(state)}`;
+  if (location.hash !== hash) history.pushState(null, '', hash);
+}
 
 async function goTo(found: Found, background: boolean): Promise<string | undefined> {
   switch (found.source) {
@@ -120,47 +130,97 @@ function ResultRow({ found, onMessage }: { found: Found; onMessage: (text: strin
 export function SearchPage() {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<SearchQuery[]>([]);
-  const [sources, setSources] = useState<Source[]>(DEFAULT_SOURCES);
+  const [sources, setSources] = useState<Source[]>(EMPTY_STATE.sources);
   const [connected, setConnected] = useState(false);
   const [sort, setSort] = useState<Sort>('relevance');
-  const [ran, setRan] = useState<{ query: string; sort: Sort; sources: Source[] } | null>(null);
+  const [ran, setRan] = useState<SearchState | null>(null);
   const [results, setResults] = useState<Found[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [note, setNote] = useState('');
+  const [disabled, setDisabled] = useState<Source[]>([]);
+  const connectedRef = useRef(false);
+  const generation = useRef(0);
 
-  useEffect(() => {
-    void listSearchHistory().then(setHistory);
-    void getSettings().then((s) => setConnected(Boolean(s.localServiceKey)));
-  }, []);
-  const active = sources.filter((s) => s !== 'archive' || connected);
-
-  async function run(query: string, nextSort = sort, nextSources = active) {
+  /** Показывает поиск из состояния; адрес меняет вызывающий. */
+  async function show(state: SearchState) {
+    const turn = ++generation.current;
     setError('');
     setNote('');
+    setInput(state.query);
+    setSources(state.sources);
+    setSort(state.sort);
     let condition;
     try {
-      condition = parseQuery(query);
+      condition = parseQuery(state.query);
     } catch (e) {
       setError(e instanceof SearchSyntaxError ? e.message : String(e));
       return;
     }
-    if (!condition) return;
-    setHistory(await rememberSearch(query));
+    if (!condition) {
+      setRan(null);
+      setResults([]);
+      setDisabled([]);
+      return;
+    }
+    const active = state.sources.filter((s) => s !== 'archive' || connectedRef.current);
+    setDisabled(mentionedSources(condition).filter((s) => !active.includes(s)));
     setBusy(true);
     try {
-      const outcome = await search(condition, nextSources, nextSort);
+      const outcome = await search(condition, active, state.sort);
+      if (turn !== generation.current) return;
       setResults(outcome.results);
-      setRan({ query, sort: nextSort, sources: nextSources });
+      setRan(state);
       if (outcome.archiveError) setNote(`Архив: ${outcome.archiveError}`);
       else if (outcome.archiveTotal > ARCHIVE_SHOWN_LIMIT)
         setNote(`В архиве найдено ${outcome.archiveTotal}, показаны ${ARCHIVE_SHOWN_LIMIT} лучших: уточните запрос`);
     } finally {
-      setBusy(false);
+      if (turn === generation.current) setBusy(false);
     }
   }
 
-  const { visible, footer } = usePaging(results, { storageKey: 'tabsurd.searchPaging', resetKey: ran });
+  useEffect(() => {
+    void listSearchHistory().then(setHistory);
+    void getSettings().then((s) => {
+      connectedRef.current = Boolean(s.localServiceKey);
+      setConnected(connectedRef.current);
+      void show(stateOfAddress());
+    });
+    // «Назад» и «Вперёд»: поиск из адреса, без новой записи в истории запросов.
+    const onPop = () => location.hash.startsWith('#search') && void show(stateOfAddress());
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  /** Запуск поиска: Enter, выбор из истории, фильтр или сортировка — новая запись, первая страница. */
+  async function run(query: string, nextSort = sort, nextSources = sources) {
+    try {
+      if (!parseQuery(query)) return;
+    } catch (e) {
+      setError(e instanceof SearchSyntaxError ? e.message : String(e));
+      return;
+    }
+    setHistory(await rememberSearch(query));
+    const state = { query, sources: nextSources, sort: nextSort, page: 1 };
+    pushAddress(state);
+    await show(state);
+  }
+
+  /** Фильтры и сортировка запускают поиск сразу, только если текст не меняли с последнего поиска. */
+  function rerun(nextSort: Sort, nextSources: Source[]) {
+    if (ran && input === ran.query) void run(ran.query, nextSort, nextSources);
+  }
+
+  const { visible, footer } = usePaging(results, {
+    storageKey: 'tabsurd.searchPaging',
+    page: ran?.page ?? 1,
+    onPageChange: (page) => {
+      if (!ran) return;
+      const state = { ...ran, page };
+      setRan(state);
+      pushAddress(state);
+    },
+  });
   const options = suggest(history, input).map((item) => item.query);
 
   return (
@@ -211,7 +271,7 @@ export function SearchPage() {
         <SmartHint rows={SMART_SEARCH_HINT} />
       </Stack>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-        {SOURCES.map((source) => (
+        {SEARCH_SOURCES.map((source) => (
           <FormControlLabel
             key={source}
             label={SOURCE_TITLES[source]}
@@ -220,7 +280,11 @@ export function SearchPage() {
               <Checkbox
                 size="small"
                 checked={sources.includes(source) && (source !== 'archive' || connected)}
-                onChange={(_, checked) => setSources((s) => (checked ? [...s, source] : s.filter((x) => x !== source)))}
+                onChange={(_, checked) => {
+                  const next = checked ? [...sources, source] : sources.filter((x) => x !== source);
+                  setSources(next);
+                  rerun(sort, next);
+                }}
               />
             }
           />
@@ -233,7 +297,7 @@ export function SearchPage() {
           onChange={(_, value: Sort | null) => {
             if (!value) return;
             setSort(value);
-            if (ran) void run(ran.query, value, active);
+            rerun(value, sources);
           }}
         >
           <ToggleButton value="relevance">По совпадению</ToggleButton>
@@ -243,6 +307,11 @@ export function SearchPage() {
       {!connected && (
         <Typography variant="body2" color="text.secondary">
           Архив ищется, когда профиль подключён к Tidy Reel (Настройки).
+        </Typography>
+      )}
+      {disabled.length > 0 && (
+        <Typography variant="body2" color="warning.main">
+          {disabled.map((s) => `«${SOURCE_TITLES[s]}»`).join(', ')} выключены в фильтрах
         </Typography>
       )}
       {busy && <LinearProgress />}

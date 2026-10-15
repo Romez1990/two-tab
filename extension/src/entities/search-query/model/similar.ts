@@ -1,4 +1,4 @@
-import { normalize, otherLayout } from '@/shared/lib';
+import { normalize } from '@/shared/lib';
 
 /** Запрос из истории поиска (docs/extension/pages/search.md, раздел 2.1). */
 export interface SearchQuery {
@@ -29,12 +29,12 @@ export function editDistance(a: string, b: string, limit = 2): number {
 /** Насколько запрос из истории похож на набранное: 3 — начинается с него, 2 — содержит, 1 — опечатки; 0 — не похож. */
 export function similarity(stored: string, typed: string): number {
   const text = normalize(stored);
-  const variants = [...new Set([normalize(typed.trim()), otherLayout(typed.trim())])].filter(Boolean);
-  if (variants.length === 0) return 0;
-  if (variants.some((v) => text.startsWith(v))) return 3;
-  if (variants.some((v) => text.includes(v))) return 2;
+  const v = normalize(typed.trim());
+  if (!v) return 0;
+  if (text.startsWith(v)) return 3;
+  if (text.includes(v)) return 2;
   // Опечатки сравниваются с началом запроса той же длины: набрано ещё не всё.
-  if (variants.some((v) => v.length >= 3 && editDistance(text.slice(0, v.length), v) <= 2)) return 1;
+  if (v.length >= 3 && editDistance(text.slice(0, v.length), v) <= 2) return 1;
   return 0;
 }
 
