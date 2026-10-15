@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ComponentType } from 'react';
 import { DownloadWindow } from '@/pages/download';
 import { DownloadsPage } from '@/pages/downloads';
+import { RecompressPage } from '@/pages/recompress';
 import { DuplicatesPage } from '@/pages/duplicates';
 import { RecoveryPage } from '@/pages/recovery';
 import { SavedPage } from '@/pages/saved';
@@ -20,6 +21,7 @@ const sections: Record<string, { title: string; page: ComponentType; hidden?: bo
   saved: { title: 'Сохранённые', page: SavedPage },
   duplicates: { title: 'Дубликаты', page: DuplicatesPage },
   downloads: { title: 'Скачивание', page: DownloadsPage },
+  recompress: { title: 'Сжатие', page: RecompressPage },
   // Окно «Скачать»: открывается кнопкой на сайте или во всплывающем окне, адрес — после #download/.
   download: { title: 'Скачать', page: DownloadWindow, hidden: true },
   windows: { title: 'Окна', page: WindowsPage },
