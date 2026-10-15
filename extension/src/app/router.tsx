@@ -8,6 +8,7 @@ import { useEffect, useState, type ComponentType } from 'react';
 import { DownloadWindow } from '@/pages/download';
 import { DownloadsPage } from '@/pages/downloads';
 import { RecompressPage } from '@/pages/recompress';
+import { AttentionBanner } from '@/features/queue-attention';
 import { DuplicatesPage } from '@/pages/duplicates';
 import { RecoveryPage } from '@/pages/recovery';
 import { SavedPage } from '@/pages/saved';
@@ -61,6 +62,8 @@ export function AppRouter() {
         </Toolbar>
       </AppBar>
       <Container maxWidth="lg" sx={{ py: 3 }}>
+        {/* «Нужно ваше решение» — вверху каждой страницы (docs/extension/queues.md, раздел 4). */}
+        <AttentionBanner onOpen={(name) => (location.hash = name)} />
         <Page />
       </Container>
     </>

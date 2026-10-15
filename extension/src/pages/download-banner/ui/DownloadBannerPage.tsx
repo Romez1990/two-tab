@@ -6,6 +6,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useEffect, useRef } from 'react';
 import { openDownloadWindow, type DownloadFrameMessage } from '@/features/download-banner';
+import { AttentionBanner } from '@/features/queue-attention';
+import { browser } from '@/shared/browser';
 
 function post(message: DownloadFrameMessage) {
   parent.postMessage(message, '*');
@@ -29,6 +31,8 @@ export function DownloadBannerPage() {
 
   return (
     <Paper ref={box} sx={{ px: 1.5, py: 1 }}>
+      {/* «Нужно ваше решение» — там же, где плашка видео (docs/extension/queues.md, раздел 4). */}
+      <AttentionBanner dense onOpen={(section) => void browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#${section}` })} />
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography variant="body2" noWrap title={downloaded} sx={{ flex: 1, minWidth: 0 }}>
           {downloaded ? `Скачано: ${downloaded}` : channel ? 'Канал' : 'Видео'}
