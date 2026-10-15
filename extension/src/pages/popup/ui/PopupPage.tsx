@@ -1,7 +1,10 @@
 import BookmarksOutlinedIcon from '@mui/icons-material/BookmarksOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import HistoryIcon from '@mui/icons-material/History';
+import CompressIcon from '@mui/icons-material/Compress';
+import DownloadingIcon from '@mui/icons-material/Downloading';
 import ViewQuiltOutlinedIcon from '@mui/icons-material/ViewQuiltOutlined';
+import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
@@ -13,6 +16,8 @@ import { useEffect, useState } from 'react';
 import { findSavedByUrl, SavedMatches, type SavedMatch } from '@/entities/saved';
 import { openSavedItem } from '@/features/saved-banner';
 import { useWindows, WindowRow } from '@/entities/window';
+import { getQueue as getDownloadQueue } from '@/entities/download';
+import { getQueue as getRecompressQueue } from '@/entities/recompress';
 import { openDownloadWindow } from '@/features/download-banner';
 import { SaveCloseButton } from '@/features/save-close';
 import { browser } from '@/shared/browser';
@@ -29,6 +34,14 @@ export function PopupPage() {
   const [tabUrl, setTabUrl] = useState('');
   // «Скачать» — для любой страницы, в том числе сайтов вне шаблонов плашки (docs/extension/pages/site_page.md, раздел 3).
   const connected = Boolean(useSettings()?.localServiceKey);
+  // Число видео, ждущих решения, у каждой очереди своё (docs/extension/pages/popup.md).
+  const [decisions, setDecisions] = useState({ downloads: 0, recompress: 0 });
+  useEffect(() => {
+    if (!connected) return;
+    void Promise.all([getDownloadQueue().catch(() => null), getRecompressQueue().catch(() => null)]).then(([d, r]) =>
+      setDecisions({ downloads: d?.counters.decisions ?? 0, recompress: r?.counters.decisions ?? 0 }),
+    );
+  }, [connected]);
   useEffect(() => {
     void browser.tabs
       .query({ active: true, currentWindow: true })
@@ -49,6 +62,24 @@ export function PopupPage() {
           <Tooltip title="Скачать видео или канал этой страницы">
             <IconButton onClick={() => void openDownloadWindow(tabUrl).then(() => window.close())}>
               <DownloadIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {connected && (
+          <Tooltip title={decisions.downloads ? `Очередь скачивания (${decisions.downloads})` : 'Очередь скачивания'}>
+            <IconButton onClick={() => openSection('downloads')}>
+              <Badge badgeContent={decisions.downloads} color="warning">
+                <DownloadingIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+        )}
+        {connected && (
+          <Tooltip title={decisions.recompress ? `Очередь сжатия (${decisions.recompress})` : 'Очередь сжатия'}>
+            <IconButton onClick={() => openSection('recompress')}>
+              <Badge badgeContent={decisions.recompress} color="warning">
+                <CompressIcon />
+              </Badge>
             </IconButton>
           </Tooltip>
         )}
