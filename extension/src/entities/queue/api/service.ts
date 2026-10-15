@@ -2,20 +2,11 @@ import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/a
 
 /**
  * Shared by both queues of the local service (tidy-reel/docs/local_service/local_service.md,
- * section 7.6): "Needs your decision" cases and queue settings.
+ * section 7.6): muting the "Needs your decision" cases and queue settings. The cases themselves
+ * come over the WebSocket (`attention-store.ts`).
  */
 
-export type AttentionCase = LocalServiceSchemas['CaseModel'];
 export type QueueSettings = LocalServiceSchemas['SettingsModel'];
-
-/** Cases the queue waits on the user for; empty when not connected. */
-export async function getAttention(): Promise<AttentionCase[]> {
-  const c = await connectedClient();
-  if (!c) return [];
-  const { data, error, response } = await c.GET('/api/attention');
-  if (!data) throw new Error(errorText(response.status, error));
-  return data;
-}
 
 /** "Mute": the sound notification for the current cases no longer plays. */
 export async function muteAttention(): Promise<void> {

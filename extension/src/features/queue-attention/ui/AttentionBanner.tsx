@@ -1,10 +1,7 @@
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { useEffect, useState } from 'react';
-import { getAttention, muteAttention, type AttentionCase } from '@/entities/queue';
-
-const POLL_MS = 5000;
+import { muteAttention, useAttention } from '@/entities/queue';
 
 /** Extension page section by the queue of the case. */
 export const QUEUE_SECTIONS: Record<string, string> = { download: 'downloads', recompress: 'recompress' };
@@ -12,22 +9,11 @@ export const QUEUE_SECTIONS: Record<string, string> = { download: 'downloads', r
 /**
  * The "Needs your decision" banner (docs/extension/queues.md, section 4): cases the queue waits on
  * the user for, a link to the queue and "Mute". The sound is a Windows notification from the local service.
+ * The cases are kept by the background script (docs/extension/queues.md, section 6).
  */
 export function AttentionBanner({ onOpen, dense = false }: { onOpen: (section: string) => void; dense?: boolean }) {
-  const [cases, setCases] = useState<AttentionCase[]>([]);
-  useEffect(() => {
-    let alive = true;
-    const poll = () =>
-      void getAttention()
-        .then((next) => alive && setCases(next))
-        .catch(() => alive && setCases([]));
-    poll();
-    const timer = setInterval(poll, POLL_MS);
-    return () => {
-      alive = false;
-      clearInterval(timer);
-    };
-  }, []);
+  // The cases come over the WebSocket into session storage; "Mute" changes them there too.
+  const cases = useAttention()?.cases ?? [];
   if (!cases.length) return null;
   const loud = cases.some((c) => !c.muted);
 
@@ -37,7 +23,7 @@ export function AttentionBanner({ onOpen, dense = false }: { onOpen: (section: s
       sx={dense ? { py: 0 } : undefined}
       action={
         loud && (
-          <Button color="inherit" size="small" onClick={() => void muteAttention().then(() => setCases((list) => list.map((c) => ({ ...c, muted: true }))))}>
+          <Button color="inherit" size="small" onClick={() => void muteAttention()}>
             Заглушить
           </Button>
         )

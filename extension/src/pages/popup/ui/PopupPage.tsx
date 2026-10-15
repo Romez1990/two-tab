@@ -16,8 +16,7 @@ import { useEffect, useState } from 'react';
 import { findSavedByUrl, SavedMatches, type SavedMatch } from '@/entities/saved';
 import { openSavedItem } from '@/features/saved-banner';
 import { useWindows, WindowRow } from '@/entities/window';
-import { getQueue as getDownloadQueue } from '@/entities/download';
-import { getQueue as getRecompressQueue } from '@/entities/recompress';
+import { useAttention } from '@/entities/queue';
 import { openDownloadWindow } from '@/features/download-banner';
 import { SaveCloseButton } from '@/features/save-close';
 import { browser } from '@/shared/browser';
@@ -31,13 +30,9 @@ export function PopupPage() {
   // "Download" works for any page, including sites outside the banner patterns (docs/extension/pages/site_page.md, section 3).
   const connected = Boolean(useSettings()?.localServiceKey);
   // Each queue has its own count of videos waiting for a decision (docs/extension/pages/popup.md).
-  const [decisions, setDecisions] = useState({ downloads: 0, recompress: 0 });
-  useEffect(() => {
-    if (!connected) return;
-    void Promise.all([getDownloadQueue().catch(() => null), getRecompressQueue().catch(() => null)]).then(([d, r]) =>
-      setDecisions({ downloads: d?.counters.decisions ?? 0, recompress: r?.counters.decisions ?? 0 }),
-    );
-  }, [connected]);
+  // From the background script's connection, at once and without asking the service.
+  const attention = useAttention();
+  const decisions = { downloads: attention?.downloads.decisions ?? 0, recompress: attention?.recompress.decisions ?? 0 };
   useEffect(() => {
     void browser.tabs
       .query({ active: true, currentWindow: true })
