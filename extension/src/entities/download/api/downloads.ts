@@ -12,6 +12,7 @@ export type Check = S['local_service__schemas__downloads__CheckResponse'];
 export type ChannelCheck = S['ChannelCheckResponse'];
 export type Group = S['GroupModel'];
 export type Download = S['DownloadModel'];
+export type DownloadsSnapshot = S['DownloadsSnapshot'];
 export type DownloadQueue = S['DownloadQueueModel'];
 export type GroupSummary = S['GroupSummaryModel'];
 export type DownloadItem = S['DownloadItemModel'];
@@ -103,16 +104,6 @@ export async function subscribe(url: string, folder: string, filters: Filters, p
   return unwrap(await (await client()).POST('/api/subscriptions', { body }));
 }
 
-/** Pause, counters, remainder and groups without videos: videos come in pages (`listItems`). */
-export async function getQueue(): Promise<DownloadQueue> {
-  return unwrap(await (await client()).GET('/api/downloads'));
-}
-
-/** A page of videos by filters (`active`, `decision`, `unread`, `errors`, `done`), pages from 0. */
-export async function listItems(filters: readonly string[], page: number): Promise<DownloadItems> {
-  return unwrap(await (await client()).GET('/api/downloads/items', { params: { query: { filter: filters.join(','), page } } }));
-}
-
 /** Next video with a message of `kind` (`decision`, `unread`, `errors`) after `after`, wrapping around. */
 export async function nextItem(kind: string, after: number | null, filters: readonly string[]): Promise<{ id: number; page: number } | null> {
   return unwrap(await (await client()).GET('/api/downloads/items/next', { params: { query: { kind, after: after ?? undefined, filter: filters.join(',') } } }));
@@ -144,21 +135,9 @@ export async function decideDuplicate(id: number, keep: 'old' | 'new' | 'both'):
   done(await (await client()).POST('/api/downloads/{download_id}/duplicate', { params: { path: { download_id: id } }, body: { keep } }));
 }
 
-/** Site cookies of queued videos: the service keeps them only in memory and forgets them on restart. */
-export async function feedCookies(items: readonly { url: string; state: string }[]): Promise<void> {
-  const urls = new Map<string, string>();
-  for (const d of items)
-    if (d.state === 'queued' || d.state === 'downloading' || d.state === 'counting') {
-      try {
-        urls.set(new URL(d.url).origin, d.url);
-      } catch {
-        // Address without a site: no cookies needed.
-      }
-    }
-  if (urls.size === 0) return;
-  const sites: Record<string, Cookie[]> = {};
-  for (const url of urls.values()) sites[url] = await siteCookies(url);
-  done(await (await client()).POST('/api/downloads/cookies', { body: { sites } }));
+/** Cookies of one site the service asked for over the WebSocket (`need_cookies`); it keeps them only in memory. */
+export async function sendSiteCookies(url: string): Promise<void> {
+  done(await (await client()).POST('/api/downloads/cookies', { body: { sites: { [url]: await siteCookies(url) } } }));
 }
 
 export async function groupAction(id: number, action: GroupAction): Promise<void> {
@@ -199,10 +178,6 @@ export async function createModel(category: string, channelUrl: string, name: st
 
 export async function pickFolder(initial?: string): Promise<string | null> {
   return unwrap(await (await client()).POST('/api/downloads/folders/pick', { body: { initial: initial ?? null } })).folder;
-}
-
-export async function listSubscriptions(): Promise<Subscription[]> {
-  return unwrap(await (await client()).GET('/api/subscriptions'));
 }
 
 export async function updateSubscription(id: number, change: S['UpdateRequest']): Promise<Subscription> {

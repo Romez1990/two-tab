@@ -1,11 +1,11 @@
 import { getSaved } from '@/entities/saved';
 import { AUTO_CLOSE_NOTIFICATION_PREFIX, runAutoClose } from '@/features/auto-close';
 import { onCheckMessage, resumeBackgroundCheck } from '@/features/background-check';
-import { DOWNLOAD_ALARM, SUBSCRIPTION_NOTIFICATION_PREFIX, ensureDownloadAlarm, onDownloadAlarm, onSubscriptionButton } from '@/features/download-watch';
 import { showDownloadBanner } from '@/features/download-banner';
 import { showBannerIfSaved } from '@/features/saved-banner';
 import { restoreTabs, restoreWindows, returnSaved } from '@/features/restore-windows';
 import { saveAndCloseGroup, saveAndCloseWindow } from '@/features/save-close';
+import { SUBSCRIPTION_NOTIFICATION_PREFIX, onSubscriptionButton, startServiceEvents } from '@/features/service-events';
 import {
   HISTORY_ALARM,
   LOSS_NOTIFICATION,
@@ -48,7 +48,6 @@ export function startBackground(): void {
 
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === HISTORY_ALARM) void onHistoryAlarm().then(autoClose);
-    if (alarm.name === DOWNLOAD_ALARM) void onDownloadAlarm();
   });
   browser.notifications.onButtonClicked.addListener((id) => {
     if (id === LOSS_NOTIFICATION) void restoreLastLoss();
@@ -72,7 +71,7 @@ export function startBackground(): void {
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => onCheckMessage(message, sendResponse));
 
   void ensureHistoryAlarm();
-  void ensureDownloadAlarm();
+  startServiceEvents();
   void resumeBackgroundCheck();
   void startTracking();
 }
