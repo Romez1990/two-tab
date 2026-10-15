@@ -7,7 +7,11 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { SMART_TIME_HINT, SmartHint } from '@/shared/ui';
-import { DEFAULT_FIELDS, SLIDERS, describeStep, trimError, type PresetFields, type SliderDef } from '../model/fields';
+import { DEFAULT_FIELDS, SLIDERS, describeStep, trimError, type PresetFields, type SliderDef, type SliderField } from '../model/fields';
+
+/** Порядок формы — один для «Скачать», «Очереди сжатия» и настроек (docs/extension/queues.md, раздел 1). */
+const ORDER: SliderField[] = ['resolution', 'crf', 'fps', 'speed', 'opus_kbps', 'grain'];
+const ORDERED = ORDER.map((field) => SLIDERS.find((s) => s.field === field)!);
 
 /**
  * Поля пресета (tidy-reel/docs/recompress.md, раздел 2). `base` — «По умолчанию»: у пресета сайта
@@ -51,9 +55,17 @@ export function PresetFieldsEditor({
           label="Сжимать"
         />
       </Stack>
-      {SLIDERS.map((def) => (
+      {ORDERED.map((def) => (
         <SliderRow key={def.field} def={def} value={full[def.field]} disabled={disabled || !own(def.field)} own={ownBox(def.field)} onChange={(v) => set(def.field, v)} />
       ))}
+      <Stack direction="row" sx={{ alignItems: 'center' }}>
+        {ownBox('normalize')}
+        <FormControlLabel
+          disabled={disabled || !own('normalize')}
+          control={<Checkbox checked={full.normalize} onChange={(_, on) => set('normalize', on)} />}
+          label="Нормализовать звук (−14 LUFS)"
+        />
+      </Stack>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'flex-start' }}>
         {ownBox('trim_start')}
         <TrimField label="Обрезать начало" value={full.trim_start} end={false} disabled={disabled || !own('trim_start')} onChange={(v) => set('trim_start', v)} />
@@ -74,14 +86,6 @@ export function PresetFieldsEditor({
           value={Math.round(full.bitrate_threshold / 1000)}
           onChange={(e) => set('bitrate_threshold', Math.max(0, Math.round(Number(e.target.value) || 0)) * 1000)}
           sx={{ width: 320 }}
-        />
-      </Stack>
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        {ownBox('normalize')}
-        <FormControlLabel
-          disabled={disabled || !own('normalize')}
-          control={<Checkbox checked={full.normalize} onChange={(_, on) => set('normalize', on)} />}
-          label="Нормализовать звук (−14 LUFS)"
         />
       </Stack>
     </Stack>
