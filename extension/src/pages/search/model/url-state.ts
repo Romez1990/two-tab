@@ -14,10 +14,6 @@ export interface SearchState {
 
 export const EMPTY_STATE: SearchState = { query: '', sources: DEFAULT_SOURCES, sort: 'relevance', page: 1 };
 
-function sameSources(a: readonly Source[], b: readonly Source[]): boolean {
-  return a.length === b.length && a.every((s) => b.includes(s));
-}
-
 export function readState(search: string): SearchState {
   const params = new URLSearchParams(search);
   const sources = params.get('in');
@@ -41,4 +37,8 @@ export function writeState(state: SearchState): string {
   if (state.page > 1) params.set('page', String(state.page));
   const text = params.toString();
   return text ? `?${text}` : '';
+}
+
+function sameSources(a: readonly Source[], b: readonly Source[]): boolean {
+  return a.length === b.length && a.every((s) => b.includes(s));
 }

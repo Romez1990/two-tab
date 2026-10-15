@@ -6,17 +6,17 @@ export type PresetInput = LocalServiceSchemas['PresetRequest'];
 
 export class PresetsUnavailableError extends Error {}
 
-async function client() {
-  const c = await connectedClient();
-  if (!c) throw new PresetsUnavailableError('Профиль не подключён к Tidy Reel');
-  return c;
-}
-
 export async function listPresets(): Promise<{ presets: Preset[]; sites: string[] }> {
   const c = await client();
   const [presets, sites] = await Promise.all([c.GET('/api/presets'), c.GET('/api/presets/sites')]);
   if (!presets.data || !sites.data) throw new Error(errorText(presets.response.status, presets.error ?? sites.error));
   return { presets: presets.data, sites: sites.data };
+}
+
+async function client() {
+  const c = await connectedClient();
+  if (!c) throw new PresetsUnavailableError('Профиль не подключён к Tidy Reel');
+  return c;
 }
 
 /** Saves a preset: a new one or in place of the old one. An error is a text for the user. */

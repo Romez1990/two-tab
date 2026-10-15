@@ -8,12 +8,6 @@ import type { LocalServiceSchemas } from '@/shared/api';
 
 export type QueueMessage = LocalServiceSchemas['QueueMessageModel'];
 
-/** Kind icon (tidy-reel/docs/recompress.md, section 6.5): yellow is a decision, blue is info, red is an error. */
-function KindIcon({ kind }: { kind: string }) {
-  if (kind === 'error') return <ErrorOutline fontSize="small" color="error" />;
-  return <PriorityHigh fontSize="small" color={kind === 'decision' ? 'warning' : 'info'} />;
-}
-
 /**
  * Message on a video: text, buttons of its case (`children`) and "Read" on info and errors,
  * per message only. Read and resolved messages stay in the history, dimmed.
@@ -33,4 +27,10 @@ export function MessageLine({ message, onRead, children }: { message: QueueMessa
       )}
     </Stack>
   );
+}
+
+/** Kind icon (tidy-reel/docs/recompress.md, section 6.5): yellow is a decision, blue is info, red is an error. */
+function KindIcon({ kind }: { kind: string }) {
+  if (kind === 'error') return <ErrorOutline fontSize="small" color="error" />;
+  return <PriorityHigh fontSize="small" color={kind === 'decision' ? 'warning' : 'info'} />;
 }

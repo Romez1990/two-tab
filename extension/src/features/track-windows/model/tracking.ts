@@ -35,6 +35,25 @@ const LOSS_KEY = 'lastLoss';
 let ready: Promise<void> | undefined;
 let timer: ReturnType<typeof setTimeout> | undefined;
 
+export async function onTabRemoved(tabId: number, info: Browser.tabs.OnRemovedInfo): Promise<void> {
+  scheduleSnapshot();
+  // Tabs of a closed window stay in snapshots; "Recently closed" gets only tabs closed one by one.
+  if (info.isWindowClosing) return;
+  if (await takeClosingByExtension(tabId)) return;
+  const tabs = (await browser.storage.session.get(TABS_KEY))[TABS_KEY] as Record<number, TabInfo> | undefined;
+  const tab = tabs?.[tabId];
+  if (!tab || !tab.url || tab.url.startsWith('chrome://newtab')) return;
+  await addClosedTab({ url: tab.url, title: tab.title, closedAt: Date.now() });
+}
+
+/** The snapshot is written 1–2 seconds after a change; a series of changes gives one write. */
+export function scheduleSnapshot(): void {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    void startTracking().then(writeSnapshot);
+  }, WRITE_DELAY_MS);
+}
+
 /**
  * Called on every background script wake-up. Once per Chrome session (or after an extension reload)
  * the previous snapshot goes to history, windows get permanent ids by address overlap, and if something
@@ -67,14 +86,6 @@ async function init(): Promise<void> {
   }
 }
 
-/** The snapshot is written 1–2 seconds after a change; a series of changes gives one write. */
-export function scheduleSnapshot(): void {
-  clearTimeout(timer);
-  timer = setTimeout(() => {
-    void startTracking().then(writeSnapshot);
-  }, WRITE_DELAY_MS);
-}
-
 async function writeSnapshot(): Promise<SnapshotWindow[] | undefined> {
   const { windows, tabs } = await captureWindows();
   await browser.storage.session.set({ [TABS_KEY]: tabs });
@@ -84,30 +95,6 @@ async function writeSnapshot(): Promise<SnapshotWindow[] | undefined> {
   if (previous && JSON.stringify(previous.windows) === JSON.stringify(windows)) return windows;
   await saveCurrentSnapshot({ takenAt: Date.now(), windows });
   return windows;
-}
-
-export async function onTabRemoved(tabId: number, info: Browser.tabs.OnRemovedInfo): Promise<void> {
-  scheduleSnapshot();
-  // Tabs of a closed window stay in snapshots; "Recently closed" gets only tabs closed one by one.
-  if (info.isWindowClosing) return;
-  if (await takeClosingByExtension(tabId)) return;
-  const tabs = (await browser.storage.session.get(TABS_KEY))[TABS_KEY] as Record<number, TabInfo> | undefined;
-  const tab = tabs?.[tabId];
-  if (!tab || !tab.url || tab.url.startsWith('chrome://newtab')) return;
-  await addClosedTab({ url: tab.url, title: tab.title, closedAt: Date.now() });
-}
-
-export async function onHistoryAlarm(): Promise<void> {
-  await startTracking();
-  const current = await getCurrentSnapshot();
-  if (current) await archiveSnapshot(current);
-  await pruneClosedTabs();
-}
-
-export async function ensureHistoryAlarm(): Promise<void> {
-  if (!(await browser.alarms.get(HISTORY_ALARM))) {
-    await browser.alarms.create(HISTORY_ALARM, { periodInMinutes: HISTORY_PERIOD_MINUTES });
-  }
 }
 
 async function notifyLoss(loss: Loss, size: { windows: number; tabs: number }): Promise<void> {
@@ -121,6 +108,19 @@ async function notifyLoss(loss: Loss, size: { windows: number; tabs: number }): 
     buttons: [{ title: 'Восстановить' }],
     requireInteraction: true,
   });
+}
+
+export async function onHistoryAlarm(): Promise<void> {
+  await startTracking();
+  const current = await getCurrentSnapshot();
+  if (current) await archiveSnapshot(current);
+  await pruneClosedTabs();
+}
+
+export async function ensureHistoryAlarm(): Promise<void> {
+  if (!(await browser.alarms.get(HISTORY_ALARM))) {
+    await browser.alarms.create(HISTORY_ALARM, { periodInMinutes: HISTORY_PERIOD_MINUTES });
+  }
 }
 
 export async function getLastLoss(): Promise<Loss | undefined> {

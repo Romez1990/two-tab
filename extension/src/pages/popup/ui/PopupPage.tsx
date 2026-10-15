@@ -24,10 +24,6 @@ import { browser } from '@/shared/browser';
 import { useSettings } from '@/shared/config';
 import { groupColor } from '@/shared/ui';
 
-function openSection(section: string) {
-  void browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#${section}` });
-}
-
 export function PopupPage() {
   const { windows, reload } = useWindows();
   const [saved, setSaved] = useState<SavedMatch[]>([]);
@@ -131,4 +127,8 @@ export function PopupPage() {
       </List>
     </Box>
   );
+}
+
+function openSection(section: string) {
+  void browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#${section}` });
 }

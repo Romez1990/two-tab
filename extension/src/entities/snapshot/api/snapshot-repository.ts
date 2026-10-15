@@ -4,11 +4,6 @@ import type { Snapshot } from '../model/types';
 
 const CURRENT_KEY = 'currentSnapshot';
 
-export async function getCurrentSnapshot(): Promise<Snapshot | undefined> {
-  const row = await db.meta.get(CURRENT_KEY);
-  return row?.value as Snapshot | undefined;
-}
-
 export async function saveCurrentSnapshot(snapshot: Snapshot): Promise<void> {
   await db.meta.put({ key: CURRENT_KEY, value: snapshot });
 }
@@ -16,6 +11,16 @@ export async function saveCurrentSnapshot(snapshot: Snapshot): Promise<void> {
 export async function listHistory(): Promise<Snapshot[]> {
   const rows = await db.snapshots.orderBy('takenAt').reverse().toArray();
   return rows as unknown as Snapshot[];
+}
+
+export async function archiveCurrentSnapshot(): Promise<void> {
+  const current = await getCurrentSnapshot();
+  if (current) await archiveSnapshot(current);
+}
+
+export async function getCurrentSnapshot(): Promise<Snapshot | undefined> {
+  const row = await db.meta.get(CURRENT_KEY);
+  return row?.value as Snapshot | undefined;
 }
 
 /**
@@ -34,9 +39,4 @@ export async function archiveSnapshot(snapshot: Snapshot, now = Date.now()): Pro
     now,
   );
   if (toDelete.length > 0) await db.snapshots.bulkDelete(toDelete);
-}
-
-export async function archiveCurrentSnapshot(): Promise<void> {
-  const current = await getCurrentSnapshot();
-  if (current) await archiveSnapshot(current);
 }

@@ -26,41 +26,6 @@ interface SiteState {
 
 const sites = new Map<string, SiteState>();
 
-function siteOf(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return url;
-  }
-}
-
-/** Pause after 429 or 503: from `Retry-After` (seconds or a date), otherwise 5 minutes, doubling each time. */
-export function pauseAfter(retryAfter: string | null, strike: number, now = Date.now()): number {
-  if (retryAfter) {
-    const seconds = Number(retryAfter);
-    if (Number.isFinite(seconds) && seconds >= 0) return seconds * 1000;
-    const date = Date.parse(retryAfter);
-    if (!Number.isNaN(date)) return Math.max(0, date - now);
-  }
-  return PAUSE_MS * 2 ** (strike - 1);
-}
-
-function wait(ms: number, signal: AbortSignal): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (signal.aborted) return reject(signal.reason);
-    const timer = setTimeout(done, Math.max(0, ms));
-    function done() {
-      signal.removeEventListener('abort', abort);
-      resolve();
-    }
-    function abort() {
-      clearTimeout(timer);
-      reject(signal.reason);
-    }
-    signal.addEventListener('abort', abort, { once: true });
-  });
-}
-
 /**
  * `fetch` with browser cookies and the site rules. Waiting for its turn does not count toward the 10 seconds for a response.
  * Throws `SiteSkippedError` if the site is skipped, and the `fetch` error if the site did not respond.
@@ -99,6 +64,41 @@ export async function siteFetch(url: string, signal: AbortSignal, init: RequestI
   } finally {
     release();
   }
+}
+
+function siteOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
+function wait(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) return reject(signal.reason);
+    const timer = setTimeout(done, Math.max(0, ms));
+    function done() {
+      signal.removeEventListener('abort', abort);
+      resolve();
+    }
+    function abort() {
+      clearTimeout(timer);
+      reject(signal.reason);
+    }
+    signal.addEventListener('abort', abort, { once: true });
+  });
+}
+
+/** Pause after 429 or 503: from `Retry-After` (seconds or a date), otherwise 5 minutes, doubling each time. */
+export function pauseAfter(retryAfter: string | null, strike: number, now = Date.now()): number {
+  if (retryAfter) {
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds) && seconds >= 0) return seconds * 1000;
+    const date = Date.parse(retryAfter);
+    if (!Number.isNaN(date)) return Math.max(0, date - now);
+  }
+  return PAUSE_MS * 2 ** (strike - 1);
 }
 
 /**

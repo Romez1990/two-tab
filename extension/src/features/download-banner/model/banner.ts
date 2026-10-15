@@ -20,12 +20,12 @@ export interface DownloadBannerInfo {
 
 export type DownloadFrameMessage = { tabsurd: 'download-banner-height'; height: number } | { tabsurd: 'download-banner-close' };
 
+const recent = new Set<string>();
+
 /** The "Download" window for an address, from the banner and from the popup. */
 export async function openDownloadWindow(url: string): Promise<void> {
   await browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#download/${encodeURIComponent(url)}` });
 }
-
-const recent = new Set<string>();
 
 export async function showDownloadBanner(tabId: number, url: string | undefined): Promise<void> {
   if (!url || !/^https?:/i.test(url)) return;

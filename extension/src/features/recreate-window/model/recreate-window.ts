@@ -3,6 +3,16 @@ import { browser } from '@/shared/browser';
 import { planMoves } from './plan-moves';
 
 /**
+ * New window order on the taskbar (docs/extension/pages/windows.md, section 1): windows before the first change
+ * stay, the rest are recreated one by one and go to the end in the right order.
+ */
+export async function reorderWindows(current: readonly BrowserWindow[], next: readonly BrowserWindow[]): Promise<void> {
+  const firstChanged = next.findIndex((w, i) => current[i]?.id !== w.id);
+  if (firstChanged === -1) return;
+  for (const w of next.slice(firstChanged)) await recreateWindow(w);
+}
+
+/**
  * Recreates a window: opens a new window in the same place and moves the tabs and groups into it.
  * Windows orders taskbar windows by creation time, so the recreated window becomes the last one
  * (docs/extension/pages/windows.md, section 1). The old window closes by itself when its last tab leaves.
@@ -27,14 +37,4 @@ export async function recreateWindow(window: BrowserWindow): Promise<void> {
       await browser.tabGroups.move(step.groupId, { windowId, index: -1 });
     }
   }
-}
-
-/**
- * New window order on the taskbar (docs/extension/pages/windows.md, section 1): windows before the first change
- * stay, the rest are recreated one by one and go to the end in the right order.
- */
-export async function reorderWindows(current: readonly BrowserWindow[], next: readonly BrowserWindow[]): Promise<void> {
-  const firstChanged = next.findIndex((w, i) => current[i]?.id !== w.id);
-  if (firstChanged === -1) return;
-  for (const w of next.slice(firstChanged)) await recreateWindow(w);
 }

@@ -31,66 +31,22 @@ type Token =
   | { kind: 'open'; prefix: Prefix }
   | { kind: 'word'; text: string; phrase: boolean; prefix: Prefix };
 
-function readPrefix(query: string, i: number): { prefix: Prefix; length: number } {
-  const match = /^([^\s()|":-][^\s()|":]*):/.exec(query.slice(i));
-  if (!match) return { prefix: null, length: 0 };
-  const name = match[1]!.toLowerCase();
-  if (!PREFIXES.includes(name)) {
-    throw new SearchSyntaxError(
-      `Неизвестный префикс «${match[0]}». Есть: ${PREFIXES.map((p) => `${p}:`).join(', ')}. Двоеточие в тексте — в кавычках: "12:30"`,
-    );
-  }
-  return { prefix: name as Prefix, length: match[0].length };
+/**
+ * What is checked on a tab or file: `name` is the title or file name. A field the source does not
+ * have is absent from the document too: a condition on it is false, and under NOT it is true (strict logic).
+ */
+export interface SearchDoc {
+  source: SearchSource;
+  name: string;
+  path?: string;
+  url?: string;
+  title?: string;
+  channel?: string;
+  song?: string;
+  group?: string;
 }
 
-function tokenize(query: string): Token[] {
-  const tokens: Token[] = [];
-  let i = 0;
-  while (i < query.length) {
-    const c = query[i]!;
-    if (/\s/.test(c)) {
-      i++;
-    } else if (c === '(') {
-      tokens.push({ kind: 'open', prefix: null });
-      i++;
-    } else if (c === ')' || c === '|') {
-      tokens.push({ kind: c === ')' ? 'close' : 'or' });
-      i++;
-    } else if (c === '-' && (tokens.length === 0 || /[\s(|]/.test(query[i - 1] ?? ' '))) {
-      tokens.push({ kind: 'not' });
-      i++;
-    } else {
-      const { prefix, length } = readPrefix(query, i);
-      i += length;
-      if (prefix && query[i] === '(') {
-        tokens.push({ kind: 'open', prefix });
-        i++;
-      } else if (query[i] === '"') {
-        const end = query.indexOf('"', i + 1);
-        if (end < 0) throw new SearchSyntaxError('Нет закрывающей кавычки');
-        const text = query.slice(i + 1, end).trim();
-        if (text) tokens.push({ kind: 'word', text, phrase: true, prefix });
-        i = end + 1;
-      } else {
-        const start = i;
-        while (i < query.length && !/[\s()|]/.test(query[i]!)) i++;
-        const text = query.slice(start, i);
-        if (!text) throw new SearchSyntaxError(`После «${prefix}:» нет слова`);
-        tokens.push({ kind: 'word', text, phrase: false, prefix });
-      }
-    }
-  }
-  return tokens;
-}
-
-function word(text: string, phrase: boolean, prefix: Prefix): Condition {
-  if (prefix !== 'source') return { op: 'term', field: prefix ?? 'name', text, phrase };
-  const source = text.toLowerCase();
-  if (!SEARCH_SOURCES.includes(source as SearchSource)) {
-    throw new SearchSyntaxError(`Неизвестный источник «source:${text}». Есть: ${SEARCH_SOURCES.join(', ')}`);
-  }
-  return { op: 'source', source: source as SearchSource };
-}
+const ANY_FIELDS = ['name', 'path', 'url', 'title', 'channel', 'song', 'group'] as const;
 
 /**
  * Parses a query; an empty query gives `null`. A syntax error throws `SearchSyntaxError`.
@@ -142,30 +98,65 @@ export function parseQuery(query: string): Condition | null {
   return tree;
 }
 
-/** Case and `ё` do not matter. */
-export function normalize(text: string): string {
-  return text.toLowerCase().replaceAll('ё', 'е');
+function tokenize(query: string): Token[] {
+  const tokens: Token[] = [];
+  let i = 0;
+  while (i < query.length) {
+    const c = query[i]!;
+    if (/\s/.test(c)) {
+      i++;
+    } else if (c === '(') {
+      tokens.push({ kind: 'open', prefix: null });
+      i++;
+    } else if (c === ')' || c === '|') {
+      tokens.push({ kind: c === ')' ? 'close' : 'or' });
+      i++;
+    } else if (c === '-' && (tokens.length === 0 || /[\s(|]/.test(query[i - 1] ?? ' '))) {
+      tokens.push({ kind: 'not' });
+      i++;
+    } else {
+      const { prefix, length } = readPrefix(query, i);
+      i += length;
+      if (prefix && query[i] === '(') {
+        tokens.push({ kind: 'open', prefix });
+        i++;
+      } else if (query[i] === '"') {
+        const end = query.indexOf('"', i + 1);
+        if (end < 0) throw new SearchSyntaxError('Нет закрывающей кавычки');
+        const text = query.slice(i + 1, end).trim();
+        if (text) tokens.push({ kind: 'word', text, phrase: true, prefix });
+        i = end + 1;
+      } else {
+        const start = i;
+        while (i < query.length && !/[\s()|]/.test(query[i]!)) i++;
+        const text = query.slice(start, i);
+        if (!text) throw new SearchSyntaxError(`После «${prefix}:» нет слова`);
+        tokens.push({ kind: 'word', text, phrase: false, prefix });
+      }
+    }
+  }
+  return tokens;
 }
 
-/**
- * What is checked on a tab or file: `name` is the title or file name. A field the source does not
- * have is absent from the document too: a condition on it is false, and under NOT it is true (strict logic).
- */
-export interface SearchDoc {
-  source: SearchSource;
-  name: string;
-  path?: string;
-  url?: string;
-  title?: string;
-  channel?: string;
-  song?: string;
-  group?: string;
+function readPrefix(query: string, i: number): { prefix: Prefix; length: number } {
+  const match = /^([^\s()|":-][^\s()|":]*):/.exec(query.slice(i));
+  if (!match) return { prefix: null, length: 0 };
+  const name = match[1]!.toLowerCase();
+  if (!PREFIXES.includes(name)) {
+    throw new SearchSyntaxError(
+      `Неизвестный префикс «${match[0]}». Есть: ${PREFIXES.map((p) => `${p}:`).join(', ')}. Двоеточие в тексте — в кавычках: "12:30"`,
+    );
+  }
+  return { prefix: name as Prefix, length: match[0].length };
 }
 
-const ANY_FIELDS = ['name', 'path', 'url', 'title', 'channel', 'song', 'group'] as const;
-
-export function contains(text: string | undefined, word: string): boolean {
-  return !!text && normalize(text).includes(normalize(word));
+function word(text: string, phrase: boolean, prefix: Prefix): Condition {
+  if (prefix !== 'source') return { op: 'term', field: prefix ?? 'name', text, phrase };
+  const source = text.toLowerCase();
+  if (!SEARCH_SOURCES.includes(source as SearchSource)) {
+    throw new SearchSyntaxError(`Неизвестный источник «source:${text}». Есть: ${SEARCH_SOURCES.join(', ')}`);
+  }
+  return { op: 'source', source: source as SearchSource };
 }
 
 export function matches(condition: Condition, doc: SearchDoc): boolean {
@@ -185,19 +176,13 @@ export function matches(condition: Condition, doc: SearchDoc): boolean {
   }
 }
 
-/** Words that must be in the result (not under NOT). */
-export function positiveTerms(condition: Condition, negated = false): Extract<Condition, { op: 'term' }>[] {
-  switch (condition.op) {
-    case 'term':
-      return negated ? [] : [condition];
-    case 'source':
-      return [];
-    case 'and':
-    case 'or':
-      return condition.items.flatMap((item) => positiveTerms(item, negated));
-    case 'not':
-      return positiveTerms(condition.item, !negated);
-  }
+export function contains(text: string | undefined, word: string): boolean {
+  return !!text && normalize(text).includes(normalize(word));
+}
+
+/** Case and `ё` do not matter. */
+export function normalize(text: string): string {
+  return text.toLowerCase().replaceAll('ё', 'е');
 }
 
 /** Sources the query mentions in `source:` (for the hint about disabled ones). */
@@ -223,4 +208,19 @@ export function relevance(condition: Condition, doc: { name: string }): number {
   const inName = names.some((t) => contains(doc.name, t.text));
   const starts = names.some((t) => name.startsWith(normalize(t.text)));
   return (phrase ? 4 : 0) + (inName ? 2 : 0) + (starts ? 1 : 0);
+}
+
+/** Words that must be in the result (not under NOT). */
+export function positiveTerms(condition: Condition, negated = false): Extract<Condition, { op: 'term' }>[] {
+  switch (condition.op) {
+    case 'term':
+      return negated ? [] : [condition];
+    case 'source':
+      return [];
+    case 'and':
+    case 'or':
+      return condition.items.flatMap((item) => positiveTerms(item, negated));
+    case 'not':
+      return positiveTerms(condition.item, !negated);
+  }
 }

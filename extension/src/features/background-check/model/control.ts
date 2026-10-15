@@ -33,9 +33,31 @@ async function startCheck(): Promise<void> {
   await ensureOffscreen();
 }
 
+async function ensureOffscreen(): Promise<void> {
+  if (await hasOffscreen()) return;
+  try {
+    await browser.offscreen.createDocument({
+      url: OFFSCREEN_PAGE,
+      reasons: ['DOM_PARSER' as Browser.offscreen.Reason],
+      justification: 'Загрузка заголовков и значков сохранённых вкладок',
+    });
+  } catch {
+    // A parallel call has already created the page.
+  }
+}
+
+async function hasOffscreen(): Promise<boolean> {
+  const contexts = await browser.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT' as Browser.runtime.ContextType] });
+  return contexts.length > 0;
+}
+
 async function stopCheck(): Promise<void> {
   await updateCheckState({ running: false });
   await closeOffscreen();
+}
+
+async function closeOffscreen(): Promise<void> {
+  if (await hasOffscreen()) await browser.offscreen.closeDocument().catch(() => undefined);
 }
 
 async function finishCheck(): Promise<void> {
@@ -51,26 +73,4 @@ export async function resumeBackgroundCheck(): Promise<void> {
     return;
   }
   await ensureOffscreen();
-}
-
-async function hasOffscreen(): Promise<boolean> {
-  const contexts = await browser.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT' as Browser.runtime.ContextType] });
-  return contexts.length > 0;
-}
-
-async function ensureOffscreen(): Promise<void> {
-  if (await hasOffscreen()) return;
-  try {
-    await browser.offscreen.createDocument({
-      url: OFFSCREEN_PAGE,
-      reasons: ['DOM_PARSER' as Browser.offscreen.Reason],
-      justification: 'Загрузка заголовков и значков сохранённых вкладок',
-    });
-  } catch {
-    // A parallel call has already created the page.
-  }
-}
-
-async function closeOffscreen(): Promise<void> {
-  if (await hasOffscreen()) await browser.offscreen.closeDocument().catch(() => undefined);
 }

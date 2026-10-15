@@ -10,10 +10,11 @@ export type JobFiles = S['JobFilesModel'];
 export type JobCheck = S['local_service__routes__recompress__CheckResponse'];
 export type FileCheck = S['FileCheckModel'];
 
-async function client() {
-  const c = await connectedClient();
-  if (!c) throw new Error('Профиль не подключён к Tidy Reel (Настройки)');
-  return c;
+export type JobAction = 'pause' | 'resume' | 'cancel' | 'up' | 'down';
+
+/** What happens to each file of the folder, and per-file warnings, before the job is created. */
+export async function checkJob(folder: string, preset: string, edits: Record<string, unknown> | null): Promise<JobCheck> {
+  return unwrap(await (await client()).POST('/api/recompress/check', { body: { folder, preset, edits } }));
 }
 
 function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T {
@@ -21,13 +22,10 @@ function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T
   return result.data;
 }
 
-function done(result: { error?: unknown; response: Response }): void {
-  if (!result.response.ok) throw new Error(errorText(result.response.status, result.error));
-}
-
-/** What happens to each file of the folder, and per-file warnings, before the job is created. */
-export async function checkJob(folder: string, preset: string, edits: Record<string, unknown> | null): Promise<JobCheck> {
-  return unwrap(await (await client()).POST('/api/recompress/check', { body: { folder, preset, edits } }));
+async function client() {
+  const c = await connectedClient();
+  if (!c) throw new Error('Профиль не подключён к Tidy Reel (Настройки)');
+  return c;
 }
 
 export async function createJob(folder: string, preset: string, edits: Record<string, unknown> | null, confirmed: string[], start: boolean): Promise<Job> {
@@ -50,11 +48,13 @@ export async function pauseQueue(paused: boolean): Promise<void> {
   done(await (await client()).PUT('/api/recompress/pause', { body: { paused } }));
 }
 
+function done(result: { error?: unknown; response: Response }): void {
+  if (!result.response.ok) throw new Error(errorText(result.response.status, result.error));
+}
+
 export async function readMessage(id: number): Promise<void> {
   done(await (await client()).POST('/api/recompress/messages/{message_id}/read', { params: { path: { message_id: id } } }));
 }
-
-export type JobAction = 'pause' | 'resume' | 'cancel' | 'up' | 'down';
 
 export async function jobAction(id: number, action: JobAction): Promise<void> {
   const c = await client();

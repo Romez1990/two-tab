@@ -12,38 +12,6 @@ import { browser } from '@/shared/browser';
 import { Favicon, usePaging } from '@/shared/ui';
 import { findDuplicates, placeOf, type Copy, type Duplicate } from '../model/duplicates';
 
-async function loadDuplicates(): Promise<Duplicate[]> {
-  const tabs = await browser.tabs.query({});
-  const open = tabs
-    .filter((tab) => tab.id !== undefined && tab.url)
-    .map((tab) => ({ id: tab.id!, windowId: tab.windowId, title: tab.title ?? '', url: tab.url! }));
-  return findDuplicates(open, await listSaved());
-}
-
-async function goTo(copy: Copy, background: boolean): Promise<void> {
-  if (copy.kind === 'open') {
-    await browser.tabs.update(copy.tabId, { active: true });
-    await browser.windows.update(copy.windowId, { focused: true });
-  } else {
-    await browser.tabs.create({ url: savedItemPageUrl(copy.savedId, copy.url), active: !background });
-  }
-}
-
-async function removeCopy(copy: Copy): Promise<void> {
-  if (copy.kind === 'open') {
-    await browser.tabs.remove(copy.tabId);
-    return;
-  }
-  const item = await getSaved(copy.savedId);
-  if (!item) return;
-  // The tab index may have shifted: the tab with the same address closest to the old place is removed.
-  const index = item.window.tabs[copy.index]?.url === copy.url ? copy.index : item.window.tabs.findIndex((t) => t.url === copy.url);
-  if (index < 0) return;
-  const after = removeSavedTab(item, index);
-  if (after) await addSaved(after);
-  else await deleteSaved(item.id);
-}
-
 /** "Duplicates" (docs/extension/pages/duplicates.md): identical open and saved tabs. */
 export function DuplicatesPage() {
   const [duplicates, setDuplicates] = useState<Duplicate[] | null>(null);
@@ -108,4 +76,36 @@ export function DuplicatesPage() {
       {footer}
     </Stack>
   );
+}
+
+async function loadDuplicates(): Promise<Duplicate[]> {
+  const tabs = await browser.tabs.query({});
+  const open = tabs
+    .filter((tab) => tab.id !== undefined && tab.url)
+    .map((tab) => ({ id: tab.id!, windowId: tab.windowId, title: tab.title ?? '', url: tab.url! }));
+  return findDuplicates(open, await listSaved());
+}
+
+async function removeCopy(copy: Copy): Promise<void> {
+  if (copy.kind === 'open') {
+    await browser.tabs.remove(copy.tabId);
+    return;
+  }
+  const item = await getSaved(copy.savedId);
+  if (!item) return;
+  // The tab index may have shifted: the tab with the same address closest to the old place is removed.
+  const index = item.window.tabs[copy.index]?.url === copy.url ? copy.index : item.window.tabs.findIndex((t) => t.url === copy.url);
+  if (index < 0) return;
+  const after = removeSavedTab(item, index);
+  if (after) await addSaved(after);
+  else await deleteSaved(item.id);
+}
+
+async function goTo(copy: Copy, background: boolean): Promise<void> {
+  if (copy.kind === 'open') {
+    await browser.tabs.update(copy.tabId, { active: true });
+    await browser.windows.update(copy.windowId, { focused: true });
+  } else {
+    await browser.tabs.create({ url: savedItemPageUrl(copy.savedId, copy.url), active: !background });
+  }
 }

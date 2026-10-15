@@ -27,6 +27,12 @@ const PAUSE_REASONS: Record<string, string> = {
   need_cookies: 'Нужны куки',
 };
 
+const COUNTERS: { kind: CounterKind; field: keyof QueueCountersValue; label: string; color: 'warning' | 'info' | 'error' }[] = [
+  { kind: 'decision', field: 'decisions', label: 'Нужно решение', color: 'warning' },
+  { kind: 'unread', field: 'unread', label: 'Сообщения', color: 'info' },
+  { kind: 'errors', field: 'errors', label: 'Ошибки', color: 'error' },
+];
+
 /** Queue panel: running or paused and why, "Pause" and "Resume", how much is left. */
 export function QueuePanel({ pause, remaining, onPause }: { pause: QueuePause | null; remaining: string; onPause: (paused: boolean) => void }) {
   return (
@@ -43,12 +49,6 @@ export function QueuePanel({ pause, remaining, onPause }: { pause: QueuePause | 
     </Paper>
   );
 }
-
-const COUNTERS: { kind: CounterKind; field: keyof QueueCountersValue; label: string; color: 'warning' | 'info' | 'error' }[] = [
-  { kind: 'decision', field: 'decisions', label: 'Нужно решение', color: 'warning' },
-  { kind: 'unread', field: 'unread', label: 'Сообщения', color: 'info' },
-  { kind: 'errors', field: 'errors', label: 'Ошибки', color: 'error' },
-];
 
 /** Counters in the top right corner, visible while scrolling; hidden at zero. A click goes to the next video. */
 export function QueueCounters({ counters, onJump }: { counters: QueueCountersValue; onJump: (kind: CounterKind) => void }) {

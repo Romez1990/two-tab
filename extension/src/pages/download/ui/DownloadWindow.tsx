@@ -36,140 +36,6 @@ import { hostOf } from '@/shared/lib';
 /** Where to: the model's `New` folder, a tag inside a model, a new model or a folder without a model. */
 type Target = { kind: 'folder'; folder: string } | { kind: 'create' } | { kind: 'other' };
 
-function addressFromHash(): string {
-  const [, ...rest] = location.hash.slice(1).split('/');
-  return decodeURIComponent(rest.join('/'));
-}
-
-/** Site preset by address: the site label appears in the domain (YouTube for youtube.com). */
-function sitePreset(presets: readonly Preset[], url: string): Preset | undefined {
-  const host = hostOf(url).toLowerCase();
-  return presets.find((p) => !p.is_default && p.sites.some((label) => host.includes(label.toLowerCase())));
-}
-
-function FolderChoice({
-  found,
-  channelUrl,
-  channelName,
-  onFolder,
-}: {
-  found: { models: string[]; folder: string | null; found_by: string | null; recent: string[] };
-  channelUrl: string;
-  channelName: string;
-  onFolder: (folder: string | null) => void;
-}) {
-  const options = useMemo(() => {
-    const list = found.models.map((model) => ({ label: `${model}\\New`, folder: `${model}\\New` }));
-    return list;
-  }, [found.models]);
-  const [target, setTarget] = useState<Target>(found.folder ? { kind: 'folder', folder: found.folder } : options[0] ? { kind: 'folder', folder: options[0].folder } : { kind: 'other' });
-  const [categoryList, setCategoryList] = useState<string[]>([]);
-  const [category, setCategory] = useState('');
-  const [name, setName] = useState(channelName);
-  const [error, setError] = useState('');
-
-  useEffect(() => onFolder(target.kind === 'folder' ? target.folder : null), [target, onFolder]);
-  useEffect(() => {
-    if (target.kind === 'create' && categoryList.length === 0) void listCategories().then(setCategoryList);
-  }, [target, categoryList.length]);
-
-  async function choose(initial?: string) {
-    try {
-      const folder = await pickFolder(initial);
-      if (folder) setTarget({ kind: 'folder', folder });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  }
-
-  async function create() {
-    try {
-      setTarget({ kind: 'folder', folder: await createModel(category, channelUrl, name) });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  }
-
-  const value = target.kind === 'folder' ? target.folder : target.kind;
-  const extra = target.kind === 'folder' && !options.some((o) => o.folder === target.folder) ? target.folder : undefined;
-  return (
-    <Stack spacing={1}>
-      <Typography variant="subtitle2">Куда</Typography>
-      {found.found_by === 'name' && <Typography variant="body2">Модель нашлась только по имени канала — проверьте выбор.</Typography>}
-      <RadioGroup
-        value={value}
-        onChange={(_, v) => setTarget(v === 'create' || v === 'other' ? { kind: v } : { kind: 'folder', folder: v })}
-      >
-        {options.map((o) => (
-          <Stack key={o.folder} direction="row" sx={{ alignItems: 'center' }}>
-            <FormControlLabel value={o.folder} control={<Radio size="small" />} label={o.label} />
-            <Button size="small" onClick={() => void choose(o.folder.replace(/\\New$/, ''))}>
-              Другой тег…
-            </Button>
-          </Stack>
-        ))}
-        {extra && <FormControlLabel value={extra} control={<Radio size="small" />} label={extra} />}
-        <FormControlLabel value="create" control={<Radio size="small" />} label="Создать модель" />
-        <FormControlLabel value="other" control={<Radio size="small" />} label="Папка без модели" />
-      </RadioGroup>
-      {target.kind === 'create' && (
-        <Stack direction="row" spacing={1}>
-          <TextField select size="small" label="Категория" value={category} onChange={(e) => setCategory(e.target.value)} sx={{ minWidth: 320 }}>
-            {categoryList.map((c) => (
-              <MenuItem key={c} value={c}>
-                {c}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField size="small" label="Имя модели" value={name} onChange={(e) => setName(e.target.value)} />
-          <Button disabled={!category || !name.trim()} onClick={() => void create()}>
-            Создать
-          </Button>
-        </Stack>
-      )}
-      {target.kind === 'other' && (
-        <Stack spacing={0.5}>
-          {found.recent.map((folder) => (
-            <Button key={folder} size="small" sx={{ alignSelf: 'flex-start', textTransform: 'none' }} onClick={() => setTarget({ kind: 'folder', folder })}>
-              {folder}
-            </Button>
-          ))}
-          <Button size="small" sx={{ alignSelf: 'flex-start' }} onClick={() => void choose()}>
-            Выбрать папку…
-          </Button>
-        </Stack>
-      )}
-      {error && <Alert severity="error">{error}</Alert>}
-    </Stack>
-  );
-}
-
-function FiltersForm({ filters, onChange }: { filters: Filters; onChange: (f: Filters) => void }) {
-  const num = (v: string) => (v.trim() ? Number(v) : null);
-  return (
-    <Stack spacing={1}>
-      <Typography variant="subtitle2">Фильтры</Typography>
-      <Stack direction="row" spacing={1}>
-        <TextField size="small" type="date" label="Опубликованы с" value={filters.date_from ?? ''} onChange={(e) => onChange({ ...filters, date_from: e.target.value || null })} slotProps={{ inputLabel: { shrink: true } }} />
-        <TextField size="small" type="date" label="по" value={filters.date_to ?? ''} onChange={(e) => onChange({ ...filters, date_to: e.target.value || null })} slotProps={{ inputLabel: { shrink: true } }} />
-      </Stack>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <TextField size="small" type="number" label="Видео с №" value={filters.number_from ?? ''} onChange={(e) => onChange({ ...filters, number_from: num(e.target.value) })} sx={{ width: 140 }} />
-        <TextField size="small" type="number" label="по №" value={filters.number_to ?? ''} onChange={(e) => onChange({ ...filters, number_to: num(e.target.value) })} sx={{ width: 140 }} />
-        <ToggleButtonGroup size="small" exclusive value={filters.from_end ? 'end' : 'start'} onChange={(_, v: string | null) => v && onChange({ ...filters, from_end: v === 'end' })}>
-          <ToggleButton value="start">с начала (от старых)</ToggleButton>
-          <ToggleButton value="end">с конца (от новых)</ToggleButton>
-        </ToggleButtonGroup>
-      </Stack>
-      <Stack direction="row" spacing={1}>
-        <TextField size="small" type="number" label="Длительность от, мин" value={filters.min_duration ? filters.min_duration / 60 : ''} onChange={(e) => onChange({ ...filters, min_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 200 }} />
-        <TextField size="small" type="number" label="до, мин" value={filters.max_duration ? filters.max_duration / 60 : ''} onChange={(e) => onChange({ ...filters, max_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 140 }} />
-      </Stack>
-      <FormControlLabel disabled control={<Checkbox size="small" />} label="Только с музыкой — после распознавания музыки в Tidy Reel" />
-    </Stack>
-  );
-}
-
 /** The "Download" window (docs/extension/pages/downloads.md): video or channel, folder, one-time preset. */
 export function DownloadWindow() {
   const url = useMemo(addressFromHash, []);
@@ -333,6 +199,140 @@ export function DownloadWindow() {
           {!folder && <Typography variant="body2" color="text.secondary">Выберите папку</Typography>}
         </CreateFooter>
       )}
+    </Stack>
+  );
+}
+
+function addressFromHash(): string {
+  const [, ...rest] = location.hash.slice(1).split('/');
+  return decodeURIComponent(rest.join('/'));
+}
+
+/** Site preset by address: the site label appears in the domain (YouTube for youtube.com). */
+function sitePreset(presets: readonly Preset[], url: string): Preset | undefined {
+  const host = hostOf(url).toLowerCase();
+  return presets.find((p) => !p.is_default && p.sites.some((label) => host.includes(label.toLowerCase())));
+}
+
+function FolderChoice({
+  found,
+  channelUrl,
+  channelName,
+  onFolder,
+}: {
+  found: { models: string[]; folder: string | null; found_by: string | null; recent: string[] };
+  channelUrl: string;
+  channelName: string;
+  onFolder: (folder: string | null) => void;
+}) {
+  const options = useMemo(() => {
+    const list = found.models.map((model) => ({ label: `${model}\\New`, folder: `${model}\\New` }));
+    return list;
+  }, [found.models]);
+  const [target, setTarget] = useState<Target>(found.folder ? { kind: 'folder', folder: found.folder } : options[0] ? { kind: 'folder', folder: options[0].folder } : { kind: 'other' });
+  const [categoryList, setCategoryList] = useState<string[]>([]);
+  const [category, setCategory] = useState('');
+  const [name, setName] = useState(channelName);
+  const [error, setError] = useState('');
+
+  useEffect(() => onFolder(target.kind === 'folder' ? target.folder : null), [target, onFolder]);
+  useEffect(() => {
+    if (target.kind === 'create' && categoryList.length === 0) void listCategories().then(setCategoryList);
+  }, [target, categoryList.length]);
+
+  async function choose(initial?: string) {
+    try {
+      const folder = await pickFolder(initial);
+      if (folder) setTarget({ kind: 'folder', folder });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  async function create() {
+    try {
+      setTarget({ kind: 'folder', folder: await createModel(category, channelUrl, name) });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  const value = target.kind === 'folder' ? target.folder : target.kind;
+  const extra = target.kind === 'folder' && !options.some((o) => o.folder === target.folder) ? target.folder : undefined;
+  return (
+    <Stack spacing={1}>
+      <Typography variant="subtitle2">Куда</Typography>
+      {found.found_by === 'name' && <Typography variant="body2">Модель нашлась только по имени канала — проверьте выбор.</Typography>}
+      <RadioGroup
+        value={value}
+        onChange={(_, v) => setTarget(v === 'create' || v === 'other' ? { kind: v } : { kind: 'folder', folder: v })}
+      >
+        {options.map((o) => (
+          <Stack key={o.folder} direction="row" sx={{ alignItems: 'center' }}>
+            <FormControlLabel value={o.folder} control={<Radio size="small" />} label={o.label} />
+            <Button size="small" onClick={() => void choose(o.folder.replace(/\\New$/, ''))}>
+              Другой тег…
+            </Button>
+          </Stack>
+        ))}
+        {extra && <FormControlLabel value={extra} control={<Radio size="small" />} label={extra} />}
+        <FormControlLabel value="create" control={<Radio size="small" />} label="Создать модель" />
+        <FormControlLabel value="other" control={<Radio size="small" />} label="Папка без модели" />
+      </RadioGroup>
+      {target.kind === 'create' && (
+        <Stack direction="row" spacing={1}>
+          <TextField select size="small" label="Категория" value={category} onChange={(e) => setCategory(e.target.value)} sx={{ minWidth: 320 }}>
+            {categoryList.map((c) => (
+              <MenuItem key={c} value={c}>
+                {c}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField size="small" label="Имя модели" value={name} onChange={(e) => setName(e.target.value)} />
+          <Button disabled={!category || !name.trim()} onClick={() => void create()}>
+            Создать
+          </Button>
+        </Stack>
+      )}
+      {target.kind === 'other' && (
+        <Stack spacing={0.5}>
+          {found.recent.map((folder) => (
+            <Button key={folder} size="small" sx={{ alignSelf: 'flex-start', textTransform: 'none' }} onClick={() => setTarget({ kind: 'folder', folder })}>
+              {folder}
+            </Button>
+          ))}
+          <Button size="small" sx={{ alignSelf: 'flex-start' }} onClick={() => void choose()}>
+            Выбрать папку…
+          </Button>
+        </Stack>
+      )}
+      {error && <Alert severity="error">{error}</Alert>}
+    </Stack>
+  );
+}
+
+function FiltersForm({ filters, onChange }: { filters: Filters; onChange: (f: Filters) => void }) {
+  const num = (v: string) => (v.trim() ? Number(v) : null);
+  return (
+    <Stack spacing={1}>
+      <Typography variant="subtitle2">Фильтры</Typography>
+      <Stack direction="row" spacing={1}>
+        <TextField size="small" type="date" label="Опубликованы с" value={filters.date_from ?? ''} onChange={(e) => onChange({ ...filters, date_from: e.target.value || null })} slotProps={{ inputLabel: { shrink: true } }} />
+        <TextField size="small" type="date" label="по" value={filters.date_to ?? ''} onChange={(e) => onChange({ ...filters, date_to: e.target.value || null })} slotProps={{ inputLabel: { shrink: true } }} />
+      </Stack>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <TextField size="small" type="number" label="Видео с №" value={filters.number_from ?? ''} onChange={(e) => onChange({ ...filters, number_from: num(e.target.value) })} sx={{ width: 140 }} />
+        <TextField size="small" type="number" label="по №" value={filters.number_to ?? ''} onChange={(e) => onChange({ ...filters, number_to: num(e.target.value) })} sx={{ width: 140 }} />
+        <ToggleButtonGroup size="small" exclusive value={filters.from_end ? 'end' : 'start'} onChange={(_, v: string | null) => v && onChange({ ...filters, from_end: v === 'end' })}>
+          <ToggleButton value="start">с начала (от старых)</ToggleButton>
+          <ToggleButton value="end">с конца (от новых)</ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
+      <Stack direction="row" spacing={1}>
+        <TextField size="small" type="number" label="Длительность от, мин" value={filters.min_duration ? filters.min_duration / 60 : ''} onChange={(e) => onChange({ ...filters, min_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 200 }} />
+        <TextField size="small" type="number" label="до, мин" value={filters.max_duration ? filters.max_duration / 60 : ''} onChange={(e) => onChange({ ...filters, max_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 140 }} />
+      </Stack>
+      <FormControlLabel disabled control={<Checkbox size="small" />} label="Только с музыкой — после распознавания музыки в Tidy Reel" />
     </Stack>
   );
 }

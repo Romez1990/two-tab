@@ -9,10 +9,6 @@ import { openDownloadWindow, type DownloadFrameMessage } from '@/features/downlo
 import { AttentionBanner } from '@/features/queue-attention';
 import { browser } from '@/shared/browser';
 
-function post(message: DownloadFrameMessage) {
-  parent.postMessage(message, '*');
-}
-
 /** The "Download" banner in an iframe on a site (docs/extension/pages/site_page.md, section 3); address and kind come in `?url=&kind=&downloaded=`. */
 export function DownloadBannerPage() {
   const params = new URLSearchParams(location.search);
@@ -46,4 +42,8 @@ export function DownloadBannerPage() {
       </Stack>
     </Paper>
   );
+}
+
+function post(message: DownloadFrameMessage) {
+  parent.postMessage(message, '*');
 }

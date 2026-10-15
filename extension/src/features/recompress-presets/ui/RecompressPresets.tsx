@@ -21,17 +21,6 @@ interface Draft {
   isDefault: boolean;
 }
 
-function toDraft(preset: Preset): Draft {
-  return { id: preset.id, name: preset.name, sites: preset.sites, fields: preset.fields as Partial<PresetFields>, isDefault: preset.is_default };
-}
-
-function summary(draft: Draft): string {
-  if (draft.isDefault) return 'Для всех сайтов';
-  const changed = Object.keys(draft.fields).length;
-  const sites = draft.sites.length ? draft.sites.join(', ') : 'сайты не выбраны';
-  return `${sites} · своих полей: ${changed}`;
-}
-
 /** Compression presets (docs/extension/pages/settings.md, section 4): "Default" and site presets. */
 export function RecompressPresets() {
   const [drafts, setDrafts] = useState<Draft[] | null>(null);
@@ -137,4 +126,15 @@ export function RecompressPresets() {
       </Button>
     </Stack>
   );
+}
+
+function toDraft(preset: Preset): Draft {
+  return { id: preset.id, name: preset.name, sites: preset.sites, fields: preset.fields as Partial<PresetFields>, isDefault: preset.is_default };
+}
+
+function summary(draft: Draft): string {
+  if (draft.isDefault) return 'Для всех сайтов';
+  const changed = Object.keys(draft.fields).length;
+  const sites = draft.sites.length ? draft.sites.join(', ') : 'сайты не выбраны';
+  return `${sites} · своих полей: ${changed}`;
 }

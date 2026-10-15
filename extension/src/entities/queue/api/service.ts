@@ -8,12 +8,6 @@ import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/a
 export type AttentionCase = LocalServiceSchemas['CaseModel'];
 export type QueueSettings = LocalServiceSchemas['SettingsModel'];
 
-async function client() {
-  const c = await connectedClient();
-  if (!c) throw new Error('Профиль не подключён к Tidy Reel (Настройки)');
-  return c;
-}
-
 /** Cases the queue waits on the user for; empty when not connected. */
 export async function getAttention(): Promise<AttentionCase[]> {
   const c = await connectedClient();
@@ -27,6 +21,12 @@ export async function getAttention(): Promise<AttentionCase[]> {
 export async function muteAttention(): Promise<void> {
   const { response, error } = await (await client()).POST('/api/attention/mute');
   if (!response.ok) throw new Error(errorText(response.status, error));
+}
+
+async function client() {
+  const c = await connectedClient();
+  if (!c) throw new Error('Профиль не подключён к Tidy Reel (Настройки)');
+  return c;
 }
 
 export async function getQueueSettings(): Promise<QueueSettings> {

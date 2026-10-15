@@ -20,6 +20,10 @@ export async function cachedIcons(): Promise<Map<string, string>> {
   return new Map(Object.entries(cache).flatMap(([host, e]) => (e.data ? [[host, e.data] as [string, string]] : [])));
 }
 
+async function readCache(): Promise<IconCache> {
+  return ((await db.meta.get(CACHE_KEY))?.value as IconCache | undefined) ?? {};
+}
+
 /**
  * Sites that have only the default icon in the Chrome cache and are not in our own cache (or failed
  * more than 30 days ago). For each site, the address of one of its tabs.
@@ -40,6 +44,27 @@ export async function missingIconSites(urls: readonly string[], signal: AbortSig
     if (equalBytes(await chromeIconBytes(url), fallback)) missing.set(host, url);
   });
   return missing;
+}
+
+/** Image Chrome returns from its icon cache; the default icon for an unknown site. */
+async function chromeIconBytes(url: string): Promise<Uint8Array> {
+  try {
+    return new Uint8Array(await (await fetch(faviconUrl(url, 32))).arrayBuffer());
+  } catch {
+    return new Uint8Array();
+  }
+}
+
+async function runParallel<T>(tasks: T[], signal: AbortSignal, run: (task: T) => Promise<void>): Promise<void> {
+  const queue = [...tasks];
+  const worker = async () => {
+    for (let t = queue.shift(); t !== undefined && !signal.aborted; t = queue.shift()) await run(t);
+  };
+  await Promise.all(Array.from({ length: PARALLEL }, worker));
+}
+
+function equalBytes(a: Uint8Array, b: Uint8Array): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
 /**
@@ -109,31 +134,6 @@ async function fetchImage(url: string, signal: AbortSignal): Promise<string | un
     if (e instanceof SiteSkippedError) throw e;
     return undefined;
   }
-}
-
-/** Image Chrome returns from its icon cache; the default icon for an unknown site. */
-async function chromeIconBytes(url: string): Promise<Uint8Array> {
-  try {
-    return new Uint8Array(await (await fetch(faviconUrl(url, 32))).arrayBuffer());
-  } catch {
-    return new Uint8Array();
-  }
-}
-
-function equalBytes(a: Uint8Array, b: Uint8Array): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
-}
-
-async function runParallel<T>(tasks: T[], signal: AbortSignal, run: (task: T) => Promise<void>): Promise<void> {
-  const queue = [...tasks];
-  const worker = async () => {
-    for (let t = queue.shift(); t !== undefined && !signal.aborted; t = queue.shift()) await run(t);
-  };
-  await Promise.all(Array.from({ length: PARALLEL }, worker));
-}
-
-async function readCache(): Promise<IconCache> {
-  return ((await db.meta.get(CACHE_KEY))?.value as IconCache | undefined) ?? {};
 }
 
 async function writeCache(host: string, entry: { data?: string; at: number }): Promise<void> {

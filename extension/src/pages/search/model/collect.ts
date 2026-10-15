@@ -40,8 +40,36 @@ export type Sort = 'relevance' | 'date';
 const ARCHIVE_LIMIT = 1000;
 const ARCHIVE_PAGE = 200;
 
-function tabDoc(source: Source, title: string, url: string, group?: string): SearchDoc {
-  return { source, name: title, url, group };
+export interface SearchOutcome {
+  results: Found[];
+  /** Archive videos in total; at most ARCHIVE_LIMIT are shown. */
+  archiveTotal: number;
+  archiveError?: string;
+}
+
+/** Search over the selected sources as one combined list. */
+export async function search(query: Condition, sources: readonly Source[], sort: Sort): Promise<SearchOutcome> {
+  const collectors: Partial<Record<Source, (q: Condition) => Promise<Found[]>>> = {
+    open: openTabs,
+    saved: savedTabs,
+    closed: closedTabs,
+    snapshot: snapshotTabs,
+  };
+  const local = await Promise.all(sources.filter((s) => collectors[s]).map((s) => collectors[s]!(query)));
+  let archiveTotal = 0;
+  let archiveError: string | undefined;
+  const results = local.flat();
+  if (sources.includes('archive')) {
+    try {
+      const archived = await archive(query);
+      results.push(...archived.found);
+      archiveTotal = archived.total;
+    } catch (error) {
+      archiveError = error instanceof Error ? error.message : String(error);
+    }
+  }
+  results.sort(sort === 'date' ? (a, b) => b.date - a.date : (a, b) => b.rank - a.rank || b.date - a.date);
+  return { results, archiveTotal, archiveError };
 }
 
 async function openTabs(query: Condition): Promise<Found[]> {
@@ -58,6 +86,10 @@ async function openTabs(query: Condition): Promise<Found[]> {
       tabId: tab.id!,
       windowId: tab.windowId,
     }));
+}
+
+function tabDoc(source: Source, title: string, url: string, group?: string): SearchDoc {
+  return { source, name: title, url, group };
 }
 
 async function savedTabs(query: Condition): Promise<Found[]> {
@@ -116,11 +148,6 @@ async function snapshotTabs(query: Condition): Promise<Found[]> {
   return [...byUrl.values()];
 }
 
-/** File name from an archive path. */
-export function fileName(path: string): string {
-  return path.split(/[\\/]/).pop() ?? path;
-}
-
 async function archive(query: Condition): Promise<{ found: Found[]; total: number }> {
   const { localServicePort, localServiceKey } = await getSettings();
   const client = localServiceClient(localServicePort, localServiceKey);
@@ -150,36 +177,9 @@ async function archive(query: Condition): Promise<{ found: Found[]; total: numbe
   return { found, total };
 }
 
-export interface SearchOutcome {
-  results: Found[];
-  /** Archive videos in total; at most ARCHIVE_LIMIT are shown. */
-  archiveTotal: number;
-  archiveError?: string;
-}
-
-/** Search over the selected sources as one combined list. */
-export async function search(query: Condition, sources: readonly Source[], sort: Sort): Promise<SearchOutcome> {
-  const collectors: Partial<Record<Source, (q: Condition) => Promise<Found[]>>> = {
-    open: openTabs,
-    saved: savedTabs,
-    closed: closedTabs,
-    snapshot: snapshotTabs,
-  };
-  const local = await Promise.all(sources.filter((s) => collectors[s]).map((s) => collectors[s]!(query)));
-  let archiveTotal = 0;
-  let archiveError: string | undefined;
-  const results = local.flat();
-  if (sources.includes('archive')) {
-    try {
-      const archived = await archive(query);
-      results.push(...archived.found);
-      archiveTotal = archived.total;
-    } catch (error) {
-      archiveError = error instanceof Error ? error.message : String(error);
-    }
-  }
-  results.sort(sort === 'date' ? (a, b) => b.date - a.date : (a, b) => b.rank - a.rank || b.date - a.date);
-  return { results, archiveTotal, archiveError };
+/** File name from an archive path. */
+export function fileName(path: string): string {
+  return path.split(/[\\/]/).pop() ?? path;
 }
 
 export const ARCHIVE_SHOWN_LIMIT = ARCHIVE_LIMIT;

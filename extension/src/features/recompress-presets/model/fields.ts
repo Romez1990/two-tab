@@ -131,14 +131,14 @@ export const SLIDERS: SliderDef[] = [
   },
 ];
 
+const TIME = /^(?:(?:(\d+):)?(\d+):)?(\d+(?:\.\d+)?)$/;
+
 /** Value label like "about 89% size, 100% time" (shown in Russian). */
 export function describeStep(def: SliderDef, step: SliderStep): string {
   if (step.size === undefined) return 'как у исходника';
   const size = `около ${step.size}% размера${def.sizeOf ? ` ${def.sizeOf}` : ''}`;
   return step.time === undefined ? size : `${size}, ${step.time}% времени`;
 }
-
-const TIME = /^(?:(?:(\d+):)?(\d+):)?(\d+(?:\.\d+)?)$/;
 
 /** "Smart time point": an error is the text to highlight the field with, empty means valid (recompress.md, section 2.7). */
 export function trimError(text: string, end: boolean): string {

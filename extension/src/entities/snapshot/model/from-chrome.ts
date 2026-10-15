@@ -1,10 +1,6 @@
 import type { Browser } from '@/shared/browser';
 import type { SnapshotGroup, SnapshotWindow } from './types';
 
-export function tabUrl(tab: Browser.tabs.Tab): string {
-  return tab.url || tab.pendingUrl || '';
-}
-
 /** A Chrome window as a snapshot window: tabs in order, groups by index in `groups`. */
 export function toSnapshotWindow(
   window: Browser.windows.Window,
@@ -38,4 +34,8 @@ export function toSnapshotWindow(
         return { url: tabUrl(t), title: t.title ?? '', pinned: t.pinned, active: t.active, group };
       }),
   };
+}
+
+export function tabUrl(tab: Browser.tabs.Tab): string {
+  return tab.url || tab.pendingUrl || '';
 }

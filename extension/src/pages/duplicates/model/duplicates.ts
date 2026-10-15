@@ -8,21 +8,6 @@ import type { SavedItem } from '@/entities/saved';
 /** Address tags and tails that do not change the page (like TRACKING_KEYS in web_links.py). */
 const TRACKING = new Set(['lang', 'order', 'igsh', 'igshid', 'is_from_webapp', 'sender_device', '_t', '_r', 'from']);
 
-/** Page key: without `#…`, tags, `www.`, the `http`/`https` difference, case and the trailing `/`. */
-export function duplicateKey(url: string): string | undefined {
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    return undefined;
-  }
-  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return undefined;
-  const params = [...parsed.searchParams].filter(([key]) => !TRACKING.has(key.toLowerCase()) && !key.toLowerCase().startsWith('utm_'));
-  const query = params.length ? `?${new URLSearchParams(params).toString()}` : '';
-  const host = parsed.hostname.replace(/^www\./, '');
-  return `${host}${parsed.pathname}`.replace(/\/+$/, '').toLowerCase() + query.toLowerCase();
-}
-
 export type Copy =
   | { kind: 'open'; title: string; url: string; tabId: number; windowId: number; windowNumber: number }
   | { kind: 'saved'; title: string; url: string; savedId: string; index: number; place: string };
@@ -69,6 +54,21 @@ export function findDuplicates(open: readonly OpenTab[], saved: readonly SavedIt
     .filter(([, copies]) => copies.length > 1)
     .map(([key, copies]) => ({ key, copies }))
     .sort((a, b) => b.copies.length - a.copies.length || a.key.localeCompare(b.key));
+}
+
+/** Page key: without `#…`, tags, `www.`, the `http`/`https` difference, case and the trailing `/`. */
+export function duplicateKey(url: string): string | undefined {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return undefined;
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return undefined;
+  const params = [...parsed.searchParams].filter(([key]) => !TRACKING.has(key.toLowerCase()) && !key.toLowerCase().startsWith('utm_'));
+  const query = params.length ? `?${new URLSearchParams(params).toString()}` : '';
+  const host = parsed.hostname.replace(/^www\./, '');
+  return `${host}${parsed.pathname}`.replace(/\/+$/, '').toLowerCase() + query.toLowerCase();
 }
 
 /** Where the copy is, like "Open, window 3" or "Saved, group 'Music'" (shown in Russian). */

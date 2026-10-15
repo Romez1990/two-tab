@@ -11,10 +11,6 @@ export async function getSaved(id: string): Promise<SavedItem | undefined> {
   return (await db.saved.get(id)) as SavedItem | undefined;
 }
 
-export async function listSaved(): Promise<SavedItem[]> {
-  return (await db.saved.orderBy('savedAt').reverse().toArray()) as unknown as SavedItem[];
-}
-
 export async function deleteSaved(id: string): Promise<void> {
   await db.saved.delete(id);
 }
@@ -40,6 +36,10 @@ export async function importSaved(items: readonly SavedItem[]): Promise<{ added:
 /** Saved windows and groups that have a tab with this address. */
 export async function findSavedByUrl(url: string): Promise<SavedMatch[]> {
   return findMatches(await listSaved(), url);
+}
+
+export async function listSaved(): Promise<SavedItem[]> {
+  return (await db.saved.orderBy('savedAt').reverse().toArray()) as unknown as SavedItem[];
 }
 
 /** Address of the "Saved" page with record `id` expanded and the tab with address `tabUrl` highlighted. */

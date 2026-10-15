@@ -11,10 +11,6 @@ type Message = { severity: 'success' | 'info' | 'warning' | 'error'; text: strin
 
 const MENU_HINT = 'Отключить его можно в его настройках или командой «Отключить профиль Tabsurd» в меню Tidy Reel.';
 
-function sinceText(since: string): string {
-  return new Date(since).toLocaleDateString('ru-RU');
-}
-
 /**
  * The "Tidy Reel" block for "First run" and settings (docs/extension/pages/settings.md, section 1).
  * `disabled`: connecting is not possible yet (on "First run" the profile name is empty).
@@ -111,4 +107,8 @@ export function TidyReelConnection({ disabled = false }: { disabled?: boolean })
       </Stack>
     </Stack>
   );
+}
+
+function sinceText(since: string): string {
+  return new Date(since).toLocaleDateString('ru-RU');
 }

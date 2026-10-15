@@ -18,13 +18,13 @@ export const MATCHES_GLOBAL = '__tabsurdSavedMatches';
 
 export type BannerFrameMessage = { tabsurd: 'banner-height'; height: number } | { tabsurd: 'banner-close' };
 
+/** The page loaded: if its address is saved, the banner is injected into it. */
+const recent = new Set<string>();
+
 /** Opens "Saved" with the record expanded and tab `tabUrl` highlighted, from the banner and from the popup. */
 export async function openSavedItem(id: string, tabUrl: string): Promise<void> {
   await browser.tabs.create({ url: savedItemPageUrl(id, tabUrl) });
 }
-
-/** The page loaded: if its address is saved, the banner is injected into it. */
-const recent = new Set<string>();
 
 export async function showBannerIfSaved(tabId: number, url: string | undefined, phase: 'start' | 'complete'): Promise<void> {
   if (!url || !/^https?:/i.test(url)) return;

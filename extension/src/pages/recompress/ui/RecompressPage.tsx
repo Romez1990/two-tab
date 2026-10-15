@@ -80,47 +80,69 @@ const OUTCOMES: Record<string, string> = {
 
 const ACTIONS: Record<string, string> = { recompress: 'сжать', sound: 'только звук', skip: 'не изменится' };
 
-function fileName(path: string): string {
-  return path.split(/[\\/]/).pop() ?? path;
-}
+/** "Compression queue" (docs/extension/pages/recompress.md): jobs in order, files in pages by filters. */
+export function RecompressPage() {
+  const [address, setAddress] = useQueueAddress('recompress');
+  const [queue, setQueue] = useState<RecompressQueue | null>(null);
+  const [items, setItems] = useState<JobFiles | null>(null);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const { target, setTarget } = useScrollTarget((items?.items ?? []).map((f) => f.id));
+  const lastJump = useRef<Partial<Record<CounterKind, number>>>({});
 
-/** File warning (tidy-reel/docs/recompress.md, section 6.1): yellow, red and with confirmation. */
-function NoticeIcon({ kind }: { kind: string }) {
-  if (kind === 'ours') return <WarningAmber fontSize="small" color="warning" />;
-  if (kind === 'worse') return <WarningAmber fontSize="small" color="error" />;
-  if (kind === 'checked' || kind === 'no_settings' || kind === 'mismatch') return <WarningAmber fontSize="small" color="error" />;
-  return <InfoOutlined fontSize="small" color="info" />;
-}
+  useEffect(() => {
+    let alive = true;
+    const poll = async () => {
+      try {
+        const [nextQueue, nextItems] = await Promise.all([getQueue(), listItems(address.filters, address.page - 1)]);
+        if (!alive) return;
+        setQueue(nextQueue);
+        setItems(nextItems);
+        setError('');
+      } catch (e) {
+        if (alive) setError(e instanceof Error ? e.message : 'Локальный сервис Tidy Reel не отвечает');
+      }
+    };
+    void poll();
+    const timer = setInterval(() => void poll(), POLL_MS);
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
+  }, [address]);
 
-/** All decisions before the start (recompress.md, section 6.2): warnings in one list, confirmation per file. */
-function CheckList({ check, confirmed, onConfirm }: { check: JobCheck; confirmed: Set<string>; onConfirm: (path: string, on: boolean) => void }) {
-  const noted = check.files.filter((f: FileCheck) => f.notices.length > 0);
+  const run: Run = (action) => void action().catch((e: unknown) => setMessage(e instanceof Error ? e.message : String(e)));
+
+  const jump = (kind: CounterKind) =>
+    run(async () => {
+      const found = await nextItem(kind, lastJump.current[kind] ?? null, address.filters);
+      if (!found) return;
+      lastJump.current[kind] = found.id;
+      if (found.page + 1 !== address.page) setAddress({ ...address, page: found.page + 1 });
+      setTarget(found.id);
+    });
+
+  const byJob = new Map<number, JobFile[]>();
+  for (const f of items?.items ?? []) byJob.set(f.job_id, [...(byJob.get(f.job_id) ?? []), f]);
+  const jobs = (queue?.jobs ?? []).filter((j) => byJob.has(j.id));
+
   return (
     <Stack spacing={1}>
-      <Typography variant="body2">
-        Файлов: {check.files.length}
-        {check.not_indexed > 0 && `, не в базе: ${check.not_indexed} (нужна индексация)`} · {formatDuration(check.seconds)} · ≈ освободится {formatSize(check.frees)}
-      </Typography>
-      {noted.map((file) => (
-        <Paper key={file.path} variant="outlined" sx={{ px: 1.5, py: 0.5 }}>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            {file.needs_confirmation && (
-              <Tooltip title="Без подтверждения файл не тронут">
-                <Checkbox size="small" checked={confirmed.has(file.path)} onChange={(_, on) => onConfirm(file.path, on)} />
-              </Tooltip>
-            )}
-            <Typography variant="body2" noWrap title={file.path} sx={{ flex: 1, minWidth: 0 }}>
-              {fileName(file.path)} — {ACTIONS[file.action] ?? file.action}
-            </Typography>
-          </Stack>
-          {file.notices.map((n) => (
-            <Stack key={n.text} direction="row" spacing={1} sx={{ alignItems: 'center', pl: file.needs_confirmation ? 5 : 0 }}>
-              <NoticeIcon kind={n.kind} />
-              <Typography variant="body2">{n.text}</Typography>
-            </Stack>
-          ))}
-        </Paper>
+      {queue && <QueueCounters counters={queue.counters} onJump={jump} />}
+      {error && <Alert severity="warning">{error}</Alert>}
+      {message && (
+        <Alert severity="error" onClose={() => setMessage('')}>
+          {message}
+        </Alert>
+      )}
+      <NewJob run={run} />
+      {queue && <QueuePanel pause={queue.pause} remaining={remainingText(queue.remaining, 'file')} onPause={(paused) => run(() => pauseQueue(paused))} />}
+      <QueueFilters value={address.filters} onChange={(filters) => setAddress({ filters, page: 1 })} />
+      {items && jobs.length === 0 && <Typography color="text.secondary">{queue?.jobs.length ? 'По этим фильтрам файлов нет.' : 'Заданий нет: создайте новое выше.'}</Typography>}
+      {jobs.map((job) => (
+        <JobItem key={job.id} job={job} files={byJob.get(job.id)!} target={target} run={run} />
       ))}
+      {items && <QueuePager total={items.total} pageSize={items.page_size} page={address.page} onPage={(page) => setAddress({ ...address, page })} />}
     </Stack>
   );
 }
@@ -229,37 +251,49 @@ function NewJob({ run }: { run: Run }) {
   );
 }
 
-function FileRow({ file, target, run }: { file: JobFile; target: boolean; run: Run }) {
-  const sizes = file.size_before != null && file.size_after != null ? `${formatSize(file.size_before)} → ${formatSize(file.size_after)}` : '';
-  const pending = file.state === 'queued' || file.state === 'running';
+/** All decisions before the start (recompress.md, section 6.2): warnings in one list, confirmation per file. */
+function CheckList({ check, confirmed, onConfirm }: { check: JobCheck; confirmed: Set<string>; onConfirm: (path: string, on: boolean) => void }) {
+  const noted = check.files.filter((f: FileCheck) => f.notices.length > 0);
   return (
-    <Box id={`queue-item-${file.id}`} sx={{ py: 0.5, borderRadius: 1, bgcolor: target ? 'action.selected' : undefined }}>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography variant="body2" noWrap title={file.path} sx={{ flex: 1, minWidth: 0 }}>
-          {fileName(file.path)}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {[file.outcome ? (OUTCOMES[file.outcome] ?? file.outcome) : '', sizes, pending && file.estimate_seconds ? formatDuration(file.estimate_seconds) : '']
-            .filter(Boolean)
-            .join(' · ')}
-        </Typography>
-        <Chip size="small" color={JOB_STATES[file.state]?.color ?? 'default'} label={JOB_STATES[file.state]?.label ?? file.state} />
-        {file.state === 'error' && (
-          <>
-            <Button size="small" onClick={() => run(() => fileAction(file.id, 'skip'))}>
-              Пропустить
-            </Button>
-            <Button size="small" onClick={() => run(() => fileAction(file.id, 'retry'))}>
-              Повторить
-            </Button>
-          </>
-        )}
-      </Stack>
-      {file.messages.map((m) => (
-        <MessageLine key={m.id} message={m} onRead={() => run(() => readMessage(m.id))} />
+    <Stack spacing={1}>
+      <Typography variant="body2">
+        Файлов: {check.files.length}
+        {check.not_indexed > 0 && `, не в базе: ${check.not_indexed} (нужна индексация)`} · {formatDuration(check.seconds)} · ≈ освободится {formatSize(check.frees)}
+      </Typography>
+      {noted.map((file) => (
+        <Paper key={file.path} variant="outlined" sx={{ px: 1.5, py: 0.5 }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            {file.needs_confirmation && (
+              <Tooltip title="Без подтверждения файл не тронут">
+                <Checkbox size="small" checked={confirmed.has(file.path)} onChange={(_, on) => onConfirm(file.path, on)} />
+              </Tooltip>
+            )}
+            <Typography variant="body2" noWrap title={file.path} sx={{ flex: 1, minWidth: 0 }}>
+              {fileName(file.path)} — {ACTIONS[file.action] ?? file.action}
+            </Typography>
+          </Stack>
+          {file.notices.map((n) => (
+            <Stack key={n.text} direction="row" spacing={1} sx={{ alignItems: 'center', pl: file.needs_confirmation ? 5 : 0 }}>
+              <NoticeIcon kind={n.kind} />
+              <Typography variant="body2">{n.text}</Typography>
+            </Stack>
+          ))}
+        </Paper>
       ))}
-    </Box>
+    </Stack>
   );
+}
+
+function fileName(path: string): string {
+  return path.split(/[\\/]/).pop() ?? path;
+}
+
+/** File warning (tidy-reel/docs/recompress.md, section 6.1): yellow, red and with confirmation. */
+function NoticeIcon({ kind }: { kind: string }) {
+  if (kind === 'ours') return <WarningAmber fontSize="small" color="warning" />;
+  if (kind === 'worse') return <WarningAmber fontSize="small" color="error" />;
+  if (kind === 'checked' || kind === 'no_settings' || kind === 'mismatch') return <WarningAmber fontSize="small" color="error" />;
+  return <InfoOutlined fontSize="small" color="info" />;
 }
 
 function JobItem({ job, files, target, run }: { job: Job; files: JobFile[]; target: number | null; run: Run }) {
@@ -326,69 +360,35 @@ function JobItem({ job, files, target, run }: { job: Job; files: JobFile[]; targ
   );
 }
 
-/** "Compression queue" (docs/extension/pages/recompress.md): jobs in order, files in pages by filters. */
-export function RecompressPage() {
-  const [address, setAddress] = useQueueAddress('recompress');
-  const [queue, setQueue] = useState<RecompressQueue | null>(null);
-  const [items, setItems] = useState<JobFiles | null>(null);
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const { target, setTarget } = useScrollTarget((items?.items ?? []).map((f) => f.id));
-  const lastJump = useRef<Partial<Record<CounterKind, number>>>({});
-
-  useEffect(() => {
-    let alive = true;
-    const poll = async () => {
-      try {
-        const [nextQueue, nextItems] = await Promise.all([getQueue(), listItems(address.filters, address.page - 1)]);
-        if (!alive) return;
-        setQueue(nextQueue);
-        setItems(nextItems);
-        setError('');
-      } catch (e) {
-        if (alive) setError(e instanceof Error ? e.message : 'Локальный сервис Tidy Reel не отвечает');
-      }
-    };
-    void poll();
-    const timer = setInterval(() => void poll(), POLL_MS);
-    return () => {
-      alive = false;
-      clearInterval(timer);
-    };
-  }, [address]);
-
-  const run: Run = (action) => void action().catch((e: unknown) => setMessage(e instanceof Error ? e.message : String(e)));
-
-  const jump = (kind: CounterKind) =>
-    run(async () => {
-      const found = await nextItem(kind, lastJump.current[kind] ?? null, address.filters);
-      if (!found) return;
-      lastJump.current[kind] = found.id;
-      if (found.page + 1 !== address.page) setAddress({ ...address, page: found.page + 1 });
-      setTarget(found.id);
-    });
-
-  const byJob = new Map<number, JobFile[]>();
-  for (const f of items?.items ?? []) byJob.set(f.job_id, [...(byJob.get(f.job_id) ?? []), f]);
-  const jobs = (queue?.jobs ?? []).filter((j) => byJob.has(j.id));
-
+function FileRow({ file, target, run }: { file: JobFile; target: boolean; run: Run }) {
+  const sizes = file.size_before != null && file.size_after != null ? `${formatSize(file.size_before)} → ${formatSize(file.size_after)}` : '';
+  const pending = file.state === 'queued' || file.state === 'running';
   return (
-    <Stack spacing={1}>
-      {queue && <QueueCounters counters={queue.counters} onJump={jump} />}
-      {error && <Alert severity="warning">{error}</Alert>}
-      {message && (
-        <Alert severity="error" onClose={() => setMessage('')}>
-          {message}
-        </Alert>
-      )}
-      <NewJob run={run} />
-      {queue && <QueuePanel pause={queue.pause} remaining={remainingText(queue.remaining, 'file')} onPause={(paused) => run(() => pauseQueue(paused))} />}
-      <QueueFilters value={address.filters} onChange={(filters) => setAddress({ filters, page: 1 })} />
-      {items && jobs.length === 0 && <Typography color="text.secondary">{queue?.jobs.length ? 'По этим фильтрам файлов нет.' : 'Заданий нет: создайте новое выше.'}</Typography>}
-      {jobs.map((job) => (
-        <JobItem key={job.id} job={job} files={byJob.get(job.id)!} target={target} run={run} />
+    <Box id={`queue-item-${file.id}`} sx={{ py: 0.5, borderRadius: 1, bgcolor: target ? 'action.selected' : undefined }}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <Typography variant="body2" noWrap title={file.path} sx={{ flex: 1, minWidth: 0 }}>
+          {fileName(file.path)}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {[file.outcome ? (OUTCOMES[file.outcome] ?? file.outcome) : '', sizes, pending && file.estimate_seconds ? formatDuration(file.estimate_seconds) : '']
+            .filter(Boolean)
+            .join(' · ')}
+        </Typography>
+        <Chip size="small" color={JOB_STATES[file.state]?.color ?? 'default'} label={JOB_STATES[file.state]?.label ?? file.state} />
+        {file.state === 'error' && (
+          <>
+            <Button size="small" onClick={() => run(() => fileAction(file.id, 'skip'))}>
+              Пропустить
+            </Button>
+            <Button size="small" onClick={() => run(() => fileAction(file.id, 'retry'))}>
+              Повторить
+            </Button>
+          </>
+        )}
+      </Stack>
+      {file.messages.map((m) => (
+        <MessageLine key={m.id} message={m} onRead={() => run(() => readMessage(m.id))} />
       ))}
-      {items && <QueuePager total={items.total} pageSize={items.page_size} page={address.page} onPage={(page) => setAddress({ ...address, page })} />}
-    </Stack>
+    </Box>
   );
 }

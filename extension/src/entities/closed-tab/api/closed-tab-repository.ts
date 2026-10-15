@@ -12,6 +12,8 @@ export interface ClosedTab {
 
 const KEEP_MS = 30 * DAY;
 
+const CLOSING_KEY = 'closingByExtension';
+
 export async function addClosedTab(tab: Omit<ClosedTab, 'id'>): Promise<void> {
   await db.closedTabs.add({ ...tab });
 }
@@ -28,8 +30,6 @@ export async function deleteClosedTab(id: number): Promise<void> {
 export async function pruneClosedTabs(now = Date.now()): Promise<void> {
   await db.closedTabs.where('closedAt').below(now - KEEP_MS).delete();
 }
-
-const CLOSING_KEY = 'closingByExtension';
 
 /** Tabs closed by the extension itself (saving a group, auto-close): they do not go to "Recently closed". */
 export async function markClosingByExtension(tabIds: readonly number[]): Promise<void> {

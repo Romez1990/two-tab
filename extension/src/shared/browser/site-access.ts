@@ -7,14 +7,6 @@ import { browser } from 'wxt/browser';
  */
 const ORIGINS = ['<all_urls>'];
 
-export function hasSiteAccess(): Promise<boolean> {
-  return browser.permissions.contains({ origins: ORIGINS });
-}
-
-export function requestSiteAccess(): Promise<boolean> {
-  return browser.permissions.request({ origins: ORIGINS });
-}
-
 /** Whether there is access (`undefined` while unknown) and a function that requests it. */
 export function useSiteAccess(): [boolean | undefined, () => void] {
   const [access, setAccess] = useState<boolean>();
@@ -23,4 +15,12 @@ export function useSiteAccess(): [boolean | undefined, () => void] {
   }, []);
   const request = useCallback(() => void requestSiteAccess().then(setAccess), []);
   return [access, request];
+}
+
+export function hasSiteAccess(): Promise<boolean> {
+  return browser.permissions.contains({ origins: ORIGINS });
+}
+
+export function requestSiteAccess(): Promise<boolean> {
+  return browser.permissions.request({ origins: ORIGINS });
 }

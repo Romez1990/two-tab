@@ -37,11 +37,6 @@ const LOCAL_DEFAULTS: LocalSettings = { profileName: '', profileId: '', localSer
 const SYNC_KEY = 'settings';
 const LOCAL_KEY = 'localSettings';
 
-export async function getSettings(): Promise<Settings> {
-  const [sync, local] = await Promise.all([browser.storage.sync.get(SYNC_KEY), browser.storage.local.get(LOCAL_KEY)]);
-  return { ...SYNC_DEFAULTS, ...(sync[SYNC_KEY] as Partial<SyncSettings>), ...LOCAL_DEFAULTS, ...(local[LOCAL_KEY] as Partial<LocalSettings>) };
-}
-
 export async function updateSettings(change: Partial<Settings>): Promise<void> {
   const current = await getSettings();
   const next = { ...current, ...change };
@@ -58,6 +53,11 @@ export async function updateSettings(change: Partial<Settings>): Promise<void> {
     localServiceKey: next.localServiceKey,
   };
   await Promise.all([browser.storage.sync.set({ [SYNC_KEY]: sync }), browser.storage.local.set({ [LOCAL_KEY]: local })]);
+}
+
+export async function getSettings(): Promise<Settings> {
+  const [sync, local] = await Promise.all([browser.storage.sync.get(SYNC_KEY), browser.storage.local.get(LOCAL_KEY)]);
+  return { ...SYNC_DEFAULTS, ...(sync[SYNC_KEY] as Partial<SyncSettings>), ...LOCAL_DEFAULTS, ...(local[LOCAL_KEY] as Partial<LocalSettings>) };
 }
 
 /** Settings for pages; updated when any part of the extension changes them. */

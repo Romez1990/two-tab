@@ -11,12 +11,6 @@ export interface SavedMatch {
   savedAt: number;
 }
 
-/** Address for comparison: without the part after `#`. */
-export function pageKey(url: string): string {
-  const i = url.indexOf('#');
-  return i < 0 ? url : url.slice(0, i);
-}
-
 export function findMatches(items: readonly SavedItem[], url: string): SavedMatch[] {
   if (!/^https?:/i.test(url)) return [];
   const key = pageKey(url);
@@ -30,4 +24,10 @@ export function findMatches(items: readonly SavedItem[], url: string): SavedMatc
       tabs: i.window.tabs.length,
       savedAt: i.savedAt,
     }));
+}
+
+/** Address for comparison: without the part after `#`. */
+export function pageKey(url: string): string {
+  const i = url.indexOf('#');
+  return i < 0 ? url : url.slice(0, i);
 }

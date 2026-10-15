@@ -3,6 +3,23 @@ import { archiveCurrentSnapshot, type SnapshotTab, type SnapshotWindow } from '@
 import { getWindowUids, newWindowUid, setWindowUid } from '@/entities/window';
 import { browser, type Browser } from '@/shared/browser';
 
+/** "Open" a saved item: tabs open in the current window in the background, without a group; the record stays in "Saved". */
+export async function openSaved(item: SavedItem): Promise<void> {
+  const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
+  if (target?.id === undefined) {
+    await browser.windows.create({ url: item.window.tabs.map((t) => t.url) });
+    return;
+  }
+  for (const t of item.window.tabs) await browser.tabs.create({ windowId: target.id, url: t.url, active: false });
+}
+
+/** "Restore" a saved item (from the auto-close notification): the window or group opens as it was, the record leaves "Saved". */
+export async function returnSaved(item: SavedItem): Promise<void> {
+  if (item.kind === 'window') await restoreWindows([item.window]);
+  else await restoreGroup(item.window);
+  await deleteSaved(item.id);
+}
+
 /**
  * Restores windows from a snapshot (docs/extension/pages/recovery.md, section 1). Before restoring, the current windows
  * go to history so that the restore can be undone. All tabs except the first in a window open discarded.
@@ -10,18 +27,6 @@ import { browser, type Browser } from '@/shared/browser';
 export async function restoreWindows(windows: readonly SnapshotWindow[]): Promise<void> {
   await archiveCurrentSnapshot();
   for (const w of windows) await openWindow(w);
-}
-
-/** Adds missing tabs to the open window with this permanent id, or to a new window if there is none. */
-export async function restoreTabs(window: SnapshotWindow, tabs: readonly SnapshotTab[]): Promise<void> {
-  await archiveCurrentSnapshot();
-  const windowId = await findWindowId(window.uid);
-  if (windowId === undefined) {
-    await openWindow({ ...window, tabs: [...tabs] });
-    return;
-  }
-  const created = await Promise.all(tabs.map((t) => createDiscardedTab(windowId, t)));
-  await applyGroups(window, tabs, created, windowId);
 }
 
 async function openWindow(window: SnapshotWindow): Promise<void> {
@@ -42,15 +47,6 @@ async function openWindow(window: SnapshotWindow): Promise<void> {
   const restIds: number[] = [];
   for (const t of rest) restIds.push(await createDiscardedTab(windowId, t));
   await applyGroups(window, window.tabs, [firstTabId, ...restIds], windowId);
-}
-
-async function findWindowId(uid: string): Promise<number | undefined> {
-  for (const [id, u] of await getWindowUids()) {
-    if (u !== uid) continue;
-    const exists = await browser.windows.get(id).then(() => true, () => false);
-    if (exists) return id;
-  }
-  return undefined;
 }
 
 /** A tab without loading the page: created in the background and discarded as soon as Chrome knows its address. */
@@ -110,19 +106,23 @@ export async function restoreGroup(group: SnapshotWindow): Promise<void> {
   await restoreTabs({ ...group, uid: uid ?? newWindowUid() }, group.tabs);
 }
 
-/** "Open" a saved item: tabs open in the current window in the background, without a group; the record stays in "Saved". */
-export async function openSaved(item: SavedItem): Promise<void> {
-  const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
-  if (target?.id === undefined) {
-    await browser.windows.create({ url: item.window.tabs.map((t) => t.url) });
+/** Adds missing tabs to the open window with this permanent id, or to a new window if there is none. */
+export async function restoreTabs(window: SnapshotWindow, tabs: readonly SnapshotTab[]): Promise<void> {
+  await archiveCurrentSnapshot();
+  const windowId = await findWindowId(window.uid);
+  if (windowId === undefined) {
+    await openWindow({ ...window, tabs: [...tabs] });
     return;
   }
-  for (const t of item.window.tabs) await browser.tabs.create({ windowId: target.id, url: t.url, active: false });
+  const created = await Promise.all(tabs.map((t) => createDiscardedTab(windowId, t)));
+  await applyGroups(window, tabs, created, windowId);
 }
 
-/** "Restore" a saved item (from the auto-close notification): the window or group opens as it was, the record leaves "Saved". */
-export async function returnSaved(item: SavedItem): Promise<void> {
-  if (item.kind === 'window') await restoreWindows([item.window]);
-  else await restoreGroup(item.window);
-  await deleteSaved(item.id);
+async function findWindowId(uid: string): Promise<number | undefined> {
+  for (const [id, u] of await getWindowUids()) {
+    if (u !== uid) continue;
+    const exists = await browser.windows.get(id).then(() => true, () => false);
+    if (exists) return id;
+  }
+  return undefined;
 }

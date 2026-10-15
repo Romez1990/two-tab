@@ -2,18 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { SavedMatches, type SavedMatch } from '@/entities/saved';
 import { openSavedItem, type BannerFrameMessage } from '@/features/saved-banner';
 
-function readMatches(): SavedMatch[] {
-  try {
-    return JSON.parse(new URLSearchParams(location.search).get('matches') ?? '[]') as SavedMatch[];
-  } catch {
-    return [];
-  }
-}
-
-function post(message: BannerFrameMessage) {
-  parent.postMessage(message, '*');
-}
-
 /** The "Already saved" banner in an iframe on a site (docs/extension/pages/saved.md, section 1); found records come in `?matches=`, the site address in `&url=`. */
 export function SavedBannerPage() {
   const [matches] = useState<SavedMatch[]>(readMatches);
@@ -38,4 +26,16 @@ export function SavedBannerPage() {
       />
     </div>
   );
+}
+
+function readMatches(): SavedMatch[] {
+  try {
+    return JSON.parse(new URLSearchParams(location.search).get('matches') ?? '[]') as SavedMatch[];
+  } catch {
+    return [];
+  }
+}
+
+function post(message: BannerFrameMessage) {
+  parent.postMessage(message, '*');
 }

@@ -17,45 +17,6 @@ export const PAGE_SIZE = 50;
 
 type Mode = 'pages' | 'scroll';
 
-/** Ellipsis in the page switcher: a click turns it into a field, a page number and Enter navigate. */
-function PageJump({ pages, onJump }: { pages: number; onJump: (page: number) => void }) {
-  const [editing, setEditing] = useState(false);
-  if (!editing) {
-    return (
-      <Tooltip title="Перейти к странице">
-        <Button size="small" onClick={() => setEditing(true)} sx={{ minWidth: 26, height: 26, px: 0.5, color: 'text.primary' }}>
-          …
-        </Button>
-      </Tooltip>
-    );
-  }
-  return (
-    <TextField
-      autoFocus
-      size="small"
-      placeholder={`1–${pages}`}
-      onBlur={() => setEditing(false)}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') setEditing(false);
-        if (e.key !== 'Enter') return;
-        const page = Number((e.target as HTMLInputElement).value);
-        if (Number.isInteger(page) && page >= 1 && page <= pages) onJump(page);
-        setEditing(false);
-      }}
-      slotProps={{ htmlInput: { inputMode: 'numeric', 'aria-label': 'Номер страницы', style: { textAlign: 'center' } } }}
-      sx={{ width: 64, mx: 0.5, '& input': { py: 0.25 } }}
-    />
-  );
-}
-
-function readMode(key: string): Mode {
-  try {
-    return localStorage.getItem(key) === 'scroll' ? 'scroll' : 'pages';
-  } catch {
-    return 'pages';
-  }
-}
-
 export interface PagingOptions {
   /** localStorage key under which the mode of this list is remembered. */
   storageKey: string;
@@ -161,4 +122,43 @@ export function usePaging<T>(items: readonly T[], options: PagingOptions): { vis
     </>
   );
   return { visible, footer };
+}
+
+function readMode(key: string): Mode {
+  try {
+    return localStorage.getItem(key) === 'scroll' ? 'scroll' : 'pages';
+  } catch {
+    return 'pages';
+  }
+}
+
+/** Ellipsis in the page switcher: a click turns it into a field, a page number and Enter navigate. */
+function PageJump({ pages, onJump }: { pages: number; onJump: (page: number) => void }) {
+  const [editing, setEditing] = useState(false);
+  if (!editing) {
+    return (
+      <Tooltip title="Перейти к странице">
+        <Button size="small" onClick={() => setEditing(true)} sx={{ minWidth: 26, height: 26, px: 0.5, color: 'text.primary' }}>
+          …
+        </Button>
+      </Tooltip>
+    );
+  }
+  return (
+    <TextField
+      autoFocus
+      size="small"
+      placeholder={`1–${pages}`}
+      onBlur={() => setEditing(false)}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') setEditing(false);
+        if (e.key !== 'Enter') return;
+        const page = Number((e.target as HTMLInputElement).value);
+        if (Number.isInteger(page) && page >= 1 && page <= pages) onJump(page);
+        setEditing(false);
+      }}
+      slotProps={{ htmlInput: { inputMode: 'numeric', 'aria-label': 'Номер страницы', style: { textAlign: 'center' } } }}
+      sx={{ width: 64, mx: 0.5, '& input': { py: 0.25 } }}
+    />
+  );
 }

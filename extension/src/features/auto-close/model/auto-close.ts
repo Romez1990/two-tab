@@ -9,16 +9,6 @@ import { findStale } from './find-stale';
 const RUN_DAYS_KEY = 'chromeRunDays';
 export const AUTO_CLOSE_NOTIFICATION_PREFIX = 'auto-closed:';
 
-/** Marks today (starting at 6:00) as a day Chrome was running. */
-export async function recordRunDay(now = Date.now()): Promise<number[]> {
-  const days = ((await db.meta.get(RUN_DAYS_KEY))?.value as number[] | undefined) ?? [];
-  const today = dayIndex(now);
-  if (days.includes(today)) return days;
-  const next = [...days, today];
-  await db.meta.put({ key: RUN_DAYS_KEY, value: next });
-  return next;
-}
-
 /**
  * Closes stale windows and groups: saves them first (`save`), then shows a notification
  * with a "Restore" button. Saving is passed in so that the feature does not depend on another feature.
@@ -57,6 +47,16 @@ export async function runAutoClose(save: {
     const item = target.kind === 'window' ? await save.window(target.windowId) : await save.group(target.groupId);
     await notifyClosed(item);
   }
+}
+
+/** Marks today (starting at 6:00) as a day Chrome was running. */
+export async function recordRunDay(now = Date.now()): Promise<number[]> {
+  const days = ((await db.meta.get(RUN_DAYS_KEY))?.value as number[] | undefined) ?? [];
+  const today = dayIndex(now);
+  if (days.includes(today)) return days;
+  const next = [...days, today];
+  await db.meta.put({ key: RUN_DAYS_KEY, value: next });
+  return next;
 }
 
 async function notifyClosed(item: SavedItem): Promise<void> {

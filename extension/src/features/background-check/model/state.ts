@@ -14,14 +14,14 @@ export interface CheckState {
 const STATE_KEY = 'backgroundCheck';
 const IDLE: CheckState = { running: false, checked: 0, total: 0 };
 
-export async function getCheckState(): Promise<CheckState> {
-  return ((await db.meta.get(STATE_KEY))?.value as CheckState | undefined) ?? IDLE;
-}
-
 export async function updateCheckState(change: Partial<CheckState>): Promise<void> {
   await db.transaction('rw', db.meta, async () => {
     await db.meta.put({ key: STATE_KEY, value: { ...(await getCheckState()), ...change } });
   });
+}
+
+export async function getCheckState(): Promise<CheckState> {
+  return ((await db.meta.get(STATE_KEY))?.value as CheckState | undefined) ?? IDLE;
 }
 
 /** State for the settings page; the check runs in another extension page, so it is re-read every second. */

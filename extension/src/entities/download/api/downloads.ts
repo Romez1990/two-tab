@@ -25,10 +25,24 @@ export class NotConnectedError extends Error {
   }
 }
 
-async function client(): Promise<LocalServiceClient> {
-  const c = await connectedClient();
-  if (!c) throw new NotConnectedError();
-  return c;
+/** How to queue: "Temporarily keep the original" and "Start the queue" (docs/extension/pages/downloads.md, section 0). */
+export interface EnqueueOptions {
+  keepOriginal: boolean;
+  start: boolean;
+  musicOnly?: boolean;
+}
+
+export type GroupAction = 'pause' | 'resume' | 'cancel' | 'up' | 'down' | 'delete';
+
+export type DownloadAction = 'cancel' | 'retry' | 'skip' | 'open' | 'show' | 'up' | 'down' | 'original-open' | 'original-done';
+
+/** Access to site cookies: requested on a button click. */
+export function requestCookieAccess(url: string): Promise<boolean> {
+  return browser.permissions.request({ permissions: ['cookies'], origins: [`${new URL(url).origin}/*`] });
+}
+
+export async function knownDownload(url: string): Promise<string | null> {
+  return unwrap(await (await client()).POST('/api/downloads/known', { body: { url } })).downloaded;
 }
 
 /** Service response or an error with a readable text. */
@@ -37,8 +51,14 @@ function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T
   return result.data;
 }
 
-function done(result: { error?: unknown; response: Response }): void {
-  if (!result.response.ok) throw new Error(errorText(result.response.status, result.error));
+async function client(): Promise<LocalServiceClient> {
+  const c = await connectedClient();
+  if (!c) throw new NotConnectedError();
+  return c;
+}
+
+export async function checkVideo(url: string): Promise<Check> {
+  return unwrap(await (await client()).POST('/api/downloads/check', { body: { url, cookies: await siteCookies(url) } }));
 }
 
 /** Site cookies of the address; empty without site access (the service tries without them). */
@@ -53,29 +73,9 @@ export async function siteCookies(url: string): Promise<Cookie[]> {
   }
 }
 
-/** Access to site cookies: requested on a button click. */
-export function requestCookieAccess(url: string): Promise<boolean> {
-  return browser.permissions.request({ permissions: ['cookies'], origins: [`${new URL(url).origin}/*`] });
-}
-
-export async function knownDownload(url: string): Promise<string | null> {
-  return unwrap(await (await client()).POST('/api/downloads/known', { body: { url } })).downloaded;
-}
-
-export async function checkVideo(url: string): Promise<Check> {
-  return unwrap(await (await client()).POST('/api/downloads/check', { body: { url, cookies: await siteCookies(url) } }));
-}
-
 /** Channel before queueing: video count and how many pass the filters; the service keeps the channel list for 10 minutes (tidy-reel/docs/downloader.md, section 6.0). */
 export async function checkChannel(url: string, filters: Filters = { from_end: false, music_only: false }): Promise<ChannelCheck> {
   return unwrap(await (await client()).POST('/api/downloads/channel/check', { body: { url, cookies: await siteCookies(url), filters } }));
-}
-
-/** How to queue: "Temporarily keep the original" and "Start the queue" (docs/extension/pages/downloads.md, section 0). */
-export interface EnqueueOptions {
-  keepOriginal: boolean;
-  start: boolean;
-  musicOnly?: boolean;
 }
 
 export async function enqueueVideo(url: string, folder: string, title: string | null, presetEdits: Record<string, unknown> | null, options: EnqueueOptions): Promise<Group> {
@@ -122,6 +122,10 @@ export async function pauseQueue(paused: boolean): Promise<void> {
   done(await (await client()).PUT('/api/downloads/pause', { body: { paused } }));
 }
 
+function done(result: { error?: unknown; response: Response }): void {
+  if (!result.response.ok) throw new Error(errorText(result.response.status, result.error));
+}
+
 export async function readMessage(id: number): Promise<void> {
   done(await (await client()).POST('/api/downloads/messages/{message_id}/read', { params: { path: { message_id: id } } }));
 }
@@ -156,9 +160,6 @@ export async function feedCookies(items: readonly { url: string; state: string }
   for (const url of urls.values()) sites[url] = await siteCookies(url);
   done(await (await client()).POST('/api/downloads/cookies', { body: { sites } }));
 }
-
-export type GroupAction = 'pause' | 'resume' | 'cancel' | 'up' | 'down' | 'delete';
-export type DownloadAction = 'cancel' | 'retry' | 'skip' | 'open' | 'show' | 'up' | 'down' | 'original-open' | 'original-done';
 
 export async function groupAction(id: number, action: GroupAction): Promise<void> {
   const c = await client();

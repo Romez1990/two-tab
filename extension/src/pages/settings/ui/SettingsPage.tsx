@@ -100,47 +100,18 @@ export function SettingsPage() {
   );
 }
 
-/** "Notification repeat, minutes" and "Strict order" (docs/extension/pages/settings.md, section 5). */
-function QueueSettingsForm() {
-  const [value, setValue] = useState<QueueSettings | null>(null);
-  const [error, setError] = useState('');
-  useEffect(() => {
-    void getQueueSettings()
-      .then(setValue)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  }, []);
-  const save = (next: QueueSettings) =>
-    void saveQueueSettings(next)
-      .then(setValue)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  if (!value) return <Typography color={error ? 'error' : 'text.secondary'}>{error || '…'}</Typography>;
+function Section({ title, hint, children }: { title: string; hint: string; children: ReactNode }) {
   return (
-    <Stack spacing={1}>
-      <TextField
-        key={value.notify_every_minutes}
-        type="number"
-        label="Повтор уведомлений, минут"
-        helperText="Как часто звучит уведомление, пока очереди нужно ваше решение"
-        defaultValue={value.notify_every_minutes}
-        onBlur={(e) => save({ ...value, notify_every_minutes: Math.min(1440, Math.max(1, Math.round(Number(e.target.value) || 1))) })}
-        slotProps={{ htmlInput: { min: 1, max: 1440 } }}
-        sx={{ width: 320 }}
-      />
-      <FormControlLabel
-        control={<Checkbox checked={value.strict_order} onChange={(_, on) => save({ ...value, strict_order: on })} />}
-        label="Строгий порядок: ошибка или нужные куки у видео ставят на паузу всю очередь"
-      />
-      {error && <Typography color="error">{error}</Typography>}
-    </Stack>
+    <Card variant="outlined">
+      <CardContent>
+        <Typography variant="h6">{title}</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {hint}
+        </Typography>
+        {children}
+      </CardContent>
+    </Card>
   );
-}
-
-function DbUsage() {
-  const [bytes, setBytes] = useState<number | undefined>();
-  useEffect(() => {
-    void getDbUsageBytes().then(setBytes);
-  }, []);
-  return <Typography>{bytes === undefined ? '…' : `≈ ${formatBytes(bytes)}`}</Typography>;
 }
 
 /**
@@ -199,17 +170,46 @@ function KeepRow({ kept, onToggle, children }: { kept: boolean; onToggle: () => 
   );
 }
 
-function Section({ title, hint, children }: { title: string; hint: string; children: ReactNode }) {
+/** "Notification repeat, minutes" and "Strict order" (docs/extension/pages/settings.md, section 5). */
+function QueueSettingsForm() {
+  const [value, setValue] = useState<QueueSettings | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    void getQueueSettings()
+      .then(setValue)
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+  }, []);
+  const save = (next: QueueSettings) =>
+    void saveQueueSettings(next)
+      .then(setValue)
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+  if (!value) return <Typography color={error ? 'error' : 'text.secondary'}>{error || '…'}</Typography>;
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <Typography variant="h6">{title}</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {hint}
-        </Typography>
-        {children}
-      </CardContent>
-    </Card>
+    <Stack spacing={1}>
+      <TextField
+        key={value.notify_every_minutes}
+        type="number"
+        label="Повтор уведомлений, минут"
+        helperText="Как часто звучит уведомление, пока очереди нужно ваше решение"
+        defaultValue={value.notify_every_minutes}
+        onBlur={(e) => save({ ...value, notify_every_minutes: Math.min(1440, Math.max(1, Math.round(Number(e.target.value) || 1))) })}
+        slotProps={{ htmlInput: { min: 1, max: 1440 } }}
+        sx={{ width: 320 }}
+      />
+      <FormControlLabel
+        control={<Checkbox checked={value.strict_order} onChange={(_, on) => save({ ...value, strict_order: on })} />}
+        label="Строгий порядок: ошибка или нужные куки у видео ставят на паузу всю очередь"
+      />
+      {error && <Typography color="error">{error}</Typography>}
+    </Stack>
   );
+}
+
+function DbUsage() {
+  const [bytes, setBytes] = useState<number | undefined>();
+  useEffect(() => {
+    void getDbUsageBytes().then(setBytes);
+  }, []);
+  return <Typography>{bytes === undefined ? '…' : `≈ ${formatBytes(bytes)}`}</Typography>;
 }
 

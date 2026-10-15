@@ -27,105 +27,6 @@ import { Favicon, SMART_SEARCH_HINT, SmartHint, usePaging } from '@/shared/ui';
 import { ARCHIVE_SHOWN_LIMIT, SOURCE_TITLES, search, type Found, type Sort, type Source } from '../model/collect';
 import { EMPTY_STATE, readState, writeState, type SearchState } from '../model/url-state';
 
-/** Search in the address after `#search` (docs/extension/pages/search.md, section 4). */
-function stateOfAddress(): SearchState {
-  const at = location.hash.indexOf('?');
-  return at < 0 ? EMPTY_STATE : readState(location.hash.slice(at));
-}
-
-function pushAddress(state: SearchState) {
-  const hash = `#search${writeState(state)}`;
-  if (location.hash !== hash) history.pushState(null, '', hash);
-}
-
-async function goTo(found: Found, background: boolean): Promise<string | undefined> {
-  switch (found.source) {
-    case 'open':
-      await browser.tabs.update(found.tabId, { active: true });
-      await browser.windows.update(found.windowId, { focused: true });
-      return;
-    case 'saved':
-      await browser.tabs.create({ url: savedItemPageUrl(found.savedId, found.url), active: !background });
-      return;
-    case 'closed':
-    case 'snapshot':
-      await browser.tabs.create({ url: found.url, active: !background });
-      return;
-    case 'archive':
-      return;
-  }
-}
-
-async function archiveAction(fileId: number, action: 'open' | 'show'): Promise<string | undefined> {
-  const { localServicePort, localServiceKey } = await getSettings();
-  const client = localServiceClient(localServicePort, localServiceKey);
-  const path = action === 'open' ? '/api/archive/files/{file_id}/open' : '/api/archive/files/{file_id}/show';
-  try {
-    const { response, error } = await client.POST(path, { params: { path: { file_id: fileId } } });
-    if (response.ok) return undefined;
-    return response.status === 404 ? 'Файл переместили, нужна индексация' : `Ошибка ${response.status}: ${JSON.stringify(error)}`;
-  } catch {
-    return 'Локальный сервис Tidy Reel не отвечает';
-  }
-}
-
-function ResultRow({ found, onMessage }: { found: Found; onMessage: (text: string) => void }) {
-  const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  const isArchive = found.source === 'archive';
-  return (
-    <Paper variant="outlined" sx={{ px: 1.5, py: 1 }}>
-      <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-        {!isArchive && <Favicon url={found.url} size={16} />}
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography noWrap title={found.title}>
-            {found.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {isArchive ? found.path : found.url}
-            {found.source === 'saved' && found.group ? ` · ${found.group}` : ''}
-          </Typography>
-        </Box>
-        <Chip size="small" label={SOURCE_TITLES[found.source]} />
-        <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
-          {found.date ? formatDateTime(found.date) : ''}
-        </Typography>
-        {isArchive ? (
-          <>
-            <Button size="small" onClick={() => void archiveAction(found.fileId, 'open').then((m) => m && onMessage(m))}>
-              Открыть
-            </Button>
-            <Button size="small" onClick={() => void archiveAction(found.fileId, 'show').then((m) => m && onMessage(m))}>
-              Показать в папке
-            </Button>
-          </>
-        ) : (
-          <Button
-            size="small"
-            onClick={() => void goTo(found, false)}
-            onAuxClick={(e) => e.button === 1 && void goTo(found, true)}
-          >
-            {found.source === 'open' ? 'Перейти к вкладке' : found.source === 'saved' ? 'Перейти к группе' : 'Открыть'}
-          </Button>
-        )}
-      </Stack>
-      {isArchive && found.shortcuts.length > 0 && (
-        <>
-          <Link component="button" variant="body2" onClick={() => setShortcutsOpen((o) => !o)}>
-            Ярлыков: {found.shortcuts.length}
-          </Link>
-          <Collapse in={shortcutsOpen}>
-            {found.shortcuts.map((path) => (
-              <Typography key={path} variant="body2" color="text.secondary" sx={{ pl: 2 }}>
-                {path}
-              </Typography>
-            ))}
-          </Collapse>
-        </>
-      )}
-    </Paper>
-  );
-}
-
 /** "Search" (docs/extension/pages/search.md): tabs and archive in one list, "smart search" on Enter. */
 export function SearchPage() {
   const [input, setInput] = useState('');
@@ -330,4 +231,103 @@ export function SearchPage() {
       {footer}
     </Stack>
   );
+}
+
+/** Search in the address after `#search` (docs/extension/pages/search.md, section 4). */
+function stateOfAddress(): SearchState {
+  const at = location.hash.indexOf('?');
+  return at < 0 ? EMPTY_STATE : readState(location.hash.slice(at));
+}
+
+function pushAddress(state: SearchState) {
+  const hash = `#search${writeState(state)}`;
+  if (location.hash !== hash) history.pushState(null, '', hash);
+}
+
+function ResultRow({ found, onMessage }: { found: Found; onMessage: (text: string) => void }) {
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const isArchive = found.source === 'archive';
+  return (
+    <Paper variant="outlined" sx={{ px: 1.5, py: 1 }}>
+      <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+        {!isArchive && <Favicon url={found.url} size={16} />}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography noWrap title={found.title}>
+            {found.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" noWrap>
+            {isArchive ? found.path : found.url}
+            {found.source === 'saved' && found.group ? ` · ${found.group}` : ''}
+          </Typography>
+        </Box>
+        <Chip size="small" label={SOURCE_TITLES[found.source]} />
+        <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
+          {found.date ? formatDateTime(found.date) : ''}
+        </Typography>
+        {isArchive ? (
+          <>
+            <Button size="small" onClick={() => void archiveAction(found.fileId, 'open').then((m) => m && onMessage(m))}>
+              Открыть
+            </Button>
+            <Button size="small" onClick={() => void archiveAction(found.fileId, 'show').then((m) => m && onMessage(m))}>
+              Показать в папке
+            </Button>
+          </>
+        ) : (
+          <Button
+            size="small"
+            onClick={() => void goTo(found, false)}
+            onAuxClick={(e) => e.button === 1 && void goTo(found, true)}
+          >
+            {found.source === 'open' ? 'Перейти к вкладке' : found.source === 'saved' ? 'Перейти к группе' : 'Открыть'}
+          </Button>
+        )}
+      </Stack>
+      {isArchive && found.shortcuts.length > 0 && (
+        <>
+          <Link component="button" variant="body2" onClick={() => setShortcutsOpen((o) => !o)}>
+            Ярлыков: {found.shortcuts.length}
+          </Link>
+          <Collapse in={shortcutsOpen}>
+            {found.shortcuts.map((path) => (
+              <Typography key={path} variant="body2" color="text.secondary" sx={{ pl: 2 }}>
+                {path}
+              </Typography>
+            ))}
+          </Collapse>
+        </>
+      )}
+    </Paper>
+  );
+}
+
+async function archiveAction(fileId: number, action: 'open' | 'show'): Promise<string | undefined> {
+  const { localServicePort, localServiceKey } = await getSettings();
+  const client = localServiceClient(localServicePort, localServiceKey);
+  const path = action === 'open' ? '/api/archive/files/{file_id}/open' : '/api/archive/files/{file_id}/show';
+  try {
+    const { response, error } = await client.POST(path, { params: { path: { file_id: fileId } } });
+    if (response.ok) return undefined;
+    return response.status === 404 ? 'Файл переместили, нужна индексация' : `Ошибка ${response.status}: ${JSON.stringify(error)}`;
+  } catch {
+    return 'Локальный сервис Tidy Reel не отвечает';
+  }
+}
+
+async function goTo(found: Found, background: boolean): Promise<string | undefined> {
+  switch (found.source) {
+    case 'open':
+      await browser.tabs.update(found.tabId, { active: true });
+      await browser.windows.update(found.windowId, { focused: true });
+      return;
+    case 'saved':
+      await browser.tabs.create({ url: savedItemPageUrl(found.savedId, found.url), active: !background });
+      return;
+    case 'closed':
+    case 'snapshot':
+      await browser.tabs.create({ url: found.url, active: !background });
+      return;
+    case 'archive':
+      return;
+  }
 }

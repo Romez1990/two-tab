@@ -63,39 +63,6 @@ interface Loader {
 }
 const LoaderContext = createContext<Loader>({ loadItem: () => () => {}, loadIcons: () => () => {}, checks: new Map(), recheck: () => {} });
 
-/** While a record is expanded (accordion details are mounted), its pages are checked and icons loaded. */
-function ExpandedLoader({ item }: { item: SavedItem }) {
-  const { loadItem, loadIcons } = useContext(LoaderContext);
-  // The record re-renders when titles arrive; that does not restart the check.
-  const itemRef = useRef(item);
-  itemRef.current = item;
-  useEffect(() => loadItem(itemRef.current), [loadItem, item.id]);
-  const urls = useMemo(() => item.window.tabs.map((t) => t.url), [item]);
-  useEffect(() => loadIcons(urls), [loadIcons, urls]);
-  return null;
-}
-
-function SiteIcon({ url, size }: { url: string; size?: number }) {
-  const icons = useContext(SiteIconsContext);
-  return <Favicon url={url} size={size} src={icons.get(hostOf(url))} />;
-}
-
-/** Group icon is the icon of its most frequent site; the group color, if any, is a stripe below. */
-function TabStatus({ url }: { url: string }) {
-  const { checks, recheck } = useContext(LoaderContext);
-  return <PageStatus check={checks.get(url)} onRecheck={() => recheck(url)} />;
-}
-
-function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined }) {
-  const url = mostCommonHostUrl(item.window.tabs.map((t) => t.url));
-  if (!url) return <FolderOutlinedIcon sx={{ color: color ? groupColor(color) : 'action.active' }} />;
-  return (
-    <Box sx={{ p: 0.25, borderBottom: 3, borderColor: color ? groupColor(color) : 'transparent' }}>
-      <SiteIcon url={url} size={20} />
-    </Box>
-  );
-}
-
 /** The list pagination mode is remembered under this key. */
 const PAGING_KEY = 'tabsurd.savedPaging';
 
@@ -455,4 +422,37 @@ function SavedAccordion({
       </AccordionDetails>
     </Accordion>
   );
+}
+
+function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined }) {
+  const url = mostCommonHostUrl(item.window.tabs.map((t) => t.url));
+  if (!url) return <FolderOutlinedIcon sx={{ color: color ? groupColor(color) : 'action.active' }} />;
+  return (
+    <Box sx={{ p: 0.25, borderBottom: 3, borderColor: color ? groupColor(color) : 'transparent' }}>
+      <SiteIcon url={url} size={20} />
+    </Box>
+  );
+}
+
+function SiteIcon({ url, size }: { url: string; size?: number }) {
+  const icons = useContext(SiteIconsContext);
+  return <Favicon url={url} size={size} src={icons.get(hostOf(url))} />;
+}
+
+/** While a record is expanded (accordion details are mounted), its pages are checked and icons loaded. */
+function ExpandedLoader({ item }: { item: SavedItem }) {
+  const { loadItem, loadIcons } = useContext(LoaderContext);
+  // The record re-renders when titles arrive; that does not restart the check.
+  const itemRef = useRef(item);
+  itemRef.current = item;
+  useEffect(() => loadItem(itemRef.current), [loadItem, item.id]);
+  const urls = useMemo(() => item.window.tabs.map((t) => t.url), [item]);
+  useEffect(() => loadIcons(urls), [loadIcons, urls]);
+  return null;
+}
+
+/** Group icon is the icon of its most frequent site; the group color, if any, is a stripe below. */
+function TabStatus({ url }: { url: string }) {
+  const { checks, recheck } = useContext(LoaderContext);
+  return <PageStatus check={checks.get(url)} onRecheck={() => recheck(url)} />;
 }

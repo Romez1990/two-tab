@@ -5,14 +5,14 @@ export const DAY = 24 * HOUR;
 /** A day starts at 6:00 (docs/specification.md): a visit at 1 a.m. still belongs to the previous day. */
 const DAY_START_HOUR = 6;
 
-function shifted(ms: number): Date {
-  return new Date(ms - DAY_START_HOUR * HOUR);
-}
-
 /** Key of the day from 6:00 to 6:00 local time, for example "2026-10-12". */
 export function dayKey(ms: number): string {
   const d = shifted(ms);
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function shifted(ms: number): Date {
+  return new Date(ms - DAY_START_HOUR * HOUR);
 }
 
 /** Month key with the same day boundary. */

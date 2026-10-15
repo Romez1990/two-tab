@@ -83,6 +83,14 @@ async function onExtensionInstalled(details: Browser.runtime.InstalledDetails): 
   await browser.tabs.create({ url: browser.runtime.getURL('/onboarding.html') });
 }
 
+/** Auto-close (docs/extension/specification.md, section 3.2), together with snapshot history, every 10 minutes. */
+function autoClose(): Promise<void> {
+  return runAutoClose({
+    window: (id) => saveAndCloseWindow(id, 'auto'),
+    group: (id) => saveAndCloseGroup(id, 'auto'),
+  });
+}
+
 async function restoreLastLoss(): Promise<void> {
   await browser.notifications.clear(LOSS_NOTIFICATION);
   const loss = await getLastLoss();
@@ -90,14 +98,6 @@ async function restoreLastLoss(): Promise<void> {
   await clearLastLoss();
   await restoreWindows(loss.windows);
   for (const { window, tabs } of loss.tabs) await restoreTabs(window, tabs);
-}
-
-/** Auto-close (docs/extension/specification.md, section 3.2), together with snapshot history, every 10 minutes. */
-function autoClose(): Promise<void> {
-  return runAutoClose({
-    window: (id) => saveAndCloseWindow(id, 'auto'),
-    group: (id) => saveAndCloseGroup(id, 'auto'),
-  });
 }
 
 async function returnAutoClosed(notificationId: string): Promise<void> {

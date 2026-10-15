@@ -22,11 +22,6 @@ export type ConnectResult =
 
 const TAKEN_PREFIX = 'another profile is connected: ';
 
-/** Name of the already connected profile from a 409 response. */
-export function takenBy(detail: unknown): string {
-  return typeof detail === 'string' && detail.startsWith(TAKEN_PREFIX) ? detail.slice(TAKEN_PREFIX.length) : '';
-}
-
 export async function connectTidyReel(port: number): Promise<ConnectResult> {
   const settings = await getSettings();
   const profileId = settings.profileId || crypto.randomUUID();
@@ -45,6 +40,11 @@ export async function connectTidyReel(port: number): Promise<ConnectResult> {
   }
   if (response.status === 409) return { ok: false, reason: 'taken', name: takenBy((error as { detail?: unknown }).detail) };
   return { ok: false, reason: 'error', message: `${response.status} ${JSON.stringify(error)}` };
+}
+
+/** Name of the already connected profile from a 409 response. */
+export function takenBy(detail: unknown): string {
+  return typeof detail === 'string' && detail.startsWith(TAKEN_PREFIX) ? detail.slice(TAKEN_PREFIX.length) : '';
 }
 
 export async function checkConnection(): Promise<ConnectionStatus> {
