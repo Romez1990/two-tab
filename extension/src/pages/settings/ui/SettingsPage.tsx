@@ -1,10 +1,13 @@
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState, type ReactNode } from 'react';
+import { getQueueSettings, saveQueueSettings, type QueueSettings } from '@/entities/queue';
 import { useWindows } from '@/entities/window';
 import { BackgroundCheck } from '@/features/background-check';
 import { RecompressPresets } from '@/features/recompress-presets';
@@ -73,6 +76,12 @@ export function SettingsPage() {
         </Section>
       )}
 
+      {settings.localServiceKey && (
+        <Section title="Очереди" hint="Скачивание и сжатие в Tidy Reel. Настройки хранятся в локальном сервисе.">
+          <QueueSettingsForm />
+        </Section>
+      )}
+
       <Section title="Хранилище" hint="Сколько места на этом компьютере занимает база расширения: сохранённые окна, снимки, недавно закрытые вкладки.">
         <DbUsage />
       </Section>
@@ -87,6 +96,41 @@ export function SettingsPage() {
           fullWidth
         />
       </Section>
+    </Stack>
+  );
+}
+
+/** «Повтор уведомлений, минут» и «Строгий порядок» (docs/extension/pages/settings.md, раздел 5). */
+function QueueSettingsForm() {
+  const [value, setValue] = useState<QueueSettings | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    void getQueueSettings()
+      .then(setValue)
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+  }, []);
+  const save = (next: QueueSettings) =>
+    void saveQueueSettings(next)
+      .then(setValue)
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+  if (!value) return <Typography color={error ? 'error' : 'text.secondary'}>{error || '…'}</Typography>;
+  return (
+    <Stack spacing={1}>
+      <TextField
+        key={value.notify_every_minutes}
+        type="number"
+        label="Повтор уведомлений, минут"
+        helperText="Как часто звучит уведомление, пока очереди нужно ваше решение"
+        defaultValue={value.notify_every_minutes}
+        onBlur={(e) => save({ ...value, notify_every_minutes: Math.min(1440, Math.max(1, Math.round(Number(e.target.value) || 1))) })}
+        slotProps={{ htmlInput: { min: 1, max: 1440 } }}
+        sx={{ width: 320 }}
+      />
+      <FormControlLabel
+        control={<Checkbox checked={value.strict_order} onChange={(_, on) => save({ ...value, strict_order: on })} />}
+        label="Строгий порядок: ошибка или нужные куки у видео ставят на паузу всю очередь"
+      />
+      {error && <Typography color="error">{error}</Typography>}
     </Stack>
   );
 }
