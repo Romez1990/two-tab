@@ -14,6 +14,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
 import { DEFAULT_FIELDS, listPresets, PresetFieldsEditor, type Preset, type PresetFields } from '@/features/recompress-presets';
+import { CreateFooter } from '@/entities/queue';
 import {
   categories as listCategories,
   checkChannel,
@@ -181,6 +182,10 @@ export function DownloadWindow() {
   const [edits, setEdits] = useState<Partial<PresetFields>>({});
   const [filters, setFilters] = useState<Filters>({ from_end: false, music_only: false });
   const [onlyNew, setOnlyNew] = useState(true);
+  const [keepOriginal, setKeepOriginal] = useState(false);
+  const [start, setStart] = useState(true);
+  /** Сколько скачается при фильтрах; `null` — ещё считается (tidy-reel/docs/downloader.md, раздел 6.0). */
+  const [matching, setMatching] = useState<number | null>(null);
 
   async function load(nextKind = kind) {
     setBusy(true);
@@ -194,6 +199,22 @@ export function DownloadWindow() {
       setBusy(false);
     }
   }
+  // Пересчёт при смене фильтров: список канала сервис держит в памяти, к сайту не обращается.
+  useEffect(() => {
+    if (kind !== 'channel' || !check || !('videos' in check)) return;
+    let alive = true;
+    setMatching(null);
+    const timer = setTimeout(() => {
+      void checkChannel(url, filters)
+        .then((c) => alive && setMatching(c.matching))
+        .catch(() => alive && setMatching(null));
+    }, 300);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [filters, check, kind]);
+
   useEffect(() => {
     void load();
     void listPresets()
@@ -210,8 +231,9 @@ export function DownloadWindow() {
     if (!folder) return;
     setBusy(true);
     try {
-      if (action === 'video') await enqueueVideo(url, folder, (check as Check).video.title, presetEdits);
-      else if (action === 'channel') await enqueueChannel(url, folder, filters, presetEdits);
+      const options = { keepOriginal, start };
+      if (action === 'video') await enqueueVideo(url, folder, (check as Check).video.title, presetEdits, options);
+      else if (action === 'channel') await enqueueChannel(url, folder, filters, presetEdits, options);
       else await subscribe(url, folder, filters, presetEdits, onlyNew);
       location.hash = action === 'subscribe' ? 'downloads/subscriptions' : 'downloads';
     } catch (e) {
@@ -263,6 +285,9 @@ export function DownloadWindow() {
           <Typography variant="body2" color="text.secondary">
             Видео на канале: {channel.videos}, уже скачано: {channel.downloaded}
           </Typography>
+          <Typography variant="body2" color={matching === 0 ? 'error' : 'text.primary'}>
+            {matching === null ? 'Считается, сколько скачается…' : matching === 0 ? 'По фильтрам видео нет' : `Скачается видео: ${matching}`}
+          </Typography>
         </Paper>
       )}
       {check && (
@@ -281,7 +306,13 @@ export function DownloadWindow() {
         </Stack>
       )}
       {check && (
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <FormControlLabel
+          control={<Checkbox size="small" checked={keepOriginal} onChange={(_, v) => setKeepOriginal(v)} />}
+          label="Временно сохранить оригинал — рядом со сжатым до галочки «Готово» в очереди"
+        />
+      )}
+      {check && (
+        <CreateFooter start={start} onStart={setStart}>
           {video && (
             <Button variant="contained" disabled={!folder || busy} onClick={() => void submit('video')}>
               {video.downloaded ? 'Скачать ещё раз' : 'Скачать'}
@@ -289,7 +320,8 @@ export function DownloadWindow() {
           )}
           {channel && (
             <>
-              <Button variant="contained" disabled={!folder || busy} onClick={() => void submit('channel')}>
+              {/* Пока число не пришло, можно не ждать: группа встанет с «подсчитывается…». */}
+              <Button variant="contained" disabled={!folder || busy || matching === 0} onClick={() => void submit('channel')}>
                 Скачать канал
               </Button>
               <Button variant="outlined" disabled={!folder || busy} onClick={() => void submit('subscribe')}>
@@ -299,7 +331,7 @@ export function DownloadWindow() {
             </>
           )}
           {!folder && <Typography variant="body2" color="text.secondary">Выберите папку</Typography>}
-        </Stack>
+        </CreateFooter>
       )}
     </Stack>
   );
