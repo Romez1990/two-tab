@@ -1,0 +1,59 @@
+import type { LocalServiceSchemas } from '@/shared/api';
+
+/** Остаток группы, задания или очереди (tidy-reel/docs/recompress.md, раздел 2.12.1). */
+export type Remaining = LocalServiceSchemas['RemainingModel'];
+
+/** «≈ 3 ч 20 мин»: оставшееся время, не время на часах. */
+export function formatDuration(seconds: number): string {
+  const minutes = Math.max(1, Math.round(seconds / 60));
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (!hours) return `≈ ${minutes} мин`;
+  return rest ? `≈ ${hours} ч ${rest} мин` : `≈ ${hours} ч`;
+}
+
+/** «450 МБ», «2,3 ГБ», «12 ГБ». */
+export function formatSize(bytes: number): string {
+  const units = ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'];
+  let value = bytes;
+  let i = 0;
+  while (value >= 1024 && i < units.length - 1) {
+    value /= 1024;
+    i++;
+  }
+  const text = value < 10 && i > 0 ? value.toFixed(1).replace('.', ',').replace(/,0$/, '') : String(Math.round(value));
+  return `${text} ${units[i]}`;
+}
+
+/** 1 файл, 2 файла, 5 файлов. */
+export function plural(n: number, forms: readonly [string, string, string]): string {
+  const tens = n % 100;
+  const ones = n % 10;
+  if (tens >= 11 && tens <= 14) return forms[2];
+  if (ones === 1) return forms[0];
+  if (ones >= 2 && ones <= 4) return forms[1];
+  return forms[2];
+}
+
+const UNITS = {
+  video: ['видео', 'видео', 'видео'],
+  file: ['файл', 'файла', 'файлов'],
+} as const;
+
+/**
+ * «осталось 12 видео · ≈ 3 ч 20 мин · ≈ 2,3 ГБ»: время и размер — только когда длительность
+ * известна у всех оставшихся; пока список канала не получен — «подсчитывается…». Каждый
+ * вариант — целая строка с подстановками.
+ */
+export function remainingText(remaining: Remaining, unit: keyof typeof UNITS): string {
+  const count = remaining.count;
+  const items = plural(count, UNITS[unit]);
+  if (remaining.counting) return count ? `осталось ${count} ${items} · подсчитывается…` : 'подсчитывается…';
+  if (!count) return 'ничего не осталось';
+  if (remaining.seconds == null) return `осталось ${count} ${items}`;
+  const time = formatDuration(remaining.seconds);
+  if (remaining.frees != null) return `осталось ${count} ${items} · ${time} · ≈ освободится ${formatSize(remaining.frees)}`;
+  if (remaining.bytes == null) return `осталось ${count} ${items} · ${time}`;
+  const size = formatSize(remaining.bytes);
+  return remaining.approximate ? `осталось ${count} ${items} · ${time} · ≈ ${size} (приблизительно)` : `осталось ${count} ${items} · ${time} · ≈ ${size}`;
+}
