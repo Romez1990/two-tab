@@ -1627,7 +1627,7 @@ export interface components {
              */
             key: string;
         };
-        Node: components["schemas"]["TermNode"] | components["schemas"]["AndNode"] | components["schemas"]["OrNode"] | components["schemas"]["NotNode"];
+        Node: components["schemas"]["TermNode"] | components["schemas"]["SourceNode"] | components["schemas"]["AndNode"] | components["schemas"]["OrNode"] | components["schemas"]["NotNode"];
         /** NotNode */
         NotNode: {
             /**
@@ -1804,6 +1804,19 @@ export interface components {
          * @enum {string}
          */
         Sort: "relevance" | "date";
+        /** SourceNode */
+        SourceNode: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            op: "source";
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "open" | "saved" | "archive" | "closed" | "snapshot";
+        };
         /** SubfolderModel */
         SubfolderModel: {
             /** Name */
@@ -1894,7 +1907,7 @@ export interface components {
              * Field
              * @enum {string}
              */
-            field: "name" | "path" | "url";
+            field: "name" | "path" | "url" | "title" | "channel" | "song" | "group" | "any";
             /** Text */
             text: string;
             /**

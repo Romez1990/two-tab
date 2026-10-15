@@ -2900,6 +2900,7 @@ components:
     Node:
       oneOf:
       - $ref: '#/components/schemas/TermNode'
+      - $ref: '#/components/schemas/SourceNode'
       - $ref: '#/components/schemas/AndNode'
       - $ref: '#/components/schemas/OrNode'
       - $ref: '#/components/schemas/NotNode'
@@ -2909,6 +2910,7 @@ components:
           and: '#/components/schemas/AndNode'
           not: '#/components/schemas/NotNode'
           or: '#/components/schemas/OrNode'
+          source: '#/components/schemas/SourceNode'
           term: '#/components/schemas/TermNode'
     NotNode:
       properties:
@@ -3173,6 +3175,26 @@ components:
       - relevance
       - date
       title: Sort
+    SourceNode:
+      properties:
+        op:
+          type: string
+          const: source
+          title: Op
+        source:
+          type: string
+          enum:
+          - open
+          - saved
+          - archive
+          - closed
+          - snapshot
+          title: Source
+      type: object
+      required:
+      - op
+      - source
+      title: SourceNode
     SubfolderModel:
       properties:
         name:
@@ -3309,6 +3331,11 @@ components:
           - name
           - path
           - url
+          - title
+          - channel
+          - song
+          - group
+          - any
           title: Field
         text:
           type: string
