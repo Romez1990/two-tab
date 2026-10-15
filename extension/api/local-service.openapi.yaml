@@ -363,7 +363,9 @@ paths:
       tags:
       - downloads
       summary: List Downloads
-      description: 'The queue: its pause, the counters and the groups; the videos come by pages.'
+      description: 'The queue: its pause, the counters, what is left and the groups; the videos come by
+
+        pages.'
       operationId: list_downloads
       responses:
         '200':
@@ -409,12 +411,15 @@ paths:
       tags:
       - downloads
       summary: Check Channel
+      description: 'The channel before queueing it; its list stays in memory for 10 minutes, so a recount
+
+        with other filters does not ask the site (downloader.md, section 6.0).'
       operationId: check_channel
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/local_service__schemas__downloads__CheckRequest'
+              $ref: '#/components/schemas/ChannelCheckRequest'
         required: true
       responses:
         '200':
@@ -427,14 +432,10 @@ paths:
           description: Wrong key
         '403':
           description: Not the connected extension
+        '422':
+          description: Wrong filter
         '502':
           description: The site did not answer
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
   /api/downloads/channel:
@@ -460,12 +461,8 @@ paths:
           description: Wrong key
         '403':
           description: Not the connected extension
-        '409':
-          description: Nothing new to download
         '422':
           description: Wrong folder, filter or preset edit
-        '502':
-          description: The site did not answer
       security:
       - HTTPBearer: []
   /api/downloads/items:
@@ -501,6 +498,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DownloadItemsModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Unknown filter
+  /api/downloads/items/next:
+    get:
+      tags:
+      - downloads
+      summary: Next Downloads Item
+      description: 'A click on a counter: the next video after `after` (without it — the first) with an
+        open
+
+        message of the kind (decision, unread, errors) among the filters, round the queue.'
+      operationId: next_downloads_item
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Kind
+      - name: after
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: After
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: string
+          default: active
+          title: Filter
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/NextItemModel'
+                - type: 'null'
+                title: Response Next Downloads Item
         '401':
           description: Wrong key
         '403':
@@ -1507,6 +1554,56 @@ paths:
           description: Not the connected extension
         '422':
           description: Unknown filter
+  /api/recompress/items/next:
+    get:
+      tags:
+      - recompress
+      summary: Next Recompress Item
+      description: 'A click on a counter: the next file after `after` (without it — the first) with an
+        open
+
+        message of the kind (decision, unread, errors) among the filters, round the queue.'
+      operationId: next_recompress_item
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Kind
+      - name: after
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: After
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: string
+          default: active
+          title: Filter
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/NextItemModel'
+                - type: 'null'
+                title: Response Next Recompress Item
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Unknown filter
   /api/recompress/messages/{message_id}/read:
     post:
       tags:
@@ -1944,6 +2041,28 @@ components:
       - since
       - muted
       title: CaseModel
+    ChannelCheckRequest:
+      properties:
+        url:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Url
+        cookies:
+          items:
+            $ref: '#/components/schemas/Cookie'
+          type: array
+          title: Cookies
+          default: []
+        filters:
+          $ref: '#/components/schemas/FiltersModel'
+          default:
+            from_end: false
+            music_only: false
+      type: object
+      required:
+      - url
+      title: ChannelCheckRequest
     ChannelCheckResponse:
       properties:
         title:
@@ -1955,6 +2074,11 @@ components:
         downloaded:
           type: integer
           title: Downloaded
+        matching:
+          type: integer
+          title: Matching
+          description: 'How many will be downloaded with the filters: they pass and are not downloaded
+            yet (downloader.md, section 6.0)'
         models:
           items:
             type: string
@@ -1980,6 +2104,7 @@ components:
       - title
       - videos
       - downloaded
+      - matching
       - models
       - found_by
       - folder
@@ -2175,6 +2300,12 @@ components:
           - type: number
           - type: 'null'
           title: Progress
+        eta_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Eta Seconds
+          description: Seconds left to download, from yt-dlp
         folder:
           type: string
           title: Folder
@@ -2285,6 +2416,12 @@ components:
           - type: number
           - type: 'null'
           title: Progress
+        eta_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Eta Seconds
+          description: Seconds left to download, from yt-dlp
         folder:
           type: string
           title: Folder
@@ -2338,6 +2475,9 @@ components:
           description: The pause of the whole queue, None — it goes
         counters:
           $ref: '#/components/schemas/CountersModel'
+        remaining:
+          $ref: '#/components/schemas/RemainingModel'
+          description: What is left of the whole queue
         groups:
           items:
             $ref: '#/components/schemas/GroupSummaryModel'
@@ -2347,6 +2487,7 @@ components:
       required:
       - pause
       - counters
+      - remaining
       - groups
       title: DownloadQueueModel
     DuplicateRequest:
@@ -2585,6 +2726,8 @@ components:
         finished:
           type: integer
           title: Finished
+        remaining:
+          $ref: '#/components/schemas/RemainingModel'
       type: object
       required:
       - id
@@ -2593,6 +2736,7 @@ components:
       - paused
       - videos
       - finished
+      - remaining
       title: GroupSummaryModel
       description: 'A group in the queue, without its videos: they come by pages (/api/downloads/items).'
     HTTPValidationError:
@@ -2640,6 +2784,18 @@ components:
           - type: string
           - type: 'null'
           title: Finished At
+        estimate_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Estimate Seconds
+          description: Recompression time estimate, made when the job was created
+        estimate_frees:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Estimate Frees
+          description: How many bytes it will free, an estimate
         messages:
           items:
             $ref: '#/components/schemas/QueueMessageModel'
@@ -2734,18 +2890,9 @@ components:
           - $ref: '#/components/schemas/MessageModel'
           - type: 'null'
           description: Why the job stopped
-        estimate_seconds:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Estimate Seconds
-          description: Estimate made when the job was created
-        estimate_frees:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Estimate Frees
-          description: How many bytes it will free, an estimate
+        remaining:
+          $ref: '#/components/schemas/RemainingModel'
+          description: Files left, by the estimates made when the job was created (recompress.md, 2.12.1)
         created_at:
           type: string
           title: Created At
@@ -2770,8 +2917,7 @@ components:
       - current
       - progress
       - error
-      - estimate_seconds
-      - estimate_frees
+      - remaining
       - created_at
       - finished_at
       title: JobModel
@@ -2897,6 +3043,21 @@ components:
       - connected_at
       - key
       title: NewConnection
+    NextItemModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        page:
+          type: integer
+          title: Page
+          description: The page of the item under the filters, from 0
+      type: object
+      required:
+      - id
+      - page
+      title: NextItemModel
+      description: 'For a click on a counter: the next item with such a message and its page.'
     Node:
       oneOf:
       - $ref: '#/components/schemas/TermNode'
@@ -3103,6 +3264,9 @@ components:
           description: The pause of the whole queue, None — it goes
         counters:
           $ref: '#/components/schemas/CountersModel'
+        remaining:
+          $ref: '#/components/schemas/RemainingModel'
+          description: What is left of the whole queue
         jobs:
           items:
             $ref: '#/components/schemas/JobModel'
@@ -3112,8 +3276,47 @@ components:
       required:
       - pause
       - counters
+      - remaining
       - jobs
       title: RecompressQueueModel
+    RemainingModel:
+      properties:
+        count:
+          type: integer
+          title: Count
+          description: Videos or files left
+        counting:
+          type: boolean
+          title: Counting
+          description: The list of a channel is not got yet
+          default: false
+        seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Seconds
+          description: Recompression time left; None — a duration is unknown
+        bytes:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bytes
+          description: How much the compressed videos will take
+        frees:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Frees
+          description: How much the recompression frees
+        approximate:
+          type: boolean
+          title: Approximate
+          default: false
+      type: object
+      required:
+      - count
+      title: RemainingModel
+      description: What is left of a group, a job or a whole queue (recompress.md, section 2.12.1).
     SearchRequest:
       properties:
         query:

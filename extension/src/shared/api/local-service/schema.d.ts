@@ -170,7 +170,8 @@ export interface paths {
         };
         /**
          * List Downloads
-         * @description The queue: its pause, the counters and the groups; the videos come by pages.
+         * @description The queue: its pause, the counters, what is left and the groups; the videos come by
+         *     pages.
          */
         get: operations["list_downloads"];
         put?: never;
@@ -191,7 +192,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Check Channel */
+        /**
+         * Check Channel
+         * @description The channel before queueing it; its list stays in memory for 10 minutes, so a recount
+         *     with other filters does not ask the site (downloader.md, section 6.0).
+         */
         post: operations["check_channel"];
         delete?: never;
         options?: never;
@@ -229,6 +234,27 @@ export interface paths {
          *     unread, errors, done; several through commas.
          */
         get: operations["list_download_items"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/items/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Next Downloads Item
+         * @description A click on a counter: the next video after `after` (without it — the first) with an open
+         *     message of the kind (decision, unread, errors) among the filters, round the queue.
+         */
+        get: operations["next_downloads_item"];
         put?: never;
         post?: never;
         delete?: never;
@@ -766,6 +792,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/recompress/items/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Next Recompress Item
+         * @description A click on a counter: the next file after `after` (without it — the first) with an open
+         *     message of the kind (decision, unread, errors) among the filters, round the queue.
+         */
+        get: operations["next_recompress_item"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/recompress/messages/{message_id}/read": {
         parameters: {
             query?: never;
@@ -1042,6 +1089,23 @@ export interface components {
              */
             muted: boolean;
         };
+        /** ChannelCheckRequest */
+        ChannelCheckRequest: {
+            /** Url */
+            url: string;
+            /**
+             * Cookies
+             * @default []
+             */
+            cookies: components["schemas"]["Cookie"][];
+            /**
+             * @default {
+             *       "from_end": false,
+             *       "music_only": false
+             *     }
+             */
+            filters: components["schemas"]["FiltersModel"];
+        };
         /** ChannelCheckResponse */
         ChannelCheckResponse: {
             /** Title */
@@ -1050,6 +1114,11 @@ export interface components {
             videos: number;
             /** Downloaded */
             downloaded: number;
+            /**
+             * Matching
+             * @description How many will be downloaded with the filters: they pass and are not downloaded yet (downloader.md, section 6.0)
+             */
+            matching: number;
             /** Models */
             models: string[];
             /** Found By */
@@ -1194,6 +1263,11 @@ export interface components {
             error: components["schemas"]["MessageModel"] | null;
             /** Progress */
             progress: number | null;
+            /**
+             * Eta Seconds
+             * @description Seconds left to download, from yt-dlp
+             */
+            eta_seconds?: number | null;
             /** Folder */
             folder: string;
             /** File Path */
@@ -1253,6 +1327,11 @@ export interface components {
             error: components["schemas"]["MessageModel"] | null;
             /** Progress */
             progress: number | null;
+            /**
+             * Eta Seconds
+             * @description Seconds left to download, from yt-dlp
+             */
+            eta_seconds?: number | null;
             /** Folder */
             folder: string;
             /** File Path */
@@ -1283,6 +1362,8 @@ export interface components {
             /** @description The pause of the whole queue, None — it goes */
             pause: components["schemas"]["PauseModel"] | null;
             counters: components["schemas"]["CountersModel"];
+            /** @description What is left of the whole queue */
+            remaining: components["schemas"]["RemainingModel"];
             /** Groups */
             groups: components["schemas"]["GroupSummaryModel"][];
         };
@@ -1454,6 +1535,7 @@ export interface components {
             videos: number;
             /** Finished */
             finished: number;
+            remaining: components["schemas"]["RemainingModel"];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1487,6 +1569,16 @@ export interface components {
             size_after: number | null;
             /** Finished At */
             finished_at: string | null;
+            /**
+             * Estimate Seconds
+             * @description Recompression time estimate, made when the job was created
+             */
+            estimate_seconds?: number | null;
+            /**
+             * Estimate Frees
+             * @description How many bytes it will free, an estimate
+             */
+            estimate_frees?: number | null;
             /** Messages */
             messages: components["schemas"]["QueueMessageModel"][];
         };
@@ -1531,16 +1623,8 @@ export interface components {
             progress: number | null;
             /** @description Why the job stopped */
             error: components["schemas"]["MessageModel"] | null;
-            /**
-             * Estimate Seconds
-             * @description Estimate made when the job was created
-             */
-            estimate_seconds: number | null;
-            /**
-             * Estimate Frees
-             * @description How many bytes it will free, an estimate
-             */
-            estimate_frees: number | null;
+            /** @description Files left, by the estimates made when the job was created (recompress.md, 2.12.1) */
+            remaining: components["schemas"]["RemainingModel"];
             /** Created At */
             created_at: string;
             /** Finished At */
@@ -1626,6 +1710,19 @@ export interface components {
              * @description Secret key for the Authorization header; given only once
              */
             key: string;
+        };
+        /**
+         * NextItemModel
+         * @description For a click on a counter: the next item with such a message and its page.
+         */
+        NextItemModel: {
+            /** Id */
+            id: number;
+            /**
+             * Page
+             * @description The page of the item under the filters, from 0
+             */
+            page: number;
         };
         Node: components["schemas"]["TermNode"] | components["schemas"]["SourceNode"] | components["schemas"]["AndNode"] | components["schemas"]["OrNode"] | components["schemas"]["NotNode"];
         /** NotNode */
@@ -1759,8 +1856,47 @@ export interface components {
             /** @description The pause of the whole queue, None — it goes */
             pause: components["schemas"]["PauseModel"] | null;
             counters: components["schemas"]["CountersModel"];
+            /** @description What is left of the whole queue */
+            remaining: components["schemas"]["RemainingModel"];
             /** Jobs */
             jobs: components["schemas"]["JobModel"][];
+        };
+        /**
+         * RemainingModel
+         * @description What is left of a group, a job or a whole queue (recompress.md, section 2.12.1).
+         */
+        RemainingModel: {
+            /**
+             * Count
+             * @description Videos or files left
+             */
+            count: number;
+            /**
+             * Counting
+             * @description The list of a channel is not got yet
+             * @default false
+             */
+            counting: boolean;
+            /**
+             * Seconds
+             * @description Recompression time left; None — a duration is unknown
+             */
+            seconds?: number | null;
+            /**
+             * Bytes
+             * @description How much the compressed videos will take
+             */
+            bytes?: number | null;
+            /**
+             * Frees
+             * @description How much the recompression frees
+             */
+            frees?: number | null;
+            /**
+             * Approximate
+             * @default false
+             */
+            approximate: boolean;
         };
         /** SearchRequest */
         SearchRequest: {
@@ -2772,7 +2908,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["local_service__schemas__downloads__CheckRequest"];
+                "application/json": components["schemas"]["ChannelCheckRequest"];
             };
         };
         responses: {
@@ -2799,14 +2935,12 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Validation Error */
+            /** @description Wrong filter */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
+                content?: never;
             };
             /** @description The site did not answer */
             502: {
@@ -2853,22 +2987,8 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Nothing new to download */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Wrong folder, filter or preset edit */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The site did not answer */
-            502: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2895,6 +3015,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DownloadItemsModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown filter */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    next_downloads_item: {
+        parameters: {
+            query: {
+                kind: string;
+                after?: number | null;
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NextItemModel"] | null;
                 };
             };
             /** @description Wrong key */
@@ -4551,6 +4716,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobFilesModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown filter */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    next_recompress_item: {
+        parameters: {
+            query: {
+                kind: string;
+                after?: number | null;
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NextItemModel"] | null;
                 };
             };
             /** @description Wrong key */
