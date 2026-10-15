@@ -168,7 +168,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Downloads */
+        /**
+         * List Downloads
+         * @description The queue: its pause, the counters and the groups; the videos come by pages.
+         */
         get: operations["list_downloads"];
         put?: never;
         /** Enqueue Download */
@@ -207,6 +210,47 @@ export interface paths {
         put?: never;
         /** Enqueue Channel */
         post: operations["enqueue_channel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Download Items
+         * @description A page of the videos matching the filters (recompress.md, section 6.5): active, decision,
+         *     unread, errors, done; several through commas.
+         */
+        get: operations["list_download_items"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/messages/{message_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Read Download Message
+         * @description «Прочитано» at an information or an error.
+         */
+        post: operations["read_download_message"];
         delete?: never;
         options?: never;
         head?: never;
@@ -463,6 +507,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/downloads/{download_id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Duplicate
+         * @description The decision at «Найден дубликат» (downloader.md, section 5.1).
+         */
+        post: operations["decide_duplicate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/messages/{message_id}/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open Message Video
+         * @description «Открыть» the archive video of a duplicate message.
+         */
+        post: operations["open_message_video"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/messages/{message_id}/show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Show Message Video
+         * @description «Показать в папке» the archive video of a duplicate message.
+         */
+        post: operations["show_message_video"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/downloads/messages/{message_id}/play": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Play Message Video
+         * @description «Воспроизвести с этого места»: VLC from the timecode of a part or a shared piece.
+         */
+        post: operations["play_message_video"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/downloads/categories": {
         parameters: {
             query?: never;
@@ -622,6 +746,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/recompress/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Recompress Items
+         * @description A page of the files of the jobs matching the filters (recompress.md, section 6.5).
+         */
+        get: operations["list_recompress_items"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/recompress/messages/{message_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Read Recompress Message
+         * @description «Прочитано» at an information or an error.
+         */
+        post: operations["read_recompress_message"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/recompress/pause": {
         parameters: {
             query?: never;
@@ -642,7 +806,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/recompress/{job_id}/retry": {
+    "/api/recompress/files/{file_id}/retry": {
         parameters: {
             query?: never;
             header?: never;
@@ -652,17 +816,17 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Retry Recompress
-         * @description «Повторить» the video that stopped the queue with an error (strict order).
+         * Retry Recompress File
+         * @description «Повторить» a file with an error; its error pause is taken off (strict order).
          */
-        post: operations["retry_recompress"];
+        post: operations["retry_recompress_file"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/recompress/{job_id}/skip": {
+    "/api/recompress/files/{file_id}/skip": {
         parameters: {
             query?: never;
             header?: never;
@@ -672,10 +836,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Skip Recompress
-         * @description «Пропустить»: the video stays with its error, the job goes on.
+         * Skip Recompress File
+         * @description «Пропустить»: the file stays with its error, the queue goes on.
          */
-        post: operations["skip_recompress"];
+        post: operations["skip_recompress_file"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1000,6 +1164,77 @@ export interface components {
                 [key: string]: components["schemas"]["Cookie"][];
             };
         };
+        /**
+         * CountersModel
+         * @description The counters at the top of a queue: open messages by kind.
+         */
+        CountersModel: {
+            /** Decisions */
+            decisions: number;
+            /** Unread */
+            unread: number;
+            /** Errors */
+            errors: number;
+        };
+        /** DownloadItemModel */
+        DownloadItemModel: {
+            /** Id */
+            id: number;
+            /** Url */
+            url: string;
+            /** Title */
+            title: string | null;
+            /** Channel */
+            channel: string | null;
+            /** Published At */
+            published_at: string | null;
+            /** State */
+            state: string;
+            /** @description Code and text (docs/codes.md, section 2) */
+            error: components["schemas"]["MessageModel"] | null;
+            /** Progress */
+            progress: number | null;
+            /** Folder */
+            folder: string;
+            /** File Path */
+            file_path: string | null;
+            /**
+             * Original Path
+             * @description The original kept for now: «waits for the original to be deleted», downloader.md section 2.2
+             */
+            original_path?: string | null;
+            /**
+             * Compress Seconds
+             * @description Recompression time estimate, recompress.md section 2.12.1
+             */
+            compress_seconds?: number | null;
+            /**
+             * Compress Bytes
+             * @description How much the compressed video will take, an estimate
+             */
+            compress_bytes?: number | null;
+            /**
+             * Compress Approximate
+             * @default false
+             */
+            compress_approximate: boolean;
+            /** Group Id */
+            group_id: number;
+            /** Messages */
+            messages: components["schemas"]["QueueMessageModel"][];
+        };
+        /** DownloadItemsModel */
+        DownloadItemsModel: {
+            /** Items */
+            items: components["schemas"]["DownloadItemModel"][];
+            /**
+             * Total
+             * @description How many videos match the filters
+             */
+            total: number;
+            /** Page Size */
+            page_size: number;
+        };
         /** DownloadModel */
         DownloadModel: {
             /** Id */
@@ -1014,8 +1249,8 @@ export interface components {
             published_at: string | null;
             /** State */
             state: string;
-            /** Error */
-            error: string | null;
+            /** @description Code and text (docs/codes.md, section 2) */
+            error: components["schemas"]["MessageModel"] | null;
             /** Progress */
             progress: number | null;
             /** Folder */
@@ -1029,9 +1264,14 @@ export interface components {
             original_path?: string | null;
             /**
              * Compress Seconds
-             * @description Recompression time estimate, recompress.md section 2.12
+             * @description Recompression time estimate, recompress.md section 2.12.1
              */
             compress_seconds?: number | null;
+            /**
+             * Compress Bytes
+             * @description How much the compressed video will take, an estimate
+             */
+            compress_bytes?: number | null;
             /**
              * Compress Approximate
              * @default false
@@ -1042,8 +1282,18 @@ export interface components {
         DownloadQueueModel: {
             /** @description The pause of the whole queue, None — it goes */
             pause: components["schemas"]["PauseModel"] | null;
+            counters: components["schemas"]["CountersModel"];
             /** Groups */
-            groups: components["schemas"]["GroupModel"][];
+            groups: components["schemas"]["GroupSummaryModel"][];
+        };
+        /** DuplicateRequest */
+        DuplicateRequest: {
+            /**
+             * Keep
+             * @description old — the new video to the trash; new — the old one; both — not duplicates
+             * @enum {string}
+             */
+            keep: "old" | "new" | "both";
         };
         /** EnqueueRequest */
         EnqueueRequest: {
@@ -1100,6 +1350,16 @@ export interface components {
              * @description Without a confirmation in the job the file is left as it is
              */
             needs_confirmation: boolean;
+            /**
+             * Seconds
+             * @description Estimate of the encoding, recompress.md section 2.12.1
+             */
+            seconds: number;
+            /**
+             * Frees
+             * @description How many bytes it will free, an estimate
+             */
+            frees: number;
         };
         /**
          * FiltersModel
@@ -1177,10 +1437,67 @@ export interface components {
             /** Downloads */
             downloads: components["schemas"]["DownloadModel"][];
         };
+        /**
+         * GroupSummaryModel
+         * @description A group in the queue, without its videos: they come by pages (/api/downloads/items).
+         */
+        GroupSummaryModel: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Kind */
+            kind: string;
+            /** Paused */
+            paused: boolean;
+            /** Videos */
+            videos: number;
+            /** Finished */
+            finished: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * JobFileModel
+         * @description A file of a job in the history (recompress.md, section 6.5).
+         */
+        JobFileModel: {
+            /** Id */
+            id: number;
+            /** Job Id */
+            job_id: number;
+            /** Path */
+            path: string;
+            /**
+             * State
+             * @description queued, running, done or error
+             */
+            state: string;
+            /**
+             * Outcome
+             * @description docs/codes.md, section 1; None — not touched
+             */
+            outcome: string | null;
+            /** Size Before */
+            size_before: number | null;
+            /** Size After */
+            size_after: number | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Messages */
+            messages: components["schemas"]["QueueMessageModel"][];
+        };
+        /** JobFilesModel */
+        JobFilesModel: {
+            /** Items */
+            items: components["schemas"]["JobFileModel"][];
+            /** Total */
+            total: number;
+            /** Page Size */
+            page_size: number;
         };
         /** JobModel */
         JobModel: {
@@ -1208,14 +1525,22 @@ export interface components {
             kept: number;
             /** Saved Bytes */
             saved_bytes: number;
-            /** Errors */
-            errors: string[][];
             /** Current */
             current: string | null;
             /** Progress */
             progress: number | null;
-            /** Error */
-            error: string | null;
+            /** @description Why the job stopped */
+            error: components["schemas"]["MessageModel"] | null;
+            /**
+             * Estimate Seconds
+             * @description Estimate made when the job was created
+             */
+            estimate_seconds: number | null;
+            /**
+             * Estimate Frees
+             * @description How many bytes it will free, an estimate
+             */
+            estimate_frees: number | null;
             /** Created At */
             created_at: string;
             /** Finished At */
@@ -1263,6 +1588,18 @@ export interface components {
              * @description Where the file is now; none — not downloaded
              */
             downloaded: string | null;
+        };
+        /**
+         * MessageModel
+         * @description A code kept in the database (docs/codes.md) and its Russian text.
+         */
+        MessageModel: {
+            /** Code */
+            code: string;
+            /** Detail */
+            detail?: string | null;
+            /** Text */
+            text: string;
         };
         /** ModelRequest */
         ModelRequest: {
@@ -1383,6 +1720,32 @@ export interface components {
             /** Is Default */
             is_default: boolean;
         };
+        /**
+         * QueueMessageModel
+         * @description A message at a video of a queue (recompress.md, section 6.5).
+         */
+        QueueMessageModel: {
+            /** Id */
+            id: number;
+            /**
+             * Kind
+             * @description decision (yellow), info (blue) or error (red)
+             */
+            kind: string;
+            /** Code */
+            code: string;
+            /** Detail */
+            detail: string | null;
+            /** Text */
+            text: string;
+            /** Created At */
+            created_at: string;
+            /**
+             * Done
+             * @description The decision is taken or «Прочитано» was pressed
+             */
+            done: boolean;
+        };
         /** QueuePauseRequest */
         QueuePauseRequest: {
             /**
@@ -1395,6 +1758,7 @@ export interface components {
         RecompressQueueModel: {
             /** @description The pause of the whole queue, None — it goes */
             pause: components["schemas"]["PauseModel"] | null;
+            counters: components["schemas"]["CountersModel"];
             /** Jobs */
             jobs: components["schemas"]["JobModel"][];
         };
@@ -1637,6 +2001,16 @@ export interface components {
             files: components["schemas"]["FileCheckModel"][];
             /** Not Indexed */
             not_indexed: number;
+            /**
+             * Seconds
+             * @description Estimate of the whole job
+             */
+            seconds: number;
+            /**
+             * Frees
+             * @description How many bytes the whole job will free, an estimate
+             */
+            frees: number;
         };
         /** StepsRequest */
         local_service__routes__recompress__StepsRequest: {
@@ -2489,6 +2863,107 @@ export interface operations {
             };
         };
     };
+    list_download_items: {
+        parameters: {
+            query?: {
+                filter?: string;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DownloadItemsModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown filter */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_download_message: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such group or download, or no file */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The action does not fit the state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     pause_downloads: {
         parameters: {
             query?: never;
@@ -3275,6 +3750,224 @@ export interface operations {
             };
         };
     };
+    decide_duplicate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                download_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DuplicateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such group or download, or no file */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No open «Найден дубликат», or «new» while the new video is compressed */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    open_message_video: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such message with an archive video, or the video is gone */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    show_message_video: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such message with an archive video, or the video is gone */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    play_message_video: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such message with an archive video, or the video is gone */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description VLC is not found */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     list_categories: {
         parameters: {
             query?: never;
@@ -3826,6 +4519,100 @@ export interface operations {
             };
         };
     };
+    list_recompress_items: {
+        parameters: {
+            query?: {
+                filter?: string;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobFilesModel"];
+                };
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown filter */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_recompress_message: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Wrong key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not the connected extension */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such message */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     pause_recompress_queue: {
         parameters: {
             query?: never;
@@ -3871,12 +4658,12 @@ export interface operations {
             };
         };
     };
-    retry_recompress: {
+    retry_recompress_file: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                job_id: number;
+                file_id: number;
             };
             cookie?: never;
         };
@@ -3903,14 +4690,14 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description No such job */
+            /** @description No such file */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description The job did not stop the queue */
+            /** @description The file has no error */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -3928,12 +4715,12 @@ export interface operations {
             };
         };
     };
-    skip_recompress: {
+    skip_recompress_file: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                job_id: number;
+                file_id: number;
             };
             cookie?: never;
         };
@@ -3960,14 +4747,14 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description No such job */
+            /** @description No such file */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description The job did not stop the queue */
+            /** @description The file has no error */
             409: {
                 headers: {
                     [name: string]: unknown;

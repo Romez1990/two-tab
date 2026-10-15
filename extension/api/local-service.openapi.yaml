@@ -363,6 +363,7 @@ paths:
       tags:
       - downloads
       summary: List Downloads
+      description: 'The queue: its pause, the counters and the groups; the videos come by pages.'
       operationId: list_downloads
       responses:
         '200':
@@ -467,6 +468,78 @@ paths:
           description: The site did not answer
       security:
       - HTTPBearer: []
+  /api/downloads/items:
+    get:
+      tags:
+      - downloads
+      summary: List Download Items
+      description: 'A page of the videos matching the filters (recompress.md, section 6.5): active, decision,
+
+        unread, errors, done; several through commas.'
+      operationId: list_download_items
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: string
+          default: active
+          title: Filter
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadItemsModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Unknown filter
+  /api/downloads/messages/{message_id}/read:
+    post:
+      tags:
+      - downloads
+      summary: Read Download Message
+      description: «Прочитано» at an information or an error.
+      operationId: read_download_message
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Message Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: The action does not fit the state
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/downloads/pause:
     put:
       tags:
@@ -928,6 +1001,140 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/{download_id}/duplicate:
+    post:
+      tags:
+      - downloads
+      summary: Decide Duplicate
+      description: The decision at «Найден дубликат» (downloader.md, section 5.1).
+      operationId: decide_duplicate
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: download_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Download Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DuplicateRequest'
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such group or download, or no file
+        '409':
+          description: No open «Найден дубликат», or «new» while the new video is compressed
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/messages/{message_id}/open:
+    post:
+      tags:
+      - downloads
+      summary: Open Message Video
+      description: «Открыть» the archive video of a duplicate message.
+      operationId: open_message_video
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Message Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such message with an archive video, or the video is gone
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/messages/{message_id}/show:
+    post:
+      tags:
+      - downloads
+      summary: Show Message Video
+      description: «Показать в папке» the archive video of a duplicate message.
+      operationId: show_message_video
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Message Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such message with an archive video, or the video is gone
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/downloads/messages/{message_id}/play:
+    post:
+      tags:
+      - downloads
+      summary: Play Message Video
+      description: '«Воспроизвести с этого места»: VLC from the timecode of a part or a shared piece.'
+      operationId: play_message_video
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Message Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such message with an archive video, or the video is gone
+        '503':
+          description: VLC is not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/downloads/categories:
     get:
       tags:
@@ -1263,6 +1470,74 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
+  /api/recompress/items:
+    get:
+      tags:
+      - recompress
+      summary: List Recompress Items
+      description: A page of the files of the jobs matching the filters (recompress.md, section 6.5).
+      operationId: list_recompress_items
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: string
+          default: active
+          title: Filter
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobFilesModel'
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '422':
+          description: Unknown filter
+  /api/recompress/messages/{message_id}/read:
+    post:
+      tags:
+      - recompress
+      summary: Read Recompress Message
+      description: «Прочитано» at an information or an error.
+      operationId: read_recompress_message
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Message Id
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Wrong key
+        '403':
+          description: Not the connected extension
+        '404':
+          description: No such message
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/recompress/pause:
     put:
       tags:
@@ -1291,22 +1566,22 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
-  /api/recompress/{job_id}/retry:
+  /api/recompress/files/{file_id}/retry:
     post:
       tags:
       - recompress
-      summary: Retry Recompress
-      description: «Повторить» the video that stopped the queue with an error (strict order).
-      operationId: retry_recompress
+      summary: Retry Recompress File
+      description: «Повторить» a file with an error; its error pause is taken off (strict order).
+      operationId: retry_recompress_file
       security:
       - HTTPBearer: []
       parameters:
-      - name: job_id
+      - name: file_id
         in: path
         required: true
         schema:
           type: integer
-          title: Job Id
+          title: File Id
       responses:
         '204':
           description: Successful Response
@@ -1315,31 +1590,31 @@ paths:
         '403':
           description: Not the connected extension
         '404':
-          description: No such job
+          description: No such file
         '409':
-          description: The job did not stop the queue
+          description: The file has no error
         '422':
           description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /api/recompress/{job_id}/skip:
+  /api/recompress/files/{file_id}/skip:
     post:
       tags:
       - recompress
-      summary: Skip Recompress
-      description: '«Пропустить»: the video stays with its error, the job goes on.'
-      operationId: skip_recompress
+      summary: Skip Recompress File
+      description: '«Пропустить»: the file stays with its error, the queue goes on.'
+      operationId: skip_recompress_file
       security:
       - HTTPBearer: []
       parameters:
-      - name: job_id
+      - name: file_id
         in: path
         required: true
         schema:
           type: integer
-          title: Job Id
+          title: File Id
       responses:
         '204':
           description: Successful Response
@@ -1348,9 +1623,9 @@ paths:
         '403':
           description: Not the connected extension
         '404':
-          description: No such job
+          description: No such file
         '409':
-          description: The job did not stop the queue
+          description: The file has no error
         '422':
           description: Validation Error
           content:
@@ -1846,6 +2121,134 @@ components:
       required:
       - sites
       title: CookiesRequest
+    CountersModel:
+      properties:
+        decisions:
+          type: integer
+          title: Decisions
+        unread:
+          type: integer
+          title: Unread
+        errors:
+          type: integer
+          title: Errors
+      type: object
+      required:
+      - decisions
+      - unread
+      - errors
+      title: CountersModel
+      description: 'The counters at the top of a queue: open messages by kind.'
+    DownloadItemModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        url:
+          type: string
+          title: Url
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        channel:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Channel
+        published_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Published At
+        state:
+          type: string
+          title: State
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/MessageModel'
+          - type: 'null'
+          description: Code and text (docs/codes.md, section 2)
+        progress:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Progress
+        folder:
+          type: string
+          title: Folder
+        file_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Path
+        original_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Original Path
+          description: 'The original kept for now: «waits for the original to be deleted», downloader.md
+            section 2.2'
+        compress_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Compress Seconds
+          description: Recompression time estimate, recompress.md section 2.12.1
+        compress_bytes:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Compress Bytes
+          description: How much the compressed video will take, an estimate
+        compress_approximate:
+          type: boolean
+          title: Compress Approximate
+          default: false
+        group_id:
+          type: integer
+          title: Group Id
+        messages:
+          items:
+            $ref: '#/components/schemas/QueueMessageModel'
+          type: array
+          title: Messages
+      type: object
+      required:
+      - id
+      - url
+      - title
+      - channel
+      - published_at
+      - state
+      - error
+      - progress
+      - folder
+      - file_path
+      - group_id
+      - messages
+      title: DownloadItemModel
+    DownloadItemsModel:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/DownloadItemModel'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+          description: How many videos match the filters
+        page_size:
+          type: integer
+          title: Page Size
+      type: object
+      required:
+      - items
+      - total
+      - page_size
+      title: DownloadItemsModel
     DownloadModel:
       properties:
         id:
@@ -1874,9 +2277,9 @@ components:
           title: State
         error:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/MessageModel'
           - type: 'null'
-          title: Error
+          description: Code and text (docs/codes.md, section 2)
         progress:
           anyOf:
           - type: number
@@ -1902,7 +2305,13 @@ components:
           - type: number
           - type: 'null'
           title: Compress Seconds
-          description: Recompression time estimate, recompress.md section 2.12
+          description: Recompression time estimate, recompress.md section 2.12.1
+        compress_bytes:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Compress Bytes
+          description: How much the compressed video will take, an estimate
         compress_approximate:
           type: boolean
           title: Compress Approximate
@@ -1927,16 +2336,33 @@ components:
           - $ref: '#/components/schemas/PauseModel'
           - type: 'null'
           description: The pause of the whole queue, None — it goes
+        counters:
+          $ref: '#/components/schemas/CountersModel'
         groups:
           items:
-            $ref: '#/components/schemas/GroupModel'
+            $ref: '#/components/schemas/GroupSummaryModel'
           type: array
           title: Groups
       type: object
       required:
       - pause
+      - counters
       - groups
       title: DownloadQueueModel
+    DuplicateRequest:
+      properties:
+        keep:
+          type: string
+          enum:
+          - old
+          - new
+          - both
+          title: Keep
+          description: old — the new video to the trash; new — the old one; both — not duplicates
+      type: object
+      required:
+      - keep
+      title: DuplicateRequest
     EnqueueRequest:
       properties:
         url:
@@ -2004,12 +2430,22 @@ components:
           type: boolean
           title: Needs Confirmation
           description: Without a confirmation in the job the file is left as it is
+        seconds:
+          type: number
+          title: Seconds
+          description: Estimate of the encoding, recompress.md section 2.12.1
+        frees:
+          type: integer
+          title: Frees
+          description: How many bytes it will free, an estimate
       type: object
       required:
       - path
       - action
       - notices
       - needs_confirmation
+      - seconds
+      - frees
       title: FileCheckModel
     FiltersModel:
       properties:
@@ -2129,6 +2565,36 @@ components:
       - paused
       - downloads
       title: GroupModel
+    GroupSummaryModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        kind:
+          type: string
+          title: Kind
+        paused:
+          type: boolean
+          title: Paused
+        videos:
+          type: integer
+          title: Videos
+        finished:
+          type: integer
+          title: Finished
+      type: object
+      required:
+      - id
+      - title
+      - kind
+      - paused
+      - videos
+      - finished
+      title: GroupSummaryModel
+      description: 'A group in the queue, without its videos: they come by pages (/api/downloads/items).'
     HTTPValidationError:
       properties:
         detail:
@@ -2138,6 +2604,79 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    JobFileModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        job_id:
+          type: integer
+          title: Job Id
+        path:
+          type: string
+          title: Path
+        state:
+          type: string
+          title: State
+          description: queued, running, done or error
+        outcome:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Outcome
+          description: docs/codes.md, section 1; None — not touched
+        size_before:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size Before
+        size_after:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size After
+        finished_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Finished At
+        messages:
+          items:
+            $ref: '#/components/schemas/QueueMessageModel'
+          type: array
+          title: Messages
+      type: object
+      required:
+      - id
+      - job_id
+      - path
+      - state
+      - outcome
+      - size_before
+      - size_after
+      - finished_at
+      - messages
+      title: JobFileModel
+      description: A file of a job in the history (recompress.md, section 6.5).
+    JobFilesModel:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/JobFileModel'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page_size:
+          type: integer
+          title: Page Size
+      type: object
+      required:
+      - items
+      - total
+      - page_size
+      title: JobFilesModel
     JobModel:
       properties:
         id:
@@ -2180,13 +2719,6 @@ components:
         saved_bytes:
           type: integer
           title: Saved Bytes
-        errors:
-          items:
-            items:
-              type: string
-            type: array
-          type: array
-          title: Errors
         current:
           anyOf:
           - type: string
@@ -2199,9 +2731,21 @@ components:
           title: Progress
         error:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/MessageModel'
           - type: 'null'
-          title: Error
+          description: Why the job stopped
+        estimate_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Estimate Seconds
+          description: Estimate made when the job was created
+        estimate_frees:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Estimate Frees
+          description: How many bytes it will free, an estimate
         created_at:
           type: string
           title: Created At
@@ -2223,10 +2767,11 @@ components:
       - compressed
       - kept
       - saved_bytes
-      - errors
       - current
       - progress
       - error
+      - estimate_seconds
+      - estimate_frees
       - created_at
       - finished_at
       title: JobModel
@@ -2291,6 +2836,25 @@ components:
       required:
       - downloaded
       title: KnownResponse
+    MessageModel:
+      properties:
+        code:
+          type: string
+          title: Code
+        detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Detail
+        text:
+          type: string
+          title: Text
+      type: object
+      required:
+      - code
+      - text
+      title: MessageModel
+      description: A code kept in the database (docs/codes.md) and its Russian text.
     ModelRequest:
       properties:
         category:
@@ -2480,6 +3044,44 @@ components:
       - id
       - is_default
       title: PresetResponse
+    QueueMessageModel:
+      properties:
+        id:
+          type: integer
+          title: Id
+        kind:
+          type: string
+          title: Kind
+          description: decision (yellow), info (blue) or error (red)
+        code:
+          type: string
+          title: Code
+        detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Detail
+        text:
+          type: string
+          title: Text
+        created_at:
+          type: string
+          title: Created At
+        done:
+          type: boolean
+          title: Done
+          description: The decision is taken or «Прочитано» was pressed
+      type: object
+      required:
+      - id
+      - kind
+      - code
+      - detail
+      - text
+      - created_at
+      - done
+      title: QueueMessageModel
+      description: A message at a video of a queue (recompress.md, section 6.5).
     QueuePauseRequest:
       properties:
         paused:
@@ -2497,6 +3099,8 @@ components:
           - $ref: '#/components/schemas/PauseModel'
           - type: 'null'
           description: The pause of the whole queue, None — it goes
+        counters:
+          $ref: '#/components/schemas/CountersModel'
         jobs:
           items:
             $ref: '#/components/schemas/JobModel'
@@ -2505,6 +3109,7 @@ components:
       type: object
       required:
       - pause
+      - counters
       - jobs
       title: RecompressQueueModel
     SearchRequest:
@@ -2916,10 +3521,20 @@ components:
         not_indexed:
           type: integer
           title: Not Indexed
+        seconds:
+          type: number
+          title: Seconds
+          description: Estimate of the whole job
+        frees:
+          type: integer
+          title: Frees
+          description: How many bytes the whole job will free, an estimate
       type: object
       required:
       - files
       - not_indexed
+      - seconds
+      - frees
       title: CheckResponse
     local_service__routes__recompress__StepsRequest:
       properties:
