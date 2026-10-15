@@ -1,14 +1,14 @@
 import type { SavedItem } from '@/entities/saved';
 
 /**
- * «Дубликаты» (docs/extension/pages/duplicates.md): открытые и сохранённые вкладки с одинаковым адресом.
- * Одинаковые — по ключу страницы, как `page_key` в tidy-reel/docs/web_links.md, раздел 5.
+ * "Duplicates" (docs/extension/pages/duplicates.md): open and saved tabs with the same address.
+ * Same means the same page key, like `page_key` in tidy-reel/docs/web_links.md, section 5.
  */
 
-/** Метки и хвосты адреса, которые не меняют страницу (как TRACKING_KEYS в web_links.py). */
+/** Address tags and tails that do not change the page (like TRACKING_KEYS in web_links.py). */
 const TRACKING = new Set(['lang', 'order', 'igsh', 'igshid', 'is_from_webapp', 'sender_device', '_t', '_r', 'from']);
 
-/** Ключ страницы: без `#…`, меток, `www.`, разницы `http`/`https`, регистра и последнего `/`. */
+/** Page key: without `#…`, tags, `www.`, the `http`/`https` difference, case and the trailing `/`. */
 export function duplicateKey(url: string): string | undefined {
   let parsed: URL;
   try {
@@ -39,7 +39,7 @@ export interface OpenTab {
   url: string;
 }
 
-/** Группы одинаковых, от самых повторяющихся; окна нумеруются по порядку, с 1. */
+/** Groups of duplicates, most repeated first; windows are numbered in order, from 1. */
 export function findDuplicates(open: readonly OpenTab[], saved: readonly SavedItem[]): Duplicate[] {
   const byKey = new Map<string, Copy[]>();
   const windowNumbers = new Map<number, number>();
@@ -71,7 +71,7 @@ export function findDuplicates(open: readonly OpenTab[], saved: readonly SavedIt
     .sort((a, b) => b.copies.length - a.copies.length || a.key.localeCompare(b.key));
 }
 
-/** Где копия: «Открыта, окно 3», «Сохранена, группа „Музыка“». */
+/** Where the copy is, like "Open, window 3" or "Saved, group 'Music'" (shown in Russian). */
 export function placeOf(copy: Copy): string {
   return copy.kind === 'open' ? `Открыта, окно ${copy.windowNumber}` : `Сохранена, группа «${copy.place || 'без названия'}»`;
 }

@@ -1,9 +1,9 @@
 import { DAY, dayKey, hourKey, monthKey } from '@/shared/lib';
 
 /**
- * Какие снимки истории удалить (docs/extension/pages/recovery.md, раздел 1):
- * до суток — все, до 7 дней — один за час, до 30 дней — один за день, старше — один за месяц.
- * В каждом промежутке остаётся самый поздний снимок.
+ * Which history snapshots to delete (docs/extension/pages/recovery.md, section 1):
+ * up to a day all of them, up to 7 days one per hour, up to 30 days one per day, older one per month.
+ * The latest snapshot of each interval stays.
  */
 export function snapshotsToDelete(items: readonly { id: number; takenAt: number }[], now: number): number[] {
   const kept = new Set<string>();

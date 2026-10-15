@@ -4,7 +4,7 @@ import { toSnapshotWindow } from '@/entities/snapshot';
 import { getWindowUids, newWindowUid } from '@/entities/window';
 import { browser } from '@/shared/browser';
 
-/** Сохранить и закрыть окно (docs/extension/pages/saved.md, раздел 1). */
+/** Save and close a window (docs/extension/pages/saved.md, section 1). */
 export async function saveAndCloseWindow(windowId: number, reason: SavedItem['reason'] = 'manual'): Promise<SavedItem> {
   const [window, groups, uids] = await Promise.all([
     browser.windows.get(windowId, { populate: true }),
@@ -26,7 +26,7 @@ export async function saveAndCloseWindow(windowId: number, reason: SavedItem['re
   return item;
 }
 
-/** Сохранить и закрыть группу вкладок. Если в окне больше ничего нет, окно закрывается вместе с ней. */
+/** Save and close a tab group. If nothing else is left in the window, the window closes with it. */
 export async function saveAndCloseGroup(groupId: number, reason: SavedItem['reason'] = 'manual'): Promise<SavedItem> {
   const group = await browser.tabGroups.get(groupId);
   const [window, tabs, uids] = await Promise.all([

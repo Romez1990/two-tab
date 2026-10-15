@@ -1,17 +1,17 @@
 import type { SavedItem } from './types';
 
-/** Сохранённое окно или группа, где есть вкладка с этим адресом (docs/extension/pages/saved.md, раздел 1). */
+/** A saved window or group that has a tab with this address (docs/extension/pages/saved.md, section 1). */
 export interface SavedMatch {
   id: string;
   kind: SavedItem['kind'];
-  /** Название записи, а без него — заголовок первой вкладки. */
+  /** Record name, or the title of the first tab when there is none. */
   title: string;
   color?: string;
   tabs: number;
   savedAt: number;
 }
 
-/** Адрес для сравнения: без части после `#`. */
+/** Address for comparison: without the part after `#`. */
 export function pageKey(url: string): string {
   const i = url.indexOf('#');
   return i < 0 ? url : url.slice(0, i);

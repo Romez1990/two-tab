@@ -11,7 +11,7 @@ import { browser } from '@/shared/browser';
 import { formatDateTime } from '@/shared/lib';
 import type { RunAction } from './RecoveryPage';
 
-/** Вкладки, закрытые по одной; хранятся 30 дней. */
+/** Tabs closed one by one; kept for 30 days. */
 export function ClosedTabsList({ tabs, run }: { tabs: ClosedTab[]; run: RunAction }) {
   if (tabs.length === 0) return <Alert severity="info">Закрытых вкладок нет. Они хранятся 30 дней.</Alert>;
   return (

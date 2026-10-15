@@ -6,7 +6,7 @@ import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
 import { matches, relevance, type Condition, type SearchDoc, type SearchSource } from '@/shared/lib';
 
-/** Источники поиска (docs/extension/pages/search.md, раздел 1). */
+/** Search sources (docs/extension/pages/search.md, section 1). */
 export type Source = SearchSource;
 
 export const SOURCE_TITLES: Record<Source, string> = {
@@ -36,7 +36,7 @@ export type Found =
 
 export type Sort = 'relevance' | 'date';
 
-/** Сколько видео архива забирается за один поиск: страница сервиса — до 200. */
+/** How many archive videos one search takes: a service page holds up to 200. */
 const ARCHIVE_LIMIT = 1000;
 const ARCHIVE_PAGE = 200;
 
@@ -96,7 +96,7 @@ async function closedTabs(query: Condition): Promise<Found[]> {
 }
 
 async function snapshotTabs(query: Condition): Promise<Found[]> {
-  // Одна и та же вкладка есть во многих снимках: показывается один раз, с датой последнего снимка.
+  // The same tab is in many snapshots: it is shown once, with the date of the latest snapshot.
   const byUrl = new Map<string, Found>();
   for (const snapshot of await listHistory()) {
     for (const window of snapshot.windows) {
@@ -116,7 +116,7 @@ async function snapshotTabs(query: Condition): Promise<Found[]> {
   return [...byUrl.values()];
 }
 
-/** Имя файла из пути архива. */
+/** File name from an archive path. */
 export function fileName(path: string): string {
   return path.split(/[\\/]/).pop() ?? path;
 }
@@ -152,12 +152,12 @@ async function archive(query: Condition): Promise<{ found: Found[]; total: numbe
 
 export interface SearchOutcome {
   results: Found[];
-  /** Видео архива всего; показаны не больше ARCHIVE_LIMIT. */
+  /** Archive videos in total; at most ARCHIVE_LIMIT are shown. */
   archiveTotal: number;
   archiveError?: string;
 }
 
-/** Поиск по выбранным источникам и один общий список. */
+/** Search over the selected sources as one combined list. */
 export async function search(query: Condition, sources: readonly Source[], sort: Sort): Promise<SearchOutcome> {
   const collectors: Partial<Record<Source, (q: Condition) => Promise<Found[]>>> = {
     open: openTabs,

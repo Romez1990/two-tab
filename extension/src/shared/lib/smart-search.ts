@@ -1,12 +1,12 @@
 /**
- * «Умный поиск» (docs/extension/pages/search.md, раздел 2): запрос разбирается в дерево условий один
- * раз. Вкладки расширение проверяет само, а дерево архива отправляет локальному сервису — формат тот
- * же, что у `POST /api/archive/search` (tidy-reel/docs/local_service/local_service.md, раздел 7.2).
+ * "Smart search" (docs/extension/pages/search.md, section 2): the query is parsed into a condition tree
+ * once. The extension checks tabs itself and sends the archive tree to the local service, in the same
+ * format as `POST /api/archive/search` (tidy-reel/docs/local_service/local_service.md, section 7.2).
  */
 
 export type Field = 'name' | 'path' | 'url' | 'title' | 'channel' | 'song' | 'group' | 'any';
 
-/** Источники поиска (docs/extension/pages/search.md, раздел 1) — значения `source:`. */
+/** Search sources (docs/extension/pages/search.md, section 1), the values of `source:`. */
 export type SearchSource = 'open' | 'saved' | 'archive' | 'closed' | 'snapshot';
 
 export const SEARCH_SOURCES: readonly SearchSource[] = ['open', 'saved', 'archive', 'closed', 'snapshot'];
@@ -20,7 +20,7 @@ export type Condition =
 
 export class SearchSyntaxError extends Error {}
 
-/** Префикс слова или группы в скобках; `null` — без префикса. */
+/** Prefix of a word or a bracketed group; `null` means no prefix. */
 type Prefix = Field | 'source' | null;
 
 const FIELDS: readonly Field[] = ['name', 'path', 'url', 'title', 'channel', 'song', 'group', 'any'];
@@ -93,8 +93,8 @@ function word(text: string, phrase: boolean, prefix: Prefix): Condition {
 }
 
 /**
- * Разбирает запрос; пустой запрос — `null`. Ошибка синтаксиса — `SearchSyntaxError`.
- * Префикс перед скобками действует на слова группы без своего префикса: `any:(a | path:b)`.
+ * Parses a query; an empty query gives `null`. A syntax error throws `SearchSyntaxError`.
+ * A prefix before brackets applies to the group words without their own prefix: `any:(a | path:b)`.
  */
 export function parseQuery(query: string): Condition | null {
   const tokens = tokenize(query);
@@ -142,14 +142,14 @@ export function parseQuery(query: string): Condition | null {
   return tree;
 }
 
-/** Регистр и `ё` не важны. */
+/** Case and `ё` do not matter. */
 export function normalize(text: string): string {
   return text.toLowerCase().replaceAll('ё', 'е');
 }
 
 /**
- * Что проверяется у вкладки или файла: `name` — заголовок или имя файла. Поля, которого у источника
- * нет, нет и в документе: условие с ним ложно, а под НЕ — истинно (строгая логика).
+ * What is checked on a tab or file: `name` is the title or file name. A field the source does not
+ * have is absent from the document too: a condition on it is false, and under NOT it is true (strict logic).
  */
 export interface SearchDoc {
   source: SearchSource;
@@ -185,7 +185,7 @@ export function matches(condition: Condition, doc: SearchDoc): boolean {
   }
 }
 
-/** Слова, которые должны быть в найденном (не под НЕ). */
+/** Words that must be in the result (not under NOT). */
 export function positiveTerms(condition: Condition, negated = false): Extract<Condition, { op: 'term' }>[] {
   switch (condition.op) {
     case 'term':
@@ -200,7 +200,7 @@ export function positiveTerms(condition: Condition, negated = false): Extract<Co
   }
 }
 
-/** Источники, которые запрос упоминает в `source:` (для подсказки о выключенных). */
+/** Sources the query mentions in `source:` (for the hint about disabled ones). */
 export function mentionedSources(condition: Condition): SearchSource[] {
   switch (condition.op) {
     case 'term':
@@ -215,7 +215,7 @@ export function mentionedSources(condition: Condition): SearchSource[] {
   }
 }
 
-/** Ранг «по совпадению», как у сервиса: фраза в названии, слово в названии, название начинается со слова. */
+/** "By relevance" rank, as in the service: phrase in the name, word in the name, name starts with the word. */
 export function relevance(condition: Condition, doc: { name: string }): number {
   const names = positiveTerms(condition).filter((t) => t.field === 'name' || t.field === 'any');
   const name = normalize(doc.name);

@@ -3,9 +3,9 @@ import { hostOf } from '@/shared/lib';
 import { cachedIcons, fillIcons, missingIconSites } from './site-icons';
 
 /**
- * Свои значки сайтов (по домену). Загружаются только для адресов, переданных в `load` (вкладки развёрнутых
- * записей), и только с доступом к сайтам; каждый сайт — один раз, пока открыта страница. `load` возвращает
- * отмену: недогруженные сайты при следующем вызове загружаются снова.
+ * Our own site icons (by domain). Loaded only for addresses passed to `load` (tabs of expanded
+ * records), and only with site access; each site once while the page is open. `load` returns
+ * a cancel function: sites not finished loading are loaded again on the next call.
  */
 export function useSiteIcons(access: boolean | undefined): {
   icons: ReadonlyMap<string, string>;

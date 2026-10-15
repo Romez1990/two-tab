@@ -1,9 +1,9 @@
 import type { SavedItem } from './types';
 
 /**
- * Импорт из BetterOneTab и SupaTabs (docs/extension/pages/saved.md, раздел 1): каждая группа файла — сохранённая
- * группа с названием из файла (или пустым), временем из файла и без цвета. Номер записи вычисляется из содержимого,
- * чтобы повторный импорт ничего не удваивал.
+ * Import from BetterOneTab and SupaTabs (docs/extension/pages/saved.md, section 1): every group of the file is a saved
+ * group with the name from the file (or empty), the time from the file and no color. The record id is derived from the content
+ * so that a repeated import does not duplicate anything.
  */
 
 interface ForeignTab {
@@ -69,7 +69,7 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-/** Два FNV-1a по 32 бита — 64 бита, чтобы разные группы не совпали. */
+/** Two 32-bit FNV-1a hashes make 64 bits, so that different groups do not collide. */
 function hash(text: string): string {
   let a = 0x811c9dc5;
   let b = 0x050c5d1f;

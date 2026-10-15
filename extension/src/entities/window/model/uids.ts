@@ -1,9 +1,9 @@
 import { browser } from '@/shared/browser';
 
 /**
- * Постоянные номера окон по номерам Chrome (docs/extension/specification.md, раздел 3.1).
- * Хранятся в `storage.session`: переживают сон фонового скрипта и стираются при перезапуске Chrome,
- * когда номера Chrome всё равно другие.
+ * Permanent window ids by Chrome ids (docs/extension/specification.md, section 3.1).
+ * Kept in `storage.session`: they survive background script sleep and are cleared on Chrome restart,
+ * when the Chrome ids are different anyway.
  */
 const KEY = 'windowUids';
 

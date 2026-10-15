@@ -2,8 +2,8 @@ import { browser, hasSiteAccess, type Browser } from '@/shared/browser';
 import { updateCheckState, getCheckState } from './state';
 
 /**
- * Управление фоновой проверкой из фонового скрипта. Сама проверка идёт в служебной скрытой странице
- * `offscreen.html`: фоновый скрипт не умеет разбирать HTML. Остановка — закрытие этой страницы.
+ * Controls the background check from the background script. The check itself runs in the hidden service page
+ * `offscreen.html`: the background script cannot parse HTML. Stopping means closing that page.
  */
 
 const OFFSCREEN_PAGE = '/offscreen.html';
@@ -14,7 +14,7 @@ export function sendCheckMessage(message: CheckMessage): Promise<void> {
   return browser.runtime.sendMessage(message);
 }
 
-/** Ответ фонового скрипта на сообщения проверки; `true` — ответ придёт позже. */
+/** Background script reply to check messages; `true` means the reply comes later. */
 export function onCheckMessage(message: unknown, sendResponse: (response?: unknown) => void): boolean {
   const type = (message as CheckMessage | undefined)?.type;
   const action =
@@ -43,7 +43,7 @@ async function finishCheck(): Promise<void> {
   await closeOffscreen();
 }
 
-/** При каждом пробуждении фонового скрипта: незаконченная проверка (например, после перезапуска Chrome) продолжается. */
+/** On every background script wake-up an unfinished check (for example after a Chrome restart) continues. */
 export async function resumeBackgroundCheck(): Promise<void> {
   if (!(await getCheckState()).running) return;
   if (!(await hasSiteAccess())) {
@@ -67,7 +67,7 @@ async function ensureOffscreen(): Promise<void> {
       justification: 'Загрузка заголовков и значков сохранённых вкладок',
     });
   } catch {
-    // Страницу уже создал параллельный вызов.
+    // A parallel call has already created the page.
   }
 }
 

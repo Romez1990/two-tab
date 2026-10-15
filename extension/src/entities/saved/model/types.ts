@@ -1,15 +1,15 @@
 import type { SnapshotWindow } from '@/entities/snapshot/@x/saved';
 
 /**
- * Сохранённое окно или группа (docs/extension/pages/saved.md, раздел 1). Группа хранится как окно,
- * все вкладки которого в одной группе.
+ * A saved window or group (docs/extension/pages/saved.md, section 1). A group is stored as a window
+ * whose tabs are all in one group.
  */
 export interface SavedItem {
   id: string;
   kind: 'window' | 'group';
   title: string;
   savedAt: number;
-  /** `auto` — закрыто автозакрытием (раздел 2.5). */
+  /** `auto`: closed by auto-close (section 2.5). */
   reason: 'manual' | 'auto';
   window: SnapshotWindow;
 }

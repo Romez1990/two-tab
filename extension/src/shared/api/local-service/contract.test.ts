@@ -9,7 +9,7 @@ if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 const source = process.env.TIDY_REEL_DIR ? join(process.env.TIDY_REEL_DIR, 'api', 'openapi.yaml') : undefined;
 const read = (path: string) => readFileSync(path, 'utf-8').replace(/\r\n/g, '\n');
 
-// Договор в расширении — копия api/openapi.yaml из Tidy Reel. Без TIDY_REEL_DIR (extension/.env.local) Tidy Reel рядом нет, проверка пропускается.
+// The extension contract is a copy of api/openapi.yaml from Tidy Reel. Without TIDY_REEL_DIR (extension/.env.local) Tidy Reel is not nearby and the check is skipped.
 describe('договор локального сервиса', () => {
   it.skipIf(!source || !existsSync(source))('копия в расширении совпадает с файлом в Tidy Reel', () => {
     expect(

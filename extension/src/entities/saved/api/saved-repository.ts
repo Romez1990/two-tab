@@ -19,7 +19,7 @@ export async function deleteSaved(id: string): Promise<void> {
   await db.saved.delete(id);
 }
 
-/** Поиск по названию, заголовкам и адресам вкладок, без учёта регистра. */
+/** Search by name, tab titles and addresses, case-insensitive. */
 export function matchesQuery(item: SavedItem, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
@@ -27,7 +27,7 @@ export function matchesQuery(item: SavedItem, query: string): boolean {
   return item.window.tabs.some((t) => t.title.toLowerCase().includes(q) || t.url.toLowerCase().includes(q));
 }
 
-/** Добавляет записи, которых ещё нет (по номеру записи). */
+/** Adds the records that are not there yet (by record id). */
 export async function importSaved(items: readonly SavedItem[]): Promise<{ added: number; skipped: number }> {
   return db.transaction('rw', db.saved, async () => {
     const existing = new Set((await db.saved.bulkGet(items.map((i) => i.id))).flatMap((r) => (r ? [r.id] : [])));
@@ -37,12 +37,12 @@ export async function importSaved(items: readonly SavedItem[]): Promise<{ added:
   });
 }
 
-/** Сохранённые окна и группы, где есть вкладка с этим адресом. */
+/** Saved windows and groups that have a tab with this address. */
 export async function findSavedByUrl(url: string): Promise<SavedMatch[]> {
   return findMatches(await listSaved(), url);
 }
 
-/** Адрес страницы «Сохранённые» с раскрытой записью `id` и подсвеченной вкладкой с адресом `tabUrl`. */
+/** Address of the "Saved" page with record `id` expanded and the tab with address `tabUrl` highlighted. */
 export function savedItemPageUrl(id: string, tabUrl?: string): string {
   const tab = tabUrl ? `/${encodeURIComponent(tabUrl)}` : '';
   return `${browser.runtime.getURL('/app.html')}#saved/${encodeURIComponent(id)}${tab}`;

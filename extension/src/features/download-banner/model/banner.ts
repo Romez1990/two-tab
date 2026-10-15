@@ -3,10 +3,10 @@ import { connectedClient } from '@/shared/api';
 import { browser, hasSiteAccess } from '@/shared/browser';
 
 /**
- * Плашка «Скачать» на страницах видео и каналов известных сайтов (docs/extension/pages/site_page.md,
- * раздел 3). Как и «Уже сохранено», её скрипт вставляет фоновый скрипт; сама плашка — страница
- * расширения `download-banner.html` в iframe справа снизу. «Уже скачано» узнаётся у сервиса по адресу,
- * без обращения к сайту.
+ * The "Download" banner on video and channel pages of known sites (docs/extension/pages/site_page.md,
+ * section 3). Like "Already saved", its script is injected by the background script; the banner itself is the
+ * extension page `download-banner.html` in an iframe at the bottom right. "Already downloaded" is asked from the service by address,
+ * without contacting the site.
  */
 const BANNER_SCRIPT = '/content-scripts/download-banner-loader.js';
 export const DOWNLOAD_BANNER_PAGE = '/download-banner.html';
@@ -14,13 +14,13 @@ export const DOWNLOAD_INFO_GLOBAL = '__tabsurdDownloadInfo';
 
 export interface DownloadBannerInfo {
   kind: PageKind;
-  /** Где уже скачанное видео сейчас. */
+  /** Where the already downloaded video is now. */
   downloaded: string | null;
 }
 
 export type DownloadFrameMessage = { tabsurd: 'download-banner-height'; height: number } | { tabsurd: 'download-banner-close' };
 
-/** Окно «Скачать» для адреса — из плашки и из всплывающего окна. */
+/** The "Download" window for an address, from the banner and from the popup. */
 export async function openDownloadWindow(url: string): Promise<void> {
   await browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#download/${encodeURIComponent(url)}` });
 }
@@ -31,7 +31,7 @@ export async function showDownloadBanner(tabId: number, url: string | undefined)
   if (!url || !/^https?:/i.test(url)) return;
   const kind = pageKind(url);
   if (!kind) return;
-  // Смена адреса и конец загрузки часто приходят подряд — плашка вставляется один раз.
+  // An address change and load completion often come back to back: the banner is injected once.
   const key = `${tabId} ${url}`;
   if (recent.has(key)) return;
   recent.add(key);
@@ -47,6 +47,6 @@ export async function showDownloadBanner(tabId: number, url: string | undefined)
     });
     await browser.scripting.executeScript({ target: { tabId }, files: [BANNER_SCRIPT as '/content-scripts/download-banner-loader.js'] });
   } catch {
-    // Страница закрылась или в неё нельзя вставлять скрипты.
+    // The page closed or scripts cannot be injected into it.
   }
 }

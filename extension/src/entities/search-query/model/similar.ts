@@ -1,14 +1,14 @@
 import { normalize } from '@/shared/lib';
 
-/** Запрос из истории поиска (docs/extension/pages/search.md, раздел 2.1). */
+/** A query from the search history (docs/extension/pages/search.md, section 2.1). */
 export interface SearchQuery {
   query: string;
   usedAt: number;
-  /** Сколько раз запускали. */
+  /** How many times it was run. */
   count: number;
 }
 
-/** Расстояние Левенштейна, не дальше `limit` (дальше — `limit + 1`). */
+/** Levenshtein distance, capped at `limit` (anything farther is `limit + 1`). */
 export function editDistance(a: string, b: string, limit = 2): number {
   if (Math.abs(a.length - b.length) > limit) return limit + 1;
   let previous = Array.from({ length: b.length + 1 }, (_, i) => i);
@@ -26,19 +26,19 @@ export function editDistance(a: string, b: string, limit = 2): number {
   return previous[b.length]!;
 }
 
-/** Насколько запрос из истории похож на набранное: 3 — начинается с него, 2 — содержит, 1 — опечатки; 0 — не похож. */
+/** How similar a history query is to the typed text: 3 starts with it, 2 contains it, 1 typos; 0 not similar. */
 export function similarity(stored: string, typed: string): number {
   const text = normalize(stored);
   const v = normalize(typed.trim());
   if (!v) return 0;
   if (text.startsWith(v)) return 3;
   if (text.includes(v)) return 2;
-  // Опечатки сравниваются с началом запроса той же длины: набрано ещё не всё.
+  // Typos are compared with the query prefix of the same length: the user has not finished typing.
   if (v.length >= 3 && editDistance(text.slice(0, v.length), v) <= 2) return 1;
   return 0;
 }
 
-/** Пустое поле — недавние сверху; при наборе — похожие, при равенстве выше частые и недавние. */
+/** Empty field: recent first; while typing: similar ones, ties broken by frequent and recent. */
 export function suggest(history: readonly SearchQuery[], typed: string): SearchQuery[] {
   if (!typed.trim()) return [...history].sort((a, b) => b.usedAt - a.usedAt);
   return history
@@ -48,7 +48,7 @@ export function suggest(history: readonly SearchQuery[], typed: string): SearchQ
     .map(({ item }) => item);
 }
 
-/** Запуск запроса: повторный не дублируется, а поднимается наверх как самый недавний. */
+/** Running a query: a repeated one is not duplicated but moved to the top as the most recent. */
 export function remember(history: readonly SearchQuery[], query: string, now: number): SearchQuery[] {
   const text = query.trim();
   if (!text) return [...history];

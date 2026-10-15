@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { queueStateOfHash, writeQueueState, type QueueState } from '../model/address';
 
 /**
- * Фильтры и страница очереди — в адресе раздела (`#downloads?…`): смена — новая запись в истории
- * браузера, «Назад» возвращает прошлое (docs/extension/queues.md, раздел 5).
+ * Queue filters and page live in the section address (`#downloads?…`): a change is a new browser
+ * history entry, "Back" restores the previous one (docs/extension/queues.md, section 5).
  */
 export function useQueueAddress(section: string): [QueueState, (next: QueueState) => void] {
   const [state, setState] = useState(() => queueStateOfHash(location.hash));
@@ -20,7 +20,7 @@ export function useQueueAddress(section: string): [QueueState, (next: QueueState
   return [state, push];
 }
 
-/** Нажатие на счётчик: id видео, к которому прокрутить, когда оно появится на странице. */
+/** Counter click: id of the video to scroll to once it appears on the page. */
 export function useScrollTarget(ids: readonly number[]): { setTarget: (id: number) => void; target: number | null } {
   const [target, setTarget] = useState<number | null>(null);
   const done = useRef<number | null>(null);

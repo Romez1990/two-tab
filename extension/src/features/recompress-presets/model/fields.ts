@@ -1,6 +1,6 @@
 /**
- * Поля пресета сжатия и подписи ползунков (tidy-reel/docs/recompress.md, разделы 2–3). Значения
- * в процентах — из тестов на PMV: 100% — значение по умолчанию, справа самая большая экономия места.
+ * Compression preset fields and slider labels (tidy-reel/docs/recompress.md, sections 2–3). Percent
+ * values come from tests on PMV: 100% is the default value, the right end saves the most space.
  */
 
 export interface PresetFields {
@@ -9,9 +9,9 @@ export interface PresetFields {
   speed: number;
   grain: number;
   opus_kbps: number;
-  /** Короткая сторона; 0 — исходное. */
+  /** Short side; 0 means the original. */
   resolution: number;
-  /** 0 — исходный. */
+  /** 0 means the original. */
   fps: number;
   trim_start: string;
   trim_end: string;
@@ -38,19 +38,19 @@ export type SliderField = 'crf' | 'speed' | 'grain' | 'opus_kbps' | 'resolution'
 export interface SliderStep {
   value: number;
   label: string;
-  /** Размер от значения по умолчанию, %; нет — неизвестно (исходное). */
+  /** Size relative to the default value, %; none means unknown (the original). */
   size?: number;
-  /** Время кодирования от значения по умолчанию, %. */
+  /** Encoding time relative to the default value, %. */
   time?: number;
 }
 
 export interface SliderDef {
   field: SliderField;
   title: string;
-  /** Слева направо: справа — меньше файл. */
+  /** Left to right: the right end gives a smaller file. */
   steps: SliderStep[];
   hint?: string;
-  /** Проценты относятся к звуку, а не ко всему файлу. */
+  /** Percentages refer to the audio, not the whole file. */
   sizeOf?: string;
 }
 
@@ -131,7 +131,7 @@ export const SLIDERS: SliderDef[] = [
   },
 ];
 
-/** Подпись значения: «около 89% размера, 100% времени». */
+/** Value label like "about 89% size, 100% time" (shown in Russian). */
 export function describeStep(def: SliderDef, step: SliderStep): string {
   if (step.size === undefined) return 'как у исходника';
   const size = `около ${step.size}% размера${def.sizeOf ? ` ${def.sizeOf}` : ''}`;
@@ -140,7 +140,7 @@ export function describeStep(def: SliderDef, step: SliderStep): string {
 
 const TIME = /^(?:(?:(\d+):)?(\d+):)?(\d+(?:\.\d+)?)$/;
 
-/** «Умный момент времени»: ошибка — текст для подсветки поля, пусто — верно (recompress.md, раздел 2.7). */
+/** "Smart time point": an error is the text to highlight the field with, empty means valid (recompress.md, section 2.7). */
 export function trimError(text: string, end: boolean): string {
   let value = text.trim().toLowerCase();
   if (!value) return '';

@@ -4,15 +4,15 @@ import { BANNER_PAGE, MATCHES_GLOBAL, type BannerFrameMessage } from './banner';
 
 const FRAME_ID = 'tabsurd-saved-banner';
 /**
- * Адрес, на котором плашку закрыли: повторная вставка при полной загрузке её не возвращает. В глобальной
- * переменной, потому что скрипт при каждой вставке выполняется заново.
+ * Address where the banner was closed: injecting again on full load does not bring it back. Kept in a global
+ * variable because the script runs anew on every injection.
  */
 const CLOSED_GLOBAL = '__tabsurdBannerClosedUrl';
 const scope = globalThis as Record<string, unknown>;
 
 /**
- * Вставляет iframe плашки в правый верхний угол. Скрипт вставляется заново при каждой загрузке страницы
- * (и при смене адреса без перезагрузки), поэтому плашка для другого адреса сначала убирается, а для того же — остаётся.
+ * Inserts the banner iframe into the top right corner. The script is injected anew on every page load
+ * (and on an address change without reload), so the banner for another address is removed first, and for the same one it stays.
  */
 export function mountSavedBanner(): void {
   if (scope[CLOSED_GLOBAL] === location.href) return;

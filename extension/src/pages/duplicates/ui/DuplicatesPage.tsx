@@ -36,7 +36,7 @@ async function removeCopy(copy: Copy): Promise<void> {
   }
   const item = await getSaved(copy.savedId);
   if (!item) return;
-  // Номер вкладки мог сдвинуться: удаляется вкладка с тем же адресом, ближайшая к прежнему месту.
+  // The tab index may have shifted: the tab with the same address closest to the old place is removed.
   const index = item.window.tabs[copy.index]?.url === copy.url ? copy.index : item.window.tabs.findIndex((t) => t.url === copy.url);
   if (index < 0) return;
   const after = removeSavedTab(item, index);
@@ -44,7 +44,7 @@ async function removeCopy(copy: Copy): Promise<void> {
   else await deleteSaved(item.id);
 }
 
-/** «Дубликаты» (docs/extension/pages/duplicates.md): одинаковые открытые и сохранённые вкладки. */
+/** "Duplicates" (docs/extension/pages/duplicates.md): identical open and saved tabs. */
 export function DuplicatesPage() {
   const [duplicates, setDuplicates] = useState<Duplicate[] | null>(null);
   const [error, setError] = useState('');

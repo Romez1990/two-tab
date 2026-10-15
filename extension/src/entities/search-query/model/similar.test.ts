@@ -13,7 +13,7 @@ describe('search history', () => {
     expect(similarity('Rain dance', 'rain')).toBe(3);
     expect(similarity('Rain dance', 'dance')).toBe(2);
     expect(similarity('Rain dance', 'rian')).toBe(1);
-    expect(similarity('maria', 'ьфкш')).toBe(0); // раскладка не исправляется
+    expect(similarity('maria', 'ьфкш')).toBe(0); // the keyboard layout is not corrected
     expect(similarity('snow', 'rain')).toBe(0);
   });
 

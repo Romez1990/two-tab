@@ -27,7 +27,7 @@ import { Favicon, SMART_SEARCH_HINT, SmartHint, usePaging } from '@/shared/ui';
 import { ARCHIVE_SHOWN_LIMIT, SOURCE_TITLES, search, type Found, type Sort, type Source } from '../model/collect';
 import { EMPTY_STATE, readState, writeState, type SearchState } from '../model/url-state';
 
-/** Поиск в адресе после `#search` (docs/extension/pages/search.md, раздел 4). */
+/** Search in the address after `#search` (docs/extension/pages/search.md, section 4). */
 function stateOfAddress(): SearchState {
   const at = location.hash.indexOf('?');
   return at < 0 ? EMPTY_STATE : readState(location.hash.slice(at));
@@ -126,7 +126,7 @@ function ResultRow({ found, onMessage }: { found: Found; onMessage: (text: strin
   );
 }
 
-/** «Поиск» (docs/extension/pages/search.md): вкладки и архив одним списком, «умный поиск» по Enter. */
+/** "Search" (docs/extension/pages/search.md): tabs and archive in one list, "smart search" on Enter. */
 export function SearchPage() {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<SearchQuery[]>([]);
@@ -142,7 +142,7 @@ export function SearchPage() {
   const connectedRef = useRef(false);
   const generation = useRef(0);
 
-  /** Показывает поиск из состояния; адрес меняет вызывающий. */
+  /** Shows the search from the state; the caller changes the address. */
   async function show(state: SearchState) {
     const turn = ++generation.current;
     setError('');
@@ -186,13 +186,13 @@ export function SearchPage() {
       setConnected(connectedRef.current);
       void show(stateOfAddress());
     });
-    // «Назад» и «Вперёд»: поиск из адреса, без новой записи в истории запросов.
+    // "Back" and "Forward": search from the address, without a new entry in the query history.
     const onPop = () => location.hash.startsWith('#search') && void show(stateOfAddress());
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
-  /** Запуск поиска: Enter, выбор из истории, фильтр или сортировка — новая запись, первая страница. */
+  /** Running a search: Enter, a history pick, a filter or sorting make a new entry and go to the first page. */
   async function run(query: string, nextSort = sort, nextSources = sources) {
     try {
       if (!parseQuery(query)) return;
@@ -206,7 +206,7 @@ export function SearchPage() {
     await show(state);
   }
 
-  /** Фильтры и сортировка запускают поиск сразу, только если текст не меняли с последнего поиска. */
+  /** Filters and sorting run the search at once only if the text has not changed since the last search. */
   function rerun(nextSort: Sort, nextSources: Source[]) {
     if (ran && input === ran.query) void run(ran.query, nextSort, nextSources);
   }

@@ -3,7 +3,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 
-/** Замочек «Не закрывать автоматически»: закрытый и голубой — включено, открытый и серый — выключено. Один вид на странице окон и в настройках. */
+/** The "Do not close automatically" lock: closed and blue is on, open and grey is off. The same look on the windows page and in settings. */
 export function KeepLockButton({ kept, onToggle, disabled }: { kept: boolean; onToggle: () => void; disabled?: boolean }) {
   return (
     <Tooltip title={kept ? 'Не закрывать автоматически — включено' : 'Не закрывать это окно автоматически'}>

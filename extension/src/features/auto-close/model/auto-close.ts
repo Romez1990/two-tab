@@ -9,7 +9,7 @@ import { findStale } from './find-stale';
 const RUN_DAYS_KEY = 'chromeRunDays';
 export const AUTO_CLOSE_NOTIFICATION_PREFIX = 'auto-closed:';
 
-/** Отмечает сегодняшние сутки (с 6:00) как день, когда Chrome работал. */
+/** Marks today (starting at 6:00) as a day Chrome was running. */
 export async function recordRunDay(now = Date.now()): Promise<number[]> {
   const days = ((await db.meta.get(RUN_DAYS_KEY))?.value as number[] | undefined) ?? [];
   const today = dayIndex(now);
@@ -20,8 +20,8 @@ export async function recordRunDay(now = Date.now()): Promise<number[]> {
 }
 
 /**
- * Закрывает устаревшие окна и группы: сначала сохраняет их (`save`), потом показывает уведомление
- * с кнопкой «Вернуть». Сохранение передаётся снаружи, чтобы фича не зависела от другой фичи.
+ * Closes stale windows and groups: saves them first (`save`), then shows a notification
+ * with a "Restore" button. Saving is passed in so that the feature does not depend on another feature.
  */
 export async function runAutoClose(save: {
   window: (windowId: number) => Promise<SavedItem>;

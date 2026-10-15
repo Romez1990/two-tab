@@ -3,8 +3,8 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 
 /**
- * Подсказка «умного» поля (docs/extension/specification.md, раздел 2): знак вопроса рядом с полем,
- * при наведении — таблица всех вариантов ввода.
+ * Hint of a "smart" field (docs/extension/specification.md, section 2): a question mark next to the field,
+ * on hover a table of all input options.
  */
 export function SmartHint({ rows }: { rows: readonly (readonly [example: string, meaning: string])[] }) {
   const table = (
@@ -30,7 +30,7 @@ export function SmartHint({ rows }: { rows: readonly (readonly [example: string,
   );
 }
 
-/** Варианты «Умного поиска» (docs/extension/pages/search.md, раздел 2). */
+/** "Smart search" options (docs/extension/pages/search.md, section 2). */
 export const SMART_SEARCH_HINT = [
   ['rain dance', 'оба слова, в любом порядке'],
   ['rain | snow', 'любое из слов'],
@@ -49,7 +49,7 @@ export const SMART_SEARCH_HINT = [
   ['"12:30"', 'двоеточие в тексте — в кавычках'],
 ] as const;
 
-/** Варианты «Умного момента времени» (tidy-reel/docs/recompress.md, раздел 2.7). */
+/** "Smart time point" options (tidy-reel/docs/recompress.md, section 2.7). */
 export const SMART_TIME_HINT = [
   ['94f', 'начало: отрезать первые 94 кадра'],
   ['12.5, 0:12.5, 1:02:03.25', 'начало: начать с этого момента'],

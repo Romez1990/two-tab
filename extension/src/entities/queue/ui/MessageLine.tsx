@@ -8,15 +8,15 @@ import type { LocalServiceSchemas } from '@/shared/api';
 
 export type QueueMessage = LocalServiceSchemas['QueueMessageModel'];
 
-/** Значок вида (tidy-reel/docs/recompress.md, раздел 6.5): жёлтый — решение, голубой — сведения, красный — ошибка. */
+/** Kind icon (tidy-reel/docs/recompress.md, section 6.5): yellow is a decision, blue is info, red is an error. */
 function KindIcon({ kind }: { kind: string }) {
   if (kind === 'error') return <ErrorOutline fontSize="small" color="error" />;
   return <PriorityHigh fontSize="small" color={kind === 'decision' ? 'warning' : 'info'} />;
 }
 
 /**
- * Сообщение у видео: текст, кнопки своего случая (`children`) и «Прочитано» у сведений и ошибок,
- * только у каждого сообщения отдельно. Прочитанное и решённое остаётся в истории бледным.
+ * Message on a video: text, buttons of its case (`children`) and "Read" on info and errors,
+ * per message only. Read and resolved messages stay in the history, dimmed.
  */
 export function MessageLine({ message, onRead, children }: { message: QueueMessage; onRead: () => void; children?: ReactNode }) {
   return (

@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { statusBadge, type PageCheck } from '../model/page-status';
 
 /**
- * Метка статуса страницы у вкладки; со страницей всё хорошо — ничего. Нажатие проверяет страницу заново.
- * Метка стоит внутри строки-ссылки, поэтому нажатие не доходит до ссылки.
+ * Page status badge on a tab; nothing when the page is fine. A click checks the page again.
+ * The badge sits inside the link row, so the click does not reach the link.
  */
 export function PageStatus({ check, onRecheck }: { check: PageCheck | undefined; onRecheck: () => void }) {
   const [busy, setBusy] = useState<number>();

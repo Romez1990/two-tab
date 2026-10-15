@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { browser } from 'wxt/browser';
 
 /**
- * Необязательный доступ к сайтам: нужен, чтобы загружать заголовки и значки сохранённых вкладок
- * (docs/extension/pages/saved.md, раздел 1). Спрашивается только по нажатию кнопки.
+ * Optional site access: needed to load titles and icons of saved tabs
+ * (docs/extension/pages/saved.md, section 1). Requested only on a button click.
  */
 const ORIGINS = ['<all_urls>'];
 
@@ -15,7 +15,7 @@ export function requestSiteAccess(): Promise<boolean> {
   return browser.permissions.request({ origins: ORIGINS });
 }
 
-/** Есть ли доступ (`undefined`, пока неизвестно) и функция, которая его спрашивает. */
+/** Whether there is access (`undefined` while unknown) and a function that requests it. */
 export function useSiteAccess(): [boolean | undefined, () => void] {
   const [access, setAccess] = useState<boolean>();
   useEffect(() => {

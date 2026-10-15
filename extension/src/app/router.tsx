@@ -16,14 +16,14 @@ import { SearchPage } from '@/pages/search';
 import { SettingsPage } from '@/pages/settings';
 import { WindowsPage } from '@/pages/windows';
 
-/** Разделы главной страницы расширения по адресу после `#`. */
+/** Sections of the extension main page, by the address after `#`. */
 const sections: Record<string, { title: string; page: ComponentType; hidden?: boolean }> = {
   search: { title: 'Поиск', page: SearchPage },
   saved: { title: 'Сохранённые', page: SavedPage },
   duplicates: { title: 'Дубликаты', page: DuplicatesPage },
   downloads: { title: 'Скачивание', page: DownloadsPage },
   recompress: { title: 'Сжатие', page: RecompressPage },
-  // Окно «Скачать»: открывается кнопкой на сайте или во всплывающем окне, адрес — после #download/.
+  // The "Download" window: opened by the button on a site or in the popup, address after #download/.
   download: { title: 'Скачать', page: DownloadWindow, hidden: true },
   windows: { title: 'Окна', page: WindowsPage },
   recovery: { title: 'Восстановление', page: RecoveryPage },
@@ -62,7 +62,7 @@ export function AppRouter() {
         </Toolbar>
       </AppBar>
       <Container maxWidth="lg" sx={{ py: 3 }}>
-        {/* «Нужно ваше решение» — вверху каждой страницы (docs/extension/queues.md, раздел 4). */}
+        {/* "Needs your decision" sits on top of every page (docs/extension/queues.md, section 4). */}
         <AttentionBanner onOpen={(name) => (location.hash = name)} />
         <Page />
       </Container>

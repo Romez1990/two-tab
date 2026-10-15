@@ -2,8 +2,8 @@ import { SEARCH_SOURCES } from '@/shared/lib';
 import { DEFAULT_SOURCES, type Sort, type Source } from './collect';
 
 /**
- * Поиск в адресе страницы (docs/extension/pages/search.md, раздел 4): запущенный запрос, галочки
- * «где искать», сортировка и номер страницы — только то, что отличается от значений по умолчанию.
+ * Search in the page address (docs/extension/pages/search.md, section 4): the run query, the "where to search"
+ * checkboxes, sorting and page number, only what differs from the defaults.
  */
 export interface SearchState {
   query: string;

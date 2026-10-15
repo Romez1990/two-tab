@@ -1,4 +1,4 @@
 import { startOffscreen } from '@/app/offscreen';
 
-// Служебная скрытая страница фоновой проверки: её создаёт и закрывает фоновый скрипт (features/background-check).
+// Hidden service page of the background check: the background script creates and closes it (features/background-check).
 startOffscreen();

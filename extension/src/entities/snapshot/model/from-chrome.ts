@@ -5,7 +5,7 @@ export function tabUrl(tab: Browser.tabs.Tab): string {
   return tab.url || tab.pendingUrl || '';
 }
 
-/** Окно Chrome в виде окна снимка: вкладки по порядку, группы — по номеру в `groups`. */
+/** A Chrome window as a snapshot window: tabs in order, groups by index in `groups`. */
 export function toSnapshotWindow(
   window: Browser.windows.Window,
   tabs: readonly Browser.tabs.Tab[],

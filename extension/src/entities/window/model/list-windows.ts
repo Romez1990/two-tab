@@ -1,7 +1,7 @@
 import { browser } from '@/shared/browser';
 import type { BrowserWindow, WindowGroup, WindowTab } from './types';
 
-/** Обычные окна Chrome (без всплывающих и окон приложений) с вкладками по порядку. */
+/** Normal Chrome windows (no popups or app windows) with tabs in order. */
 export async function listWindows(): Promise<BrowserWindow[]> {
   const [windows, groups] = await Promise.all([
     browser.windows.getAll({ populate: true, windowTypes: ['normal'] }),
@@ -32,6 +32,6 @@ export async function listWindows(): Promise<BrowserWindow[]> {
       groups: windowGroups,
     });
   }
-  // Номера окон Chrome растут: по ним виден порядок создания, а значит и порядок на панели задач.
+  // Chrome window ids grow: they show the creation order, and so the order on the taskbar.
   return result.sort((a, b) => a.id - b.id);
 }

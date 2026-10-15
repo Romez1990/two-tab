@@ -1,8 +1,8 @@
 import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/api';
 
 /**
- * Общее для обеих очередей в локальном сервисе (tidy-reel/docs/local_service/local_service.md,
- * раздел 7.6): случаи «Нужно ваше решение» и настройки очередей.
+ * Shared by both queues of the local service (tidy-reel/docs/local_service/local_service.md,
+ * section 7.6): "Needs your decision" cases and queue settings.
  */
 
 export type AttentionCase = LocalServiceSchemas['CaseModel'];
@@ -14,7 +14,7 @@ async function client() {
   return c;
 }
 
-/** Случаи, по которым очередь ждёт пользователя; без подключения — пусто. */
+/** Cases the queue waits on the user for; empty when not connected. */
 export async function getAttention(): Promise<AttentionCase[]> {
   const c = await connectedClient();
   if (!c) return [];
@@ -23,7 +23,7 @@ export async function getAttention(): Promise<AttentionCase[]> {
   return data;
 }
 
-/** «Заглушить»: уведомление со звуком по текущим случаям больше не звучит. */
+/** "Mute": the sound notification for the current cases no longer plays. */
 export async function muteAttention(): Promise<void> {
   const { response, error } = await (await client()).POST('/api/attention/mute');
   if (!response.ok) throw new Error(errorText(response.status, error));

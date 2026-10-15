@@ -1,6 +1,6 @@
 import type { GroupSummary, Subscription } from '@/entities/download';
 
-/** Что фоновый скрипт уже показал: проверки подписок по времени и скачанные группы. */
+/** What the background script has already shown: subscription checks by time and downloaded groups. */
 export interface WatchState {
   checks: Record<string, string>;
   groupsDone: number[];
@@ -11,8 +11,8 @@ export type WatchEvent =
   | { kind: 'downloaded'; groupId: number; title: string; count: number };
 
 /**
- * Уведомления подписок (tidy-reel/docs/downloader.md, раздел 7): проверка нашла новое; группа
- * подписки скачалась целиком. Первый запуск только запоминает состояние, без уведомлений о прошлом.
+ * Subscription notifications (tidy-reel/docs/downloader.md, section 7): a check found something new; a subscription
+ * group finished downloading. The first run only remembers the state, without notifications about the past.
  */
 export function watchEvents(subscriptions: readonly Subscription[], groups: readonly GroupSummary[], state: WatchState | undefined): { events: WatchEvent[]; state: WatchState } {
   const next: WatchState = { checks: {}, groupsDone: [] };
@@ -24,7 +24,7 @@ export function watchEvents(subscriptions: readonly Subscription[], groups: read
       events.push({ kind: 'found', subscriptionId: s.id, title: s.title, count: s.last_found ?? 0 });
   }
   for (const g of groups) {
-    // Ничего не осталось: всё скачано, отменено или с ошибкой.
+    // Nothing is left: everything is downloaded, cancelled or failed.
     if (g.kind !== 'subscription' || g.remaining.count > 0 || g.remaining.counting) continue;
     next.groupsDone.push(g.id);
     if (state && !state.groupsDone.includes(g.id) && g.finished > 0) events.push({ kind: 'downloaded', groupId: g.id, title: g.title, count: g.finished });

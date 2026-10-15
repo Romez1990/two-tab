@@ -5,7 +5,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
 import { saveAndCloseGroup, saveAndCloseWindow } from '../model/save-close';
 
-/** Кнопка «Сохранить и закрыть» для окна (`windowId`) или группы (`groupId`). */
+/** "Save and close" button for a window (`windowId`) or a group (`groupId`). */
 export function SaveCloseButton({
   windowId,
   groupId,

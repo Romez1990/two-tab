@@ -6,22 +6,22 @@ interface Meta {
 }
 
 /**
- * Записи таблиц описаны в сущностях (entities/snapshot, entities/closed-tab); здесь — только схема хранения,
- * чтобы shared не зависел от предметной области.
+ * Table records are described in the entities (entities/snapshot, entities/closed-tab); only the storage schema is here,
+ * so that shared does not depend on the domain.
  */
 export interface StoredRecord {
   id?: number;
   [field: string]: unknown;
 }
 
-/** База расширения в IndexedDB. */
+/** Extension database in IndexedDB. */
 class TabsurdDb extends Dexie {
   meta!: EntityTable<Meta, 'key'>;
-  /** История снимков окон; текущий снимок — в `meta` под ключом `currentSnapshot`. */
+  /** Window snapshot history; the current snapshot is in `meta` under the `currentSnapshot` key. */
   snapshots!: EntityTable<StoredRecord & { takenAt: number }, 'id'>;
   closedTabs!: EntityTable<StoredRecord & { closedAt: number }, 'id'>;
   saved!: EntityTable<{ id: string; savedAt: number; [field: string]: unknown }, 'id'>;
-  /** Проверки страниц по адресу: когда загружали последний раз и что получили. */
+  /** Page checks by address: when last loaded and what was received. */
   pageChecks!: EntityTable<{ url: string; at: number; [field: string]: unknown }, 'url'>;
 
   constructor() {

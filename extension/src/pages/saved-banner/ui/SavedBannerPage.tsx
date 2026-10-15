@@ -14,12 +14,12 @@ function post(message: BannerFrameMessage) {
   parent.postMessage(message, '*');
 }
 
-/** Плашка «Уже сохранено» в iframe на сайте (docs/extension/pages/saved.md, раздел 1); найденные записи — в `?matches=`, адрес сайта — в `&url=`. */
+/** The "Already saved" banner in an iframe on a site (docs/extension/pages/saved.md, section 1); found records come in `?matches=`, the site address in `&url=`. */
 export function SavedBannerPage() {
   const [matches] = useState<SavedMatch[]>(readMatches);
   const box = useRef<HTMLDivElement>(null);
 
-  // Высота iframe — по содержимому; без совпадений плашка закрывается.
+  // The iframe height follows the content; with no matches the banner closes.
   useEffect(() => {
     if (matches.length === 0) return post({ tabsurd: 'banner-close' });
     const el = box.current;

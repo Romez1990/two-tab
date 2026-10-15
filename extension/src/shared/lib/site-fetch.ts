@@ -1,7 +1,7 @@
 /**
- * Бережные запросы к сайтам (docs/extension/pages/saved.md, раздел 1): к одному сайту — по одному запросу
- * и не чаще раза в 10 секунд; на 429 и 503 — пауза (`Retry-After` или 5 минут, каждая следующая вдвое дольше),
- * после трёх таких ответов подряд сайт пропускается, пока жива страница расширения, где идут запросы.
+ * Gentle requests to sites (docs/extension/pages/saved.md, section 1): one request at a time per site
+ * and at most once in 10 seconds; on 429 and 503 a pause (`Retry-After` or 5 minutes, each next one twice as long),
+ * after three such responses in a row the site is skipped while the extension page making the requests is alive.
  */
 
 export const SITE_GAP_MS = 10_000;
@@ -9,7 +9,7 @@ const PAUSE_MS = 5 * 60_000;
 const MAX_STRIKES = 3;
 const TIMEOUT_MS = 10_000;
 
-/** Сайт трижды подряд попросил не спешить — до конца проверки к нему не обращаемся. */
+/** The site asked to slow down three times in a row: it is not contacted until the check ends. */
 export class SiteSkippedError extends Error {
   constructor(host: string) {
     super(`Сайт ${host} пропущен: слишком много запросов`);
@@ -17,7 +17,7 @@ export class SiteSkippedError extends Error {
 }
 
 interface SiteState {
-  /** Очередь запросов к сайту: следующий ждёт конца предыдущего. */
+  /** Request queue of a site: the next one waits for the previous to finish. */
   lock: Promise<void>;
   nextAt: number;
   strikes: number;
@@ -34,7 +34,7 @@ function siteOf(url: string): string {
   }
 }
 
-/** Пауза после 429 или 503: из `Retry-After` (секунды или дата), иначе 5 минут, удваиваясь с каждым разом. */
+/** Pause after 429 or 503: from `Retry-After` (seconds or a date), otherwise 5 minutes, doubling each time. */
 export function pauseAfter(retryAfter: string | null, strike: number, now = Date.now()): number {
   if (retryAfter) {
     const seconds = Number(retryAfter);
@@ -62,8 +62,8 @@ function wait(ms: number, signal: AbortSignal): Promise<void> {
 }
 
 /**
- * `fetch` с куками браузера и правилами для сайта. Ожидание своей очереди не входит в 10 секунд на ответ.
- * Бросает `SiteSkippedError`, если сайт пропущен, и ошибку `fetch`, если сайт не ответил.
+ * `fetch` with browser cookies and the site rules. Waiting for its turn does not count toward the 10 seconds for a response.
+ * Throws `SiteSkippedError` if the site is skipped, and the `fetch` error if the site did not respond.
  */
 export async function siteFetch(url: string, signal: AbortSignal, init: RequestInit = {}): Promise<Response> {
   const host = siteOf(url);
@@ -102,8 +102,8 @@ export async function siteFetch(url: string, signal: AbortSignal, init: RequestI
 }
 
 /**
- * Обрабатывает адреса, сгруппировав их по сайтам: сайты — по `parallel` одновременно, адреса одного сайта —
- * по очереди. Так медленный сайт со своей паузой не держит остальные.
+ * Processes addresses grouped by site: `parallel` sites at a time, addresses of one site
+ * one by one. This way a slow site with its pause does not hold up the rest.
  */
 export async function runBySite<T extends string>(
   urls: readonly T[],

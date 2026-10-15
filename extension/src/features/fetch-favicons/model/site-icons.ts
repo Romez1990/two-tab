@@ -3,8 +3,8 @@ import { DAY, hostOf, siteFetch, SiteSkippedError } from '@/shared/lib';
 import { faviconUrl } from '@/shared/ui';
 
 /**
- * Значки сайтов, которых нет в кеше Chrome (docs/extension/pages/saved.md, раздел 1): расширение загружает
- * страницу сайта, находит в ней `<link rel="icon">` (или берёт `/favicon.ico`) и хранит значок у себя.
+ * Site icons missing from the Chrome cache (docs/extension/pages/saved.md, section 1): the extension loads
+ * the site page, finds `<link rel="icon">` in it (or takes `/favicon.ico`) and keeps the icon itself.
  */
 
 const CACHE_KEY = 'siteIcons';
@@ -12,7 +12,7 @@ const RETRY_AFTER_MS = 30 * DAY;
 const MAX_ICON_BYTES = 200_000;
 const PARALLEL = 4;
 
-/** Значок сайта: `data` — картинка в виде data URL; без `data` — не нашёлся, `at` — когда пробовали. */
+/** Site icon: `data` is the image as a data URL; without `data` it was not found, `at` is when it was tried. */
 type IconCache = Record<string, { data?: string; at: number }>;
 
 export async function cachedIcons(): Promise<Map<string, string>> {
@@ -21,8 +21,8 @@ export async function cachedIcons(): Promise<Map<string, string>> {
 }
 
 /**
- * Сайты, у которых в кеше Chrome только значок по умолчанию и которых нет в своём кеше (или неудача была
- * больше 30 дней назад). Для каждого сайта — адрес одной из его вкладок.
+ * Sites that have only the default icon in the Chrome cache and are not in our own cache (or failed
+ * more than 30 days ago). For each site, the address of one of its tabs.
  */
 export async function missingIconSites(urls: readonly string[], signal: AbortSignal, now = Date.now()): Promise<Map<string, string>> {
   const cache = await readCache();
@@ -43,8 +43,8 @@ export async function missingIconSites(urls: readonly string[], signal: AbortSig
 }
 
 /**
- * Загружает значки сайтов; каждый найденный сразу сохраняется и передаётся в `onIcon`. Запросы — через
- * `siteFetch`: сайт, который просил не спешить и был пропущен, не сохраняется и проверится в следующий раз.
+ * Loads site icons; each found icon is stored at once and passed to `onIcon`. Requests go through
+ * `siteFetch`: a site that asked to slow down and was skipped is not stored and is checked next time.
  */
 export async function fillIcons(
   sites: ReadonlyMap<string, string>,
@@ -80,7 +80,7 @@ async function fetchSiteIcon(pageUrl: string, signal: AbortSignal): Promise<stri
     }
   } catch (e) {
     if (e instanceof SiteSkippedError) throw e;
-    // Страница не открылась — остаётся /favicon.ico.
+    // The page did not open: /favicon.ico stays.
   }
   candidates.push(`${origin}/favicon.ico`);
   for (const url of candidates) {
@@ -111,7 +111,7 @@ async function fetchImage(url: string, signal: AbortSignal): Promise<string | un
   }
 }
 
-/** Картинка, которую Chrome отдаёт из своего кеша значков; для неизвестного сайта — значок по умолчанию. */
+/** Image Chrome returns from its icon cache; the default icon for an unknown site. */
 async function chromeIconBytes(url: string): Promise<Uint8Array> {
   try {
     return new Uint8Array(await (await fetch(faviconUrl(url, 32))).arrayBuffer());

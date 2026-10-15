@@ -2,13 +2,13 @@ import { toSnapshotWindow, type SnapshotWindow } from '@/entities/snapshot';
 import { getWindowUids, newWindowUid, setWindowUids } from '@/entities/window';
 import { browser } from '@/shared/browser';
 
-/** Что известно о вкладке, чтобы записать её в «Недавно закрытые», когда Chrome сообщит только её номер. */
+/** What is known about a tab, to record it in "Recently closed" when Chrome reports only its id. */
 export interface TabInfo {
   url: string;
   title: string;
 }
 
-/** Текущие окна в виде снимка. Окнам без постоянного номера номер выдаётся здесь. */
+/** Current windows as a snapshot. Windows without a permanent id get one here. */
 export async function captureWindows(): Promise<{ windows: SnapshotWindow[]; tabs: Record<number, TabInfo> }> {
   const [chromeWindows, chromeGroups, uids] = await Promise.all([
     browser.windows.getAll({ populate: true, windowTypes: ['normal'] }),
@@ -28,7 +28,7 @@ export async function captureWindows(): Promise<{ windows: SnapshotWindow[]; tab
     for (const t of w.tabs ?? []) if (t.id !== undefined) tabs[t.id] = { url: t.url || t.pendingUrl || '', title: t.title ?? '' };
     windows.push(snapshot);
   }
-  // Закрытые окна выпадают из таблицы номеров, новые получают номер.
+  // Closed windows drop out of the id table, new ones get an id.
   await setWindowUids(liveUids);
   return { windows, tabs };
 }

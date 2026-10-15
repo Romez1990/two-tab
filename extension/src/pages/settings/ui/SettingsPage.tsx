@@ -17,7 +17,7 @@ import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
 import { KeepLockButton } from '@/shared/ui';
 
-/** Настройки (docs/extension/specification.md, раздел 1.2): автозакрытие, «Не закрывать», профиль, Tidy Reel, сервер синхронизации. */
+/** Settings (docs/extension/specification.md, section 1.2): auto-close, "Do not close", profile, Tidy Reel, sync server. */
 export function SettingsPage() {
   const settings = useSettings();
   if (!settings) return null;
@@ -100,7 +100,7 @@ export function SettingsPage() {
   );
 }
 
-/** «Повтор уведомлений, минут» и «Строгий порядок» (docs/extension/pages/settings.md, раздел 5). */
+/** "Notification repeat, minutes" and "Strict order" (docs/extension/pages/settings.md, section 5). */
 function QueueSettingsForm() {
   const [value, setValue] = useState<QueueSettings | null>(null);
   const [error, setError] = useState('');
@@ -144,12 +144,12 @@ function DbUsage() {
 }
 
 /**
- * Окна, которые не закрываются: открытые сейчас — с галочками, отмеченные запоминаются по постоянному номеру
- * окна (docs/extension/specification.md, раздел 3.1). Отмеченные, но закрытые сейчас окна тоже в списке.
+ * Windows that are not closed: currently open ones with checkboxes, checked ones are remembered by the permanent
+ * window id (docs/extension/specification.md, section 3.1). Checked windows that are closed now are listed too.
  */
 function KeepWindows({ settings }: { settings: Settings }) {
   const { windows, uids, reload } = useWindows();
-  // Номер окну выдаёт фоновый скрипт с задержкой, поэтому при открытии настроек не у всех окон он уже есть: выдаём недостающие сразу.
+  // The background script assigns window ids with a delay, so when settings open not every window has one yet: assign the missing ones now.
   useEffect(() => {
     void captureWindows().then(reload);
   }, [reload]);

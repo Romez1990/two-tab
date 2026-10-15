@@ -13,14 +13,14 @@ function post(message: DownloadFrameMessage) {
   parent.postMessage(message, '*');
 }
 
-/** Плашка «Скачать» в iframe на сайте (docs/extension/pages/site_page.md, раздел 3); адрес и вид — в `?url=&kind=&downloaded=`. */
+/** The "Download" banner in an iframe on a site (docs/extension/pages/site_page.md, section 3); address and kind come in `?url=&kind=&downloaded=`. */
 export function DownloadBannerPage() {
   const params = new URLSearchParams(location.search);
   const url = params.get('url') ?? '';
   const channel = params.get('kind') === 'channel';
   const downloaded = params.get('downloaded') ?? '';
   const box = useRef<HTMLDivElement>(null);
-  // Высота iframe — по содержимому.
+  // The iframe height follows the content.
   useEffect(() => {
     const el = box.current;
     if (!el) return;
@@ -31,7 +31,7 @@ export function DownloadBannerPage() {
 
   return (
     <Paper ref={box} sx={{ px: 1.5, py: 1 }}>
-      {/* «Нужно ваше решение» — там же, где плашка видео (docs/extension/queues.md, раздел 4). */}
+      {/* "Needs your decision" goes where the video banner is (docs/extension/queues.md, section 4). */}
       <AttentionBanner dense onOpen={(section) => void browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#${section}` })} />
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography variant="body2" noWrap title={downloaded} sx={{ flex: 1, minWidth: 0 }}>

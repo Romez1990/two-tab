@@ -11,9 +11,9 @@ import { groupColor } from '@/shared/ui';
 import type { SavedMatch } from '../model/match-url';
 
 /**
- * «Уже сохранено»: в каких сохранённых окнах и группах есть эта страница, со ссылкой на каждую запись.
- * Один и тот же блок — в плашке на сайте и во всплывающем окне. Без всплывающих подсказок: на сайте
- * блок живёт в теневом DOM, а подсказки рисуются в `document.body`.
+ * "Already saved": which saved windows and groups contain this page, with a link to each record.
+ * The same block is used in the banner on a site and in the popup. No tooltips: on a site
+ * the block lives in a shadow DOM, while tooltips render into `document.body`.
  */
 export function SavedMatches({
   matches,

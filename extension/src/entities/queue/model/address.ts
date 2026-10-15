@@ -1,6 +1,6 @@
 /**
- * Фильтры и страница очереди в адресе (docs/extension/queues.md, раздел 5), как поиск:
- * `#downloads?filter=decision,errors&page=2` — только то, что отличается от значений по умолчанию.
+ * Queue filters and page in the address (docs/extension/queues.md, section 5), like search:
+ * `#downloads?filter=decision,errors&page=2`, only what differs from the defaults.
  */
 
 export const QUEUE_FILTERS = ['active', 'decision', 'unread', 'errors', 'done'] as const;
@@ -16,7 +16,7 @@ export const FILTER_TITLES: Record<QueueFilter, string> = {
 
 export interface QueueState {
   filters: QueueFilter[];
-  /** С 1, как в переключателе страниц. */
+  /** From 1, as in the page switcher. */
   page: number;
 }
 
@@ -38,12 +38,12 @@ export function writeQueueState(state: QueueState): string {
   const params = new URLSearchParams();
   if (state.filters.length && !isDefault(state.filters)) params.set('filter', QUEUE_FILTERS.filter((f) => state.filters.includes(f)).join(','));
   if (state.page > 1) params.set('page', String(state.page));
-  // Запятые в списке фильтров оставляем как есть: адрес читается глазами.
+  // Commas in the filter list stay as is: the address stays human-readable.
   const text = params.toString().replace(/%2C/g, ',');
   return text ? `?${text}` : '';
 }
 
-/** Состояние из адреса вида `#downloads?…`. */
+/** State from an address like `#downloads?…`. */
 export function queueStateOfHash(hash: string): QueueState {
   const at = hash.indexOf('?');
   return at < 0 ? DEFAULT_QUEUE_STATE : readQueueState(hash.slice(at));

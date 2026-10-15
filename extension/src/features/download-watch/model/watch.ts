@@ -4,8 +4,8 @@ import { browser } from '@/shared/browser';
 import { watchEvents, type WatchState } from './events';
 
 /**
- * Скачивание в фоне: раз в минуту куки сайтов очереди уходят сервису (после его перезапуска видео ждут
- * их, tidy-reel/docs/downloader.md, раздел 3.2) и показываются уведомления подписок (раздел 7).
+ * Background downloading: once a minute queue site cookies go to the service (after its restart videos wait
+ * for them, tidy-reel/docs/downloader.md, section 3.2) and subscription notifications are shown (section 7).
  */
 export const DOWNLOAD_ALARM = 'download-watch';
 export const SUBSCRIPTION_NOTIFICATION_PREFIX = 'subscription:';
@@ -24,10 +24,10 @@ export async function onDownloadAlarm(): Promise<void> {
     const [queue, active] = await Promise.all([getQueue(), listItems(['active'], 0)]);
     groups = queue.groups;
     subscriptions = await listSubscriptions();
-    // Первая страница активных — те видео, что пойдут скоро: им и нужны куки.
+    // The first page of active items holds the videos that start soon: they are the ones needing cookies.
     await feedCookies(active.items);
   } catch {
-    return; // сервис не запущен: попробуем через минуту
+    return; // the service is not running: try again in a minute
   }
   const stored = (await browser.storage.local.get(STATE_KEY))[STATE_KEY] as WatchState | undefined;
   const { events, state } = watchEvents(subscriptions, groups, stored);
@@ -54,7 +54,7 @@ export async function onDownloadAlarm(): Promise<void> {
   }
 }
 
-/** Скачанное видео группы — для «Показать в папке»: история страницами, группа встречается редко. */
+/** A downloaded video of the group, for "Show in folder": history comes in pages, the group is rarely found. */
 async function doneVideoOf(groupId: number): Promise<number | null> {
   for (let page = 0; ; page++) {
     const { items, total, page_size } = await listItems(['done'], page).catch(() => ({ items: [], total: 0, page_size: 1 }));
@@ -64,7 +64,7 @@ async function doneVideoOf(groupId: number): Promise<number | null> {
   }
 }
 
-/** «Показать в папке» в уведомлении о скачанной группе. */
+/** "Show in folder" in the downloaded group notification. */
 export async function onSubscriptionButton(id: string): Promise<void> {
   await browser.notifications.clear(id);
   if (!id.startsWith(DOWNLOADED_PREFIX)) return;

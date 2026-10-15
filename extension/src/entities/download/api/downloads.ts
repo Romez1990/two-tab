@@ -2,8 +2,8 @@ import { connectedClient, errorText, type LocalServiceClient, type LocalServiceS
 import { browser } from '@/shared/browser';
 
 /**
- * Скачивание через локальный сервис (tidy-reel/docs/local_service/local_service.md, раздел 7.4).
- * Куки сайта расширение передаёт всегда: заранее не известно, закрыто ли видео (docs/extension/pages/downloads.md).
+ * Downloading through the local service (tidy-reel/docs/local_service/local_service.md, section 7.4).
+ * The extension always passes site cookies: it is not known beforehand whether the video is private (docs/extension/pages/downloads.md).
  */
 
 type S = LocalServiceSchemas;
@@ -31,7 +31,7 @@ async function client(): Promise<LocalServiceClient> {
   return c;
 }
 
-/** Ответ сервиса или ошибка с понятным текстом. */
+/** Service response or an error with a readable text. */
 function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T {
   if (result.data === undefined) throw new Error(errorText(result.response.status, result.error));
   return result.data;
@@ -41,7 +41,7 @@ function done(result: { error?: unknown; response: Response }): void {
   if (!result.response.ok) throw new Error(errorText(result.response.status, result.error));
 }
 
-/** Куки сайта адреса; без доступа к сайту — пусто (сервис попробует без них). */
+/** Site cookies of the address; empty without site access (the service tries without them). */
 export async function siteCookies(url: string): Promise<Cookie[]> {
   try {
     const origin = `${new URL(url).origin}/*`;
@@ -53,7 +53,7 @@ export async function siteCookies(url: string): Promise<Cookie[]> {
   }
 }
 
-/** Доступ к кукам сайта: спрашивается по нажатию кнопки. */
+/** Access to site cookies: requested on a button click. */
 export function requestCookieAccess(url: string): Promise<boolean> {
   return browser.permissions.request({ permissions: ['cookies'], origins: [`${new URL(url).origin}/*`] });
 }
@@ -66,12 +66,12 @@ export async function checkVideo(url: string): Promise<Check> {
   return unwrap(await (await client()).POST('/api/downloads/check', { body: { url, cookies: await siteCookies(url) } }));
 }
 
-/** Канал до постановки: число видео и сколько скачается при фильтрах; список канала сервис держит 10 минут (tidy-reel/docs/downloader.md, раздел 6.0). */
+/** Channel before queueing: video count and how many pass the filters; the service keeps the channel list for 10 minutes (tidy-reel/docs/downloader.md, section 6.0). */
 export async function checkChannel(url: string, filters: Filters = { from_end: false, music_only: false }): Promise<ChannelCheck> {
   return unwrap(await (await client()).POST('/api/downloads/channel/check', { body: { url, cookies: await siteCookies(url), filters } }));
 }
 
-/** Как ставить в очередь: «Временно сохранить оригинал» и «Запустить очередь» (docs/extension/pages/downloads.md, раздел 0). */
+/** How to queue: "Temporarily keep the original" and "Start the queue" (docs/extension/pages/downloads.md, section 0). */
 export interface EnqueueOptions {
   keepOriginal: boolean;
   start: boolean;
@@ -92,7 +92,7 @@ export async function enqueueVideo(url: string, folder: string, title: string | 
   return unwrap(await (await client()).POST('/api/downloads', { body }));
 }
 
-/** Канал встаёт в очередь сразу, без ожидания списка: группа с «подсчитывается…». */
+/** A channel is queued at once without waiting for the list: a group showing "counting…". */
 export async function enqueueChannel(url: string, folder: string, filters: Filters, presetEdits: Record<string, unknown> | null, options: EnqueueOptions): Promise<Group> {
   const body = { url, folder, filters, preset_edits: presetEdits, cookies: await siteCookies(url), keep_original: options.keepOriginal, start: options.start };
   return unwrap(await (await client()).POST('/api/downloads/channel', { body }));
@@ -103,17 +103,17 @@ export async function subscribe(url: string, folder: string, filters: Filters, p
   return unwrap(await (await client()).POST('/api/subscriptions', { body }));
 }
 
-/** Пауза, счётчики, остаток и группы без видео: видео — страницами (`listItems`). */
+/** Pause, counters, remainder and groups without videos: videos come in pages (`listItems`). */
 export async function getQueue(): Promise<DownloadQueue> {
   return unwrap(await (await client()).GET('/api/downloads'));
 }
 
-/** Страница видео по фильтрам (`active`, `decision`, `unread`, `errors`, `done`), страницы с 0. */
+/** A page of videos by filters (`active`, `decision`, `unread`, `errors`, `done`), pages from 0. */
 export async function listItems(filters: readonly string[], page: number): Promise<DownloadItems> {
   return unwrap(await (await client()).GET('/api/downloads/items', { params: { query: { filter: filters.join(','), page } } }));
 }
 
-/** Следующее видео с сообщением вида `kind` (`decision`, `unread`, `errors`) после `after`, по кругу. */
+/** Next video with a message of `kind` (`decision`, `unread`, `errors`) after `after`, wrapping around. */
 export async function nextItem(kind: string, after: number | null, filters: readonly string[]): Promise<{ id: number; page: number } | null> {
   return unwrap(await (await client()).GET('/api/downloads/items/next', { params: { query: { kind, after: after ?? undefined, filter: filters.join(',') } } }));
 }
@@ -126,7 +126,7 @@ export async function readMessage(id: number): Promise<void> {
   done(await (await client()).POST('/api/downloads/messages/{message_id}/read', { params: { path: { message_id: id } } }));
 }
 
-/** Видео архива из сообщения о дубликате: открыть, показать в папке, VLC с таймкода. */
+/** Archive video from a duplicate message: open, show in folder, VLC from the timestamp. */
 export async function messageAction(id: number, action: 'open' | 'show' | 'play'): Promise<void> {
   const c = await client();
   const path = { params: { path: { message_id: id } } };
@@ -135,12 +135,12 @@ export async function messageAction(id: number, action: 'open' | 'show' | 'play'
   done(await c.POST('/api/downloads/messages/{message_id}/play', path));
 }
 
-/** Решение у «Найден дубликат» (tidy-reel/docs/downloader.md, раздел 5.1). */
+/** Decision on "Duplicate found" (tidy-reel/docs/downloader.md, section 5.1). */
 export async function decideDuplicate(id: number, keep: 'old' | 'new' | 'both'): Promise<void> {
   done(await (await client()).POST('/api/downloads/{download_id}/duplicate', { params: { path: { download_id: id } }, body: { keep } }));
 }
 
-/** Куки сайтов видео очереди: сервис держит их только в памяти и забывает при перезапуске. */
+/** Site cookies of queued videos: the service keeps them only in memory and forgets them on restart. */
 export async function feedCookies(items: readonly { url: string; state: string }[]): Promise<void> {
   const urls = new Map<string, string>();
   for (const d of items)
@@ -148,7 +148,7 @@ export async function feedCookies(items: readonly { url: string; state: string }
       try {
         urls.set(new URL(d.url).origin, d.url);
       } catch {
-        // Адрес без сайта: куки не нужны.
+        // Address without a site: no cookies needed.
       }
     }
   if (urls.size === 0) return;

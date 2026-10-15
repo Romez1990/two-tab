@@ -4,8 +4,8 @@ import { fillIcons, missingIconSites } from '@/features/fetch-favicons';
 import { checkPages, pendingCheckUrls } from '@/features/check-pages';
 
 /**
- * Служебная скрытая страница фоновой проверки сохранённых (docs/extension/pages/saved.md, раздел 1):
- * сначала страницы вкладок (статус и заголовок), потом значки сайтов.
+ * Hidden service page of the background check of saved items (docs/extension/pages/saved.md, section 1):
+ * tab pages first (status and title), then site icons.
  */
 export function startOffscreen(): void {
   void runBackgroundCheck(async (signal, report) => {

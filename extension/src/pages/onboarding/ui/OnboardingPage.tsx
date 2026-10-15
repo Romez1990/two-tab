@@ -10,7 +10,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { TidyReelConnection } from '@/features/connect-tidy-reel';
 import { updateSettings, useSettings } from '@/shared/config';
 
-/** Первый запуск (docs/extension/pages/onboarding.md). Синхронизация появится на этапе 6. */
+/** First run (docs/extension/pages/onboarding.md). Sync arrives in stage 6. */
 export function OnboardingPage() {
   const settings = useSettings();
   const [name, setName] = useState<string>();

@@ -4,7 +4,7 @@ import { findStale, type StaleInputTab } from './find-stale';
 
 const now = new Date(2026, 9, 12, 12).getTime();
 const today = dayIndex(now);
-/** Chrome работал каждый из последних 40 дней. */
+/** Chrome ran on each of the last 40 days. */
 const runDays = Array.from({ length: 40 }, (_, i) => today - i);
 const tab = (daysAgo: number, extra: Partial<StaleInputTab> = {}): StaleInputTab => ({
   url: 'https://example.com/', pinned: false, lastAccessed: now - daysAgo * DAY, groupId: -1, ...extra,

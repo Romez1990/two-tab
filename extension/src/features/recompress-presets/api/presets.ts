@@ -1,6 +1,6 @@
 import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/api';
 
-/** Пресеты сжатия в локальном сервисе (tidy-reel/docs/local_service/local_service.md, раздел 7.3). */
+/** Compression presets in the local service (tidy-reel/docs/local_service/local_service.md, section 7.3). */
 export type Preset = LocalServiceSchemas['PresetResponse'];
 export type PresetInput = LocalServiceSchemas['PresetRequest'];
 
@@ -19,7 +19,7 @@ export async function listPresets(): Promise<{ presets: Preset[]; sites: string[
   return { presets: presets.data, sites: sites.data };
 }
 
-/** Сохраняет пресет: новый или на месте прежнего. Ошибка — текст для пользователя. */
+/** Saves a preset: a new one or in place of the old one. An error is a text for the user. */
 export async function savePreset(input: PresetInput, id?: number): Promise<Preset> {
   const c = await client();
   const result = id === undefined ? await c.POST('/api/presets', { body: input }) : await c.PUT('/api/presets/{preset_id}', { params: { path: { preset_id: id } }, body: input });

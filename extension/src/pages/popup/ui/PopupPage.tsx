@@ -32,9 +32,9 @@ export function PopupPage() {
   const { windows, reload } = useWindows();
   const [saved, setSaved] = useState<SavedMatch[]>([]);
   const [tabUrl, setTabUrl] = useState('');
-  // «Скачать» — для любой страницы, в том числе сайтов вне шаблонов плашки (docs/extension/pages/site_page.md, раздел 3).
+  // "Download" works for any page, including sites outside the banner patterns (docs/extension/pages/site_page.md, section 3).
   const connected = Boolean(useSettings()?.localServiceKey);
-  // Число видео, ждущих решения, у каждой очереди своё (docs/extension/pages/popup.md).
+  // Each queue has its own count of videos waiting for a decision (docs/extension/pages/popup.md).
   const [decisions, setDecisions] = useState({ downloads: 0, recompress: 0 });
   useEffect(() => {
     if (!connected) return;

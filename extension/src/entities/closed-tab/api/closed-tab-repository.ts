@@ -2,7 +2,7 @@ import { browser } from '@/shared/browser';
 import { db } from '@/shared/db';
 import { DAY } from '@/shared/lib';
 
-/** Вкладка, закрытая обычным способом (крестик, Ctrl+W); хранится 30 дней (docs/extension/pages/recovery.md, раздел 1). */
+/** A tab closed the usual way (close button, Ctrl+W); kept for 30 days (docs/extension/pages/recovery.md, section 1). */
 export interface ClosedTab {
   id?: number;
   url: string;
@@ -31,13 +31,13 @@ export async function pruneClosedTabs(now = Date.now()): Promise<void> {
 
 const CLOSING_KEY = 'closingByExtension';
 
-/** Вкладки, которые закрывает само расширение (сохранение группы, автозакрытие): в «Недавно закрытые» они не попадают. */
+/** Tabs closed by the extension itself (saving a group, auto-close): they do not go to "Recently closed". */
 export async function markClosingByExtension(tabIds: readonly number[]): Promise<void> {
   const stored = ((await browser.storage.session.get(CLOSING_KEY))[CLOSING_KEY] as number[] | undefined) ?? [];
   await browser.storage.session.set({ [CLOSING_KEY]: [...stored, ...tabIds] });
 }
 
-/** true, если вкладку закрыло расширение; отметка при этом снимается. */
+/** True if the extension closed the tab; the mark is removed. */
 export async function takeClosingByExtension(tabId: number): Promise<boolean> {
   const stored = ((await browser.storage.session.get(CLOSING_KEY))[CLOSING_KEY] as number[] | undefined) ?? [];
   if (!stored.includes(tabId)) return false;

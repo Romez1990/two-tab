@@ -33,7 +33,7 @@ import {
 } from '@/entities/download';
 import { hostOf } from '@/shared/lib';
 
-/** Куда: папка `New` модели, тег внутри модели, новая модель или папка без модели. */
+/** Where to: the model's `New` folder, a tag inside a model, a new model or a folder without a model. */
 type Target = { kind: 'folder'; folder: string } | { kind: 'create' } | { kind: 'other' };
 
 function addressFromHash(): string {
@@ -41,7 +41,7 @@ function addressFromHash(): string {
   return decodeURIComponent(rest.join('/'));
 }
 
-/** Пресет сайта по адресу: метка сайта встречается в домене (YouTube — youtube.com). */
+/** Site preset by address: the site label appears in the domain (YouTube for youtube.com). */
 function sitePreset(presets: readonly Preset[], url: string): Preset | undefined {
   const host = hostOf(url).toLowerCase();
   return presets.find((p) => !p.is_default && p.sites.some((label) => host.includes(label.toLowerCase())));
@@ -170,7 +170,7 @@ function FiltersForm({ filters, onChange }: { filters: Filters; onChange: (f: Fi
   );
 }
 
-/** Окно «Скачать» (docs/extension/pages/downloads.md): видео или канал, папка, пресет на этот раз. */
+/** The "Download" window (docs/extension/pages/downloads.md): video or channel, folder, one-time preset. */
 export function DownloadWindow() {
   const url = useMemo(addressFromHash, []);
   const [kind, setKind] = useState<PageKind>(() => pageKind(url) ?? 'video');
@@ -184,7 +184,7 @@ export function DownloadWindow() {
   const [onlyNew, setOnlyNew] = useState(true);
   const [keepOriginal, setKeepOriginal] = useState(false);
   const [start, setStart] = useState(true);
-  /** Сколько скачается при фильтрах; `null` — ещё считается (tidy-reel/docs/downloader.md, раздел 6.0). */
+  /** How many pass the filters; `null` means still counting (tidy-reel/docs/downloader.md, section 6.0). */
   const [matching, setMatching] = useState<number | null>(null);
 
   async function load(nextKind = kind) {
@@ -199,7 +199,7 @@ export function DownloadWindow() {
       setBusy(false);
     }
   }
-  // Пересчёт при смене фильтров: список канала сервис держит в памяти, к сайту не обращается.
+  // Recount on a filter change: the service keeps the channel list in memory and does not contact the site.
   useEffect(() => {
     if (kind !== 'channel' || !check || !('videos' in check)) return;
     let alive = true;
@@ -320,7 +320,7 @@ export function DownloadWindow() {
           )}
           {channel && (
             <>
-              {/* Пока число не пришло, можно не ждать: группа встанет с «подсчитывается…». */}
+              {/* No need to wait for the count: the group is queued showing "counting…". */}
               <Button variant="contained" disabled={!folder || busy || matching === 0} onClick={() => void submit('channel')}>
                 Скачать канал
               </Button>

@@ -20,8 +20,8 @@ import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { groupColor, KeepLockButton } from '@/shared/ui';
 
 /**
- * «Окна» (docs/extension/pages/windows.md, раздел 1): имена окон, порядок перетаскиванием (окна пересоздаются,
- * чтобы Windows показала их в этом порядке), «Не закрывать», сохранение окон и групп.
+ * "Windows" (docs/extension/pages/windows.md, section 1): window names, order by dragging (windows are recreated
+ * so that Windows shows them in this order), "Do not close", saving windows and groups.
  */
 export function WindowsPage() {
   const { windows, uids, reload } = useWindows();
@@ -29,7 +29,7 @@ export function WindowsPage() {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Новый порядок (номера окон), пока его не применили. Закрытые тем временем окна выпадают, новые — в конце.
+  // The new order (window ids) until it is applied. Windows closed meanwhile drop out, new ones go to the end.
   const [draft, setDraft] = useState<number[] | null>(null);
   const shown = draft
     ? [
@@ -86,7 +86,7 @@ export function WindowsPage() {
         ))}
       </Stack>
       {changed && (
-        // Панель поверх страницы внизу: окна не трогаются, пока не нажато «Применить».
+        // Panel over the page at the bottom: windows are not touched until "Apply" is pressed.
         <Paper
           elevation={6}
           sx={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 'snackbar', px: 2, py: 1 }}

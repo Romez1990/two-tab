@@ -1,6 +1,6 @@
 import type { SavedItem } from './types';
 
-/** Вкладка `from` переезжает на место `to` (номера — до переезда). */
+/** Tab `from` moves to the place of `to` (indexes as before the move). */
 export function moveSavedTab(item: SavedItem, from: number, to: number): SavedItem {
   const tabs = [...item.window.tabs];
   const [tab] = tabs.splice(from, 1);
@@ -9,7 +9,7 @@ export function moveSavedTab(item: SavedItem, from: number, to: number): SavedIt
   return { ...item, window: { ...item.window, tabs } };
 }
 
-/** Без вкладки `index`; `undefined`, если это была последняя вкладка, — тогда запись удаляется целиком. */
+/** Without tab `index`; `undefined` if it was the last tab, then the whole record is deleted. */
 export function removeSavedTab(item: SavedItem, index: number): SavedItem | undefined {
   const tabs = item.window.tabs.filter((_, i) => i !== index);
   return tabs.length === 0 ? undefined : { ...item, window: { ...item.window, tabs } };

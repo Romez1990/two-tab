@@ -1,4 +1,4 @@
-/** Домен адреса без `www.`; пустая строка, если адрес не разбирается. */
+/** Domain of the address without `www.`; an empty string if the address does not parse. */
 export function hostOf(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, '');
@@ -7,7 +7,7 @@ export function hostOf(url: string): string {
   }
 }
 
-/** Адрес с самым частым доменом среди адресов — например, чтобы взять его значок как значок группы. */
+/** The address with the most frequent domain among the addresses, for example to use its icon as the group icon. */
 export function mostCommonHostUrl(urls: readonly string[]): string | undefined {
   const counts = new Map<string, { n: number; url: string }>();
   for (const url of urls) {

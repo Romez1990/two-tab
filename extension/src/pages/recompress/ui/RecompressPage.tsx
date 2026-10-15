@@ -67,7 +67,7 @@ const JOB_STATES: Record<string, { label: string; color: 'default' | 'primary' |
   cancelled: { label: 'отменено', color: 'default' },
 };
 
-/** Итог файла (docs/codes.md в Tidy Reel, раздел 1). */
+/** File outcome (docs/codes.md in Tidy Reel, section 1). */
 const OUTCOMES: Record<string, string> = {
   compressed: 'сжато',
   source_kept: 'сжатое вышло больше, оставлен исходник',
@@ -84,7 +84,7 @@ function fileName(path: string): string {
   return path.split(/[\\/]/).pop() ?? path;
 }
 
-/** Предупреждение у файла (tidy-reel/docs/recompress.md, раздел 6.1): жёлтое, красное и с подтверждением. */
+/** File warning (tidy-reel/docs/recompress.md, section 6.1): yellow, red and with confirmation. */
 function NoticeIcon({ kind }: { kind: string }) {
   if (kind === 'ours') return <WarningAmber fontSize="small" color="warning" />;
   if (kind === 'worse') return <WarningAmber fontSize="small" color="error" />;
@@ -92,7 +92,7 @@ function NoticeIcon({ kind }: { kind: string }) {
   return <InfoOutlined fontSize="small" color="info" />;
 }
 
-/** Все решения до запуска (recompress.md, раздел 6.2): предупреждения одним списком, подтверждение по каждому файлу. */
+/** All decisions before the start (recompress.md, section 6.2): warnings in one list, confirmation per file. */
 function CheckList({ check, confirmed, onConfirm }: { check: JobCheck; confirmed: Set<string>; onConfirm: (path: string, on: boolean) => void }) {
   const noted = check.files.filter((f: FileCheck) => f.notices.length > 0);
   return (
@@ -125,7 +125,7 @@ function CheckList({ check, confirmed, onConfirm }: { check: JobCheck; confirmed
   );
 }
 
-/** Новое задание: папка, пресет с правками в общем порядке полей, проверка файлов, «Запустить очередь». */
+/** New job: folder, preset with edits in the common field order, file check, "Start the queue". */
 function NewJob({ run }: { run: Run }) {
   const [folder, setFolder] = useState('');
   const [presets, setPresets] = useState<Preset[]>([]);
@@ -143,7 +143,7 @@ function NewJob({ run }: { run: Run }) {
       })
       .catch(() => setPresets([]));
   }, []);
-  // Любая правка делает прошлую проверку неверной.
+  // Any edit makes the previous check invalid.
   useEffect(() => setCheck(null), [folder, preset, edits]);
 
   const defaults = presets.find((p) => p.is_default);
@@ -326,7 +326,7 @@ function JobItem({ job, files, target, run }: { job: Job; files: JobFile[]; targ
   );
 }
 
-/** «Очередь сжатия» (docs/extension/pages/recompress.md): задания по порядку, файлы — страницами по фильтрам. */
+/** "Compression queue" (docs/extension/pages/recompress.md): jobs in order, files in pages by filters. */
 export function RecompressPage() {
   const [address, setAddress] = useQueueAddress('recompress');
   const [queue, setQueue] = useState<RecompressQueue | null>(null);

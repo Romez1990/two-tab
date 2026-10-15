@@ -1,24 +1,24 @@
-/** Результат проверки страницы GET-запросом (docs/extension/pages/saved.md, раздел 1). */
+/** Result of checking a page with a GET request (docs/extension/pages/saved.md, section 1). */
 export interface PageCheck {
   url: string;
-  /** Когда проверяли. */
+  /** When it was checked. */
   at: number;
-  /** Код ответа. */
+  /** Response code. */
   code?: number;
-  /** Сайт не ответил: домена нет или время вышло. */
+  /** The site did not respond: no such domain or a timeout. */
   failed?: true;
-  /** Куда привели перенаправления, если адрес сменился. */
+  /** Where the redirects led, if the address changed. */
   finalUrl?: string;
 }
 
-/** Метка у вкладки; `null` — со страницей всё хорошо (или её ещё не проверяли). */
+/** Badge on a tab; `null` means the page is fine (or not checked yet). */
 export interface StatusBadge {
   label: string;
   color: 'error' | 'warning';
   hint: string;
 }
 
-/** 429 и 503 сюда не доходят: на них запросы ставятся на паузу, а результат не сохраняется. */
+/** 429 and 503 never get here: requests are paused on them and the result is not stored. */
 const BLOCKED = new Set([401, 403]);
 
 const REASONS: Record<number, string> = {
@@ -54,7 +54,7 @@ export function statusBadge(check: PageCheck | undefined): StatusBadge | null {
   return null;
 }
 
-/** Перенаправление на другой сайт или на главную страницу; смена `http`→`https` и `www` не в счёт. */
+/** Redirect to another site or to the home page; a `http`→`https` or `www` change does not count. */
 export function isSuspiciousRedirect(from: string, to: string): boolean {
   let a: URL, b: URL;
   try {

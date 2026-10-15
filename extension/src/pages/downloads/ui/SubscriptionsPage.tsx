@@ -8,7 +8,7 @@ import { checkSubscriptionsNow, listSubscriptions, unsubscribe, updateSubscripti
 import { formatDateTime } from '@/shared/lib';
 import { describeFilters } from '../model/filters';
 
-/** «Подписки» (docs/extension/pages/downloads.md, раздел 2): фильтры, пауза, «Проверить сейчас». */
+/** "Subscriptions" (docs/extension/pages/downloads.md, section 2): filters, pause, "Check now". */
 export function SubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(null);
   const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);

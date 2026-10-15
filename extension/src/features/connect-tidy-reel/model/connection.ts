@@ -2,16 +2,16 @@ import { localServiceClient } from '@/shared/api';
 import { getSettings, updateSettings } from '@/shared/config';
 
 /**
- * Подключение профиля к локальному сервису Tidy Reel (docs/extension/pages/settings.md, раздел 1):
- * регистрация с номером и названием профиля, проверка связи, отключение. Ключ хранится в `storage.local`.
+ * Connecting the profile to the local Tidy Reel service (docs/extension/pages/settings.md, section 1):
+ * registration with the profile id and name, connection check, disconnect. The key is kept in `storage.local`.
  */
 
 export type ConnectionStatus =
   | { state: 'none' }
   | { state: 'connected'; name: string; since: string }
-  /** Ключ есть, но сервис не ответил: подключение остаётся. */
+  /** There is a key but the service did not respond: the connection stays. */
   | { state: 'unreachable' }
-  /** Сервис забыл профиль (отключён командой меню): ключ забыт и здесь. */
+  /** The service forgot the profile (disconnected from the menu): the key is forgotten here too. */
   | { state: 'revoked' };
 
 export type ConnectResult =
@@ -22,7 +22,7 @@ export type ConnectResult =
 
 const TAKEN_PREFIX = 'another profile is connected: ';
 
-/** Название уже подключённого профиля из ответа 409. */
+/** Name of the already connected profile from a 409 response. */
 export function takenBy(detail: unknown): string {
   return typeof detail === 'string' && detail.startsWith(TAKEN_PREFIX) ? detail.slice(TAKEN_PREFIX.length) : '';
 }
@@ -57,7 +57,7 @@ export async function checkConnection(): Promise<ConnectionStatus> {
     return { state: 'unreachable' };
   }
   if (result.data) return { state: 'connected', name: result.data.name, since: result.data.connected_at };
-  // 401 — сервис не знает этот ключ: профиль отключили в Tidy Reel.
+  // 401: the service does not know this key, the profile was disconnected in Tidy Reel.
   if (result.response.status === 401) {
     await updateSettings({ localServiceKey: '' });
     return { state: 'revoked' };
@@ -65,13 +65,13 @@ export async function checkConnection(): Promise<ConnectionStatus> {
   return { state: 'unreachable' };
 }
 
-/** Забывает подключение; `false` — сервис не ответил, и в Tidy Reel профиль надо отключить командой меню. */
+/** Forgets the connection; `false` means the service did not respond and the profile must be disconnected from the Tidy Reel menu. */
 export async function disconnectTidyReel(): Promise<boolean> {
   const { localServicePort, localServiceKey } = await getSettings();
   let forgotten = false;
   try {
     const { response } = await localServiceClient(localServicePort, localServiceKey).DELETE('/api/connection');
-    // 401: сервис уже не знает этот профиль.
+    // 401: the service no longer knows this profile.
     forgotten = response.ok || response.status === 401;
   } catch {
     forgotten = false;

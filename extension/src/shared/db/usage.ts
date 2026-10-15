@@ -1,6 +1,6 @@
 /**
- * Сколько места занимает локальная база расширения (IndexedDB, в которой Dexie).
- * Chrome даёт оценку для всего источника расширения, поэтому цифра приблизительная.
+ * How much space the local extension database takes (IndexedDB, holding Dexie).
+ * Chrome gives an estimate for the whole extension origin, so the number is approximate.
  */
 export async function getDbUsageBytes(): Promise<number | undefined> {
   try {
@@ -10,7 +10,7 @@ export async function getDbUsageBytes(): Promise<number | undefined> {
   }
 }
 
-/** «512 Б», «48,3 КБ», «12,4 МБ». */
+/** Size like "512 B", "48.3 KB", "12.4 MB" (shown in Russian). */
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} Б`;
   const units = ['КБ', 'МБ', 'ГБ'];

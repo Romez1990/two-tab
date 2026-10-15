@@ -4,15 +4,15 @@ import { getWindowUids, newWindowUid, setWindowUid } from '@/entities/window';
 import { browser, type Browser } from '@/shared/browser';
 
 /**
- * Восстанавливает окна из снимка (docs/extension/pages/recovery.md, раздел 1). Перед восстановлением текущие окна
- * уходят в историю, чтобы восстановление можно было отменить. Вкладки, кроме первой в окне, открываются выгруженными.
+ * Restores windows from a snapshot (docs/extension/pages/recovery.md, section 1). Before restoring, the current windows
+ * go to history so that the restore can be undone. All tabs except the first in a window open discarded.
  */
 export async function restoreWindows(windows: readonly SnapshotWindow[]): Promise<void> {
   await archiveCurrentSnapshot();
   for (const w of windows) await openWindow(w);
 }
 
-/** Добавляет пропавшие вкладки в открытое окно с этим постоянным номером, а если его нет — в новое окно. */
+/** Adds missing tabs to the open window with this permanent id, or to a new window if there is none. */
 export async function restoreTabs(window: SnapshotWindow, tabs: readonly SnapshotTab[]): Promise<void> {
   await archiveCurrentSnapshot();
   const windowId = await findWindowId(window.uid);
@@ -35,7 +35,7 @@ async function openWindow(window: SnapshotWindow): Promise<void> {
   const windowId = created?.id;
   const firstTabId = created?.tabs?.[0]?.id;
   if (windowId === undefined || firstTabId === undefined) throw new Error('Chrome не вернул новое окно');
-  // Постоянный номер переходит к восстановленному окну, если такого окна сейчас нет.
+  // The permanent id moves to the restored window if no such window is open now.
   const taken = new Set((await getWindowUids()).values());
   await setWindowUid(windowId, taken.has(window.uid) ? newWindowUid() : window.uid);
   if (first.pinned) await browser.tabs.update(firstTabId, { pinned: true });
@@ -53,7 +53,7 @@ async function findWindowId(uid: string): Promise<number | undefined> {
   return undefined;
 }
 
-/** Вкладка без загрузки страницы: создаётся в фоне и выгружается, как только Chrome узнал её адрес. */
+/** A tab without loading the page: created in the background and discarded as soon as Chrome knows its address. */
 async function createDiscardedTab(windowId: number, tab: SnapshotTab): Promise<number> {
   const created = await browser.tabs.create({ windowId, url: tab.url, pinned: tab.pinned, active: false });
   const id = created.id;
@@ -96,21 +96,21 @@ async function applyGroups(
     const groupId = await browser.tabs.group({ tabIds: [firstId, ...otherIds], createProperties: { windowId } });
     await browser.tabGroups.update(groupId, {
       title: group.title,
-      // У импортированных групп цвета нет — Chrome выберет сам.
+      // Imported groups have no color: Chrome picks one itself.
       ...(group.color ? { color: group.color as Browser.tabGroups.Color } : {}),
       collapsed: group.collapsed,
     });
   }
 }
 
-/** Открывает группу в последнем активном окне (или в новом, если окон нет). */
+/** Opens a group in the last focused window (or in a new one if there are no windows). */
 export async function restoreGroup(group: SnapshotWindow): Promise<void> {
   const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
   const uid = target?.id !== undefined ? (await getWindowUids()).get(target.id) : undefined;
   await restoreTabs({ ...group, uid: uid ?? newWindowUid() }, group.tabs);
 }
 
-/** «Открыть» сохранённое: вкладки открываются в текущем окне в фоне, без группы; запись остаётся в «Сохранённых». */
+/** "Open" a saved item: tabs open in the current window in the background, without a group; the record stays in "Saved". */
 export async function openSaved(item: SavedItem): Promise<void> {
   const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
   if (target?.id === undefined) {
@@ -120,7 +120,7 @@ export async function openSaved(item: SavedItem): Promise<void> {
   for (const t of item.window.tabs) await browser.tabs.create({ windowId: target.id, url: t.url, active: false });
 }
 
-/** «Вернуть» сохранённое (из уведомления автозакрытия): окно или группа открываются как были, запись убирается из «Сохранённых». */
+/** "Restore" a saved item (from the auto-close notification): the window or group opens as it was, the record leaves "Saved". */
 export async function returnSaved(item: SavedItem): Promise<void> {
   if (item.kind === 'window') await restoreWindows([item.window]);
   else await restoreGroup(item.window);

@@ -4,9 +4,9 @@ import { checkPage, checkPages, getChecks, pendingCheckUrls } from './check-page
 import type { PageCheck } from './page-status';
 
 /**
- * Проверки страниц для «Сохранённых» (docs/extension/pages/saved.md, раздел 1). `loadItem` — для развёрнутой
- * записи: показывает сохранённые проверки и проверяет непроверенное (возвращает отмену); `recheck` — нажатие
- * на метку. Найденные заголовки передаются в `onTitle`. Без доступа к сайтам только показывается сохранённое.
+ * Page checks for "Saved" (docs/extension/pages/saved.md, section 1). `loadItem` is for an expanded
+ * record: shows stored checks and checks the unchecked ones (returns a cancel function); `recheck` is a click
+ * on a badge. Found titles go to `onTitle`. Without site access only stored results are shown.
  */
 export function usePageChecks(
   access: boolean | undefined,

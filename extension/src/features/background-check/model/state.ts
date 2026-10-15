@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { db } from '@/shared/db';
 
-/** Состояние фоновой проверки сохранённых (docs/extension/pages/saved.md, раздел 1). */
+/** State of the background check of saved items (docs/extension/pages/saved.md, section 1). */
 export interface CheckState {
   running: boolean;
-  /** Проверено из `total`; `total` 0 — проверка ещё считает, что проверять. */
+  /** Checked out of `total`; `total` 0 means the check is still counting what to check. */
   checked: number;
   total: number;
   startedAt?: number;
@@ -24,7 +24,7 @@ export async function updateCheckState(change: Partial<CheckState>): Promise<voi
   });
 }
 
-/** Состояние для страницы настроек; проверка идёт в другой странице расширения, поэтому оно перечитывается раз в секунду. */
+/** State for the settings page; the check runs in another extension page, so it is re-read every second. */
 export function useCheckState(): CheckState | undefined {
   const [state, setState] = useState<CheckState>();
   useEffect(() => {

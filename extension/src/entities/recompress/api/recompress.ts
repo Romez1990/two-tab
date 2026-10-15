@@ -1,6 +1,6 @@
 import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/api';
 
-/** Очередь сжатия архива в локальном сервисе (tidy-reel/docs/local_service/local_service.md, раздел 7.5). */
+/** Archive compression queue in the local service (tidy-reel/docs/local_service/local_service.md, section 7.5). */
 
 type S = LocalServiceSchemas;
 export type RecompressQueue = S['RecompressQueueModel'];
@@ -25,7 +25,7 @@ function done(result: { error?: unknown; response: Response }): void {
   if (!result.response.ok) throw new Error(errorText(result.response.status, result.error));
 }
 
-/** Что будет с каждым файлом папки и предупреждения по файлам — до создания задания. */
+/** What happens to each file of the folder, and per-file warnings, before the job is created. */
 export async function checkJob(folder: string, preset: string, edits: Record<string, unknown> | null): Promise<JobCheck> {
   return unwrap(await (await client()).POST('/api/recompress/check', { body: { folder, preset, edits } }));
 }
@@ -64,7 +64,7 @@ export async function jobAction(id: number, action: JobAction): Promise<void> {
   done(await c.POST('/api/recompress/{job_id}/move', { ...path, body: { steps: action === 'up' ? -1 : 1 } }));
 }
 
-/** «Повторить» и «Пропустить» у файла с ошибкой. */
+/** "Retry" and "Skip" on a failed file. */
 export async function fileAction(id: number, action: 'retry' | 'skip'): Promise<void> {
   const c = await client();
   const path = { params: { path: { file_id: id } } };

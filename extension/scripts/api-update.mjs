@@ -1,7 +1,7 @@
-// Обновляет договор локального сервиса (docs/extension/technologies.md, раздел 2.6): копирует
-// api/openapi.yaml из Tidy Reel и заново строит из него типы. Путь к Tidy Reel — в
-// extension/.env.local (не в git): TIDY_REEL_DIR=D:/.../tidy-reel. Прямые слэши: обратные
-// в .env-файле Node читает как экранирование (\v — вертикальная табуляция).
+// Updates the local service contract (docs/extension/technologies.md, section 2.6): copies
+// api/openapi.yaml from Tidy Reel and rebuilds the types from it. The Tidy Reel path is in
+// extension/.env.local (not in git): TIDY_REEL_DIR=D:/.../tidy-reel. Forward slashes: Node reads
+// backslashes in a .env file as escapes (\v is a vertical tab).
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -23,5 +23,5 @@ if (!existsSync(source)) {
 }
 copyFileSync(source, CONTRACT);
 console.log(`Скопирован ${source} → ${CONTRACT}`);
-// CLI запускается тем же Node напрямую: без оболочки, которая нужна Windows для pnpm.cmd.
+// The CLI runs with the same Node directly, without the shell Windows needs for pnpm.cmd.
 execFileSync(process.execPath, ['node_modules/openapi-typescript/bin/cli.js', CONTRACT, '-o', TYPES], { stdio: 'inherit' });

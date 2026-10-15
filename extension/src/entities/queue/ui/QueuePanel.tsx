@@ -12,14 +12,14 @@ import type { ReactNode } from 'react';
 import type { LocalServiceSchemas } from '@/shared/api';
 import { FILTER_TITLES, QUEUE_FILTERS, type QueueFilter } from '../model/address';
 
-/** Компоненты, общие для «Очереди скачивания» и «Очереди сжатия» (docs/extension/queues.md, раздел 1). */
+/** Components shared by "Download queue" and "Compression queue" (docs/extension/queues.md, section 1). */
 
 export type QueuePause = LocalServiceSchemas['PauseModel'];
 export type QueueCountersValue = LocalServiceSchemas['CountersModel'];
-/** Что считает счётчик; то же значение — `kind` у `…/items/next`. */
+/** What a counter counts; the same value is `kind` of `…/items/next`. */
 export type CounterKind = 'decision' | 'unread' | 'errors';
 
-/** Причины паузы всей очереди (tidy-reel/docs/recompress.md, раздел 6.3). */
+/** Reasons the whole queue is paused (tidy-reel/docs/recompress.md, section 6.3). */
 const PAUSE_REASONS: Record<string, string> = {
   user: 'Пауза',
   no_space: 'Кончилось место',
@@ -27,7 +27,7 @@ const PAUSE_REASONS: Record<string, string> = {
   need_cookies: 'Нужны куки',
 };
 
-/** Панель очереди: идёт или на паузе и почему, «Пауза» и «Продолжить», сколько осталось. */
+/** Queue panel: running or paused and why, "Pause" and "Resume", how much is left. */
 export function QueuePanel({ pause, remaining, onPause }: { pause: QueuePause | null; remaining: string; onPause: (paused: boolean) => void }) {
   return (
     <Paper variant="outlined" sx={{ px: 2, py: 1 }}>
@@ -50,7 +50,7 @@ const COUNTERS: { kind: CounterKind; field: keyof QueueCountersValue; label: str
   { kind: 'errors', field: 'errors', label: 'Ошибки', color: 'error' },
 ];
 
-/** Счётчики в правом верхнем углу, видны при прокрутке; при нуле скрыты. Нажатие — к следующему видео. */
+/** Counters in the top right corner, visible while scrolling; hidden at zero. A click goes to the next video. */
 export function QueueCounters({ counters, onJump }: { counters: QueueCountersValue; onJump: (kind: CounterKind) => void }) {
   const shown = COUNTERS.filter((c) => counters[c.field] > 0);
   if (!shown.length) return null;
@@ -63,7 +63,7 @@ export function QueueCounters({ counters, onJump }: { counters: QueueCountersVal
   );
 }
 
-/** Фильтры очереди, можно несколько; сняли все — снова «Активные». */
+/** Queue filters, several allowed; clearing all returns to "Active". */
 export function QueueFilters({ value, onChange }: { value: readonly QueueFilter[]; onChange: (filters: QueueFilter[]) => void }) {
   return (
     <ToggleButtonGroup size="small" value={value} onChange={(_, next: QueueFilter[]) => onChange(next.length ? QUEUE_FILTERS.filter((f) => next.includes(f)) : ['active'])}>
@@ -76,14 +76,14 @@ export function QueueFilters({ value, onChange }: { value: readonly QueueFilter[
   );
 }
 
-/** Страницы, которые отдаёт сервис; `page` — с 1. */
+/** Pages returned by the service; `page` starts from 1. */
 export function QueuePager({ total, pageSize, page, onPage }: { total: number; pageSize: number; page: number; onPage: (page: number) => void }) {
   const pages = Math.ceil(total / pageSize);
   if (pages <= 1) return null;
   return <Pagination count={pages} page={Math.min(page, pages)} onChange={(_, p) => onPage(p)} color="primary" size="small" sx={{ alignSelf: 'center' }} />;
 }
 
-/** Низ формы создания: «Запустить очередь» (по умолчанию включена) и кнопка создания. */
+/** Bottom of the create form: "Start the queue" (on by default) and the create button. */
 export function CreateFooter({ start, onStart, children }: { start: boolean; onStart: (start: boolean) => void; children: ReactNode }) {
   return (
     <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>

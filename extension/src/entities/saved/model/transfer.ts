@@ -1,7 +1,7 @@
 import { parseBetterOneTab, parseSupaTabs } from './import-other';
 import type { SavedItem } from './types';
 
-/** Файл экспорта «Сохранённых» (docs/extension/pages/saved.md, раздел 1). */
+/** Export file of "Saved" (docs/extension/pages/saved.md, section 1). */
 export interface SavedExport {
   format: typeof FORMAT;
   version: typeof VERSION;
@@ -23,8 +23,8 @@ export function exportFileName(now = Date.now()): string {
 }
 
 /**
- * Разбирает файл импорта: экспорт Tabsurd, BetterOneTab или SupaTabs — формат определяется сам.
- * Чужой формат или испорченная запись — ошибка, и ничего не импортируется.
+ * Parses an import file: a Tabsurd export, BetterOneTab or SupaTabs; the format is detected automatically.
+ * An unknown format or a broken record is an error, and nothing is imported.
  */
 export function parseExport(text: string): SavedItem[] {
   let data: unknown;

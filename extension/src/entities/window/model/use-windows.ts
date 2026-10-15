@@ -4,7 +4,7 @@ import { listWindows } from './list-windows';
 import type { BrowserWindow } from './types';
 import { getWindowUids } from './uids';
 
-/** Открытые окна и их постоянные номера; обновляются, когда окна, вкладки или группы меняются. */
+/** Open windows and their permanent ids; updated when windows, tabs or groups change. */
 export function useWindows(): { windows: BrowserWindow[]; uids: ReadonlyMap<number, string>; reload: () => void } {
   const [windows, setWindows] = useState<BrowserWindow[]>([]);
   const [uids, setUids] = useState<ReadonlyMap<number, string>>(new Map());

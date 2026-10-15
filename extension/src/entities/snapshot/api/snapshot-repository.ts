@@ -19,8 +19,8 @@ export async function listHistory(): Promise<Snapshot[]> {
 }
 
 /**
- * Копирует снимок в историю, если с последней копии окна менялись, и чистит историю по возрасту.
- * Вызывается раз в 10 минут, при запуске Chrome и перед восстановлением.
+ * Copies the snapshot to history if the windows changed since their last copy, and prunes history by age.
+ * Called every 10 minutes, on Chrome start and before a restore.
  */
 export async function archiveSnapshot(snapshot: Snapshot, now = Date.now()): Promise<void> {
   const last = await db.snapshots.orderBy('takenAt').last();

@@ -2,8 +2,8 @@ import { browser } from '@/shared/browser';
 import { remember, type SearchQuery } from '../model/similar';
 
 /**
- * История запросов поиска (docs/extension/pages/search.md, раздел 2.1). Пока без сервера синхронизации —
- * только на этом компьютере, в `storage.local`; хранится вся.
+ * Search query history (docs/extension/pages/search.md, section 2.1). Until there is a sync server,
+ * it lives only on this computer, in `storage.local`; all of it is kept.
  */
 const KEY = 'searchHistory';
 

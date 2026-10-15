@@ -3,9 +3,9 @@ import { browser } from '@/shared/browser';
 import { planMoves } from './plan-moves';
 
 /**
- * Пересоздаёт окно: открывает новое окно на том же месте и переносит в него вкладки и группы.
- * Windows сортирует окна на панели задач по времени создания, поэтому пересозданное окно становится последним
- * (docs/extension/pages/windows.md, раздел 1). Старое окно закрывается само, когда из него уходит последняя вкладка.
+ * Recreates a window: opens a new window in the same place and moves the tabs and groups into it.
+ * Windows orders taskbar windows by creation time, so the recreated window becomes the last one
+ * (docs/extension/pages/windows.md, section 1). The old window closes by itself when its last tab leaves.
  */
 export async function recreateWindow(window: BrowserWindow): Promise<void> {
   const plan = planMoves(window.tabs);
@@ -17,7 +17,7 @@ export async function recreateWindow(window: BrowserWindow): Promise<void> {
   const created = await browser.windows.create({ tabId: plan.first, ...placement });
   if (created?.id === undefined) throw new Error('Chrome не вернул новое окно');
   const windowId = created.id;
-  // Постоянный номер (имя окна, «Не закрывать») переходит к новому окну.
+  // The permanent id (window name, "Do not close") moves to the new window.
   const uid = (await getWindowUids()).get(window.id);
   if (uid) await setWindowUid(windowId, uid);
   for (const step of plan.rest) {
@@ -30,8 +30,8 @@ export async function recreateWindow(window: BrowserWindow): Promise<void> {
 }
 
 /**
- * Новый порядок окон на панели задач (docs/extension/pages/windows.md, раздел 1): окна до первого изменения
- * остаются, остальные пересоздаются по очереди и встают в конец в нужном порядке.
+ * New window order on the taskbar (docs/extension/pages/windows.md, section 1): windows before the first change
+ * stay, the rest are recreated one by one and go to the end in the right order.
  */
 export async function reorderWindows(current: readonly BrowserWindow[], next: readonly BrowserWindow[]): Promise<void> {
   const firstChanged = next.findIndex((w, i) => current[i]?.id !== w.id);

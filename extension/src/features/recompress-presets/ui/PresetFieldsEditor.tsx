@@ -9,13 +9,13 @@ import Typography from '@mui/material/Typography';
 import { SMART_TIME_HINT, SmartHint } from '@/shared/ui';
 import { DEFAULT_FIELDS, SLIDERS, describeStep, trimError, type PresetFields, type SliderDef, type SliderField } from '../model/fields';
 
-/** Порядок формы — один для «Скачать», «Очереди сжатия» и настроек (docs/extension/queues.md, раздел 1). */
+/** Form order, the same for "Download", "Compression queue" and settings (docs/extension/queues.md, section 1). */
 const ORDER: SliderField[] = ['resolution', 'crf', 'fps', 'speed', 'opus_kbps', 'grain'];
 const ORDERED = ORDER.map((field) => SLIDERS.find((s) => s.field === field)!);
 
 /**
- * Поля пресета (tidy-reel/docs/recompress.md, раздел 2). `base` — «По умолчанию»: у пресета сайта
- * поле без галочки «своё» берётся оттуда. Тот же редактор — в окне «Скачать» для правок на этот раз.
+ * Preset fields (tidy-reel/docs/recompress.md, section 2). `base` is "Default": a site preset field
+ * without the "own" checkbox is taken from it. The same editor is used in the "Download" window for one-time edits.
  */
 export function PresetFieldsEditor({
   fields,
@@ -23,7 +23,7 @@ export function PresetFieldsEditor({
   onChange,
 }: {
   fields: Partial<PresetFields>;
-  /** Нет — редактируется «По умолчанию»: все поля свои. */
+  /** None means "Default" is being edited: all fields are its own. */
   base?: PresetFields;
   onChange: (fields: Partial<PresetFields>) => void;
 }) {

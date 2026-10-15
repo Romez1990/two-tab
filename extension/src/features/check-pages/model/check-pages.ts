@@ -5,24 +5,24 @@ import { detectCharset, needsTitle, titleFromHtml } from './needs-title';
 import type { PageCheck } from './page-status';
 
 /**
- * Проверка сохранённых вкладок (docs/extension/pages/saved.md, раздел 1): один GET-запрос на адрес даёт
- * код ответа, адрес после перенаправлений и заголовок из `<title>`. Нужен доступ к сайтам. Результаты —
- * в таблице `pageChecks`, по записи на адрес.
+ * Checking saved tabs (docs/extension/pages/saved.md, section 1): one GET request per address gives
+ * the response code, the address after redirects and the title from `<title>`. Needs site access. Results
+ * go to the `pageChecks` table, one record per address.
  */
 
 const RETRY_AFTER_MS = 30 * DAY;
 
-/** Сохранённые проверки адресов; непроверенных в ответе нет. */
+/** Stored address checks; unchecked addresses are not in the result. */
 export async function getChecks(urls: readonly string[]): Promise<Map<string, PageCheck>> {
   const found = await db.pageChecks.bulkGet([...urls]);
   return new Map(found.flatMap((c) => (c ? [[c.url, c as unknown as PageCheck]] : [])));
 }
 
-/** Адреса вкладок `items`, которые не проверялись последние 30 дней. */
+/** Tab addresses of `items` not checked in the last 30 days. */
 export async function pendingCheckUrls(items: readonly SavedItem[], now = Date.now()): Promise<string[]> {
   const urls = [...new Set(items.flatMap((i) => i.window.tabs.map((t) => t.url).filter((u) => /^https?:\/\//i.test(u))))];
   const checks = await db.pageChecks.bulkGet(urls);
-  // Записи без кода и без отметки «нет ответа» остались от загрузки одних заголовков — их проверяем заново.
+  // Records without a code and without the "no response" mark are left from title-only loading: check them again.
   return urls.filter((_, n) => {
     const c = checks[n];
     return !c || !('code' in c || 'failed' in c) || now - c.at > RETRY_AFTER_MS;
@@ -30,10 +30,10 @@ export async function pendingCheckUrls(items: readonly SavedItem[], now = Date.n
 }
 
 /**
- * Проверяет страницы: разные сайты параллельно, страницы одного сайта — по очереди с паузами (`siteFetch`).
- * Найденный заголовок сразу записывается во все сохранённые из `items`, где есть вкладка с этим адресом
- * без заголовка. `onCheck` вызывается для каждого адреса; `undefined` — страница пропущена (сайт просил
- * не спешить), пустой заголовок — его нет или он не нужен.
+ * Checks pages: different sites in parallel, pages of one site one by one with pauses (`siteFetch`).
+ * A found title is written at once to every saved item of `items` that has a tab with this address
+ * and no title. `onCheck` is called for every address; `undefined` means the page was skipped (the site asked
+ * to slow down), an empty title means there is none or it is not needed.
  */
 export async function checkPages(
   urls: readonly string[],
@@ -54,7 +54,7 @@ export async function checkPages(
   });
 }
 
-/** Проверяет одну страницу и сохраняет результат; без результата — проверка остановлена или сайт пропущен. */
+/** Checks one page and stores the result; no result means the check was stopped or the site skipped. */
 export async function checkPage(url: string, signal: AbortSignal): Promise<{ check?: PageCheck; title?: string }> {
   const at = Date.now();
   let check: PageCheck;
@@ -74,7 +74,7 @@ export async function checkPage(url: string, signal: AbortSignal): Promise<{ che
       title = titleFromHtml(decoder.decode(bytes));
     }
   } catch (e) {
-    // Остановленная проверка и пропущенный сайт ничего не сохраняют: страница проверится в следующий раз.
+    // A stopped check or a skipped site stores nothing: the page is checked next time.
     if (signal.aborted || e instanceof SiteSkippedError) return {};
     check = { url, at, failed: true };
   }
@@ -82,7 +82,7 @@ export async function checkPage(url: string, signal: AbortSignal): Promise<{ che
   return { check, title };
 }
 
-/** Заголовок записывается только вкладкам, у которых его всё ещё нет: правки, сделанные тем временем, не теряются. */
+/** The title is written only to tabs that still have none: edits made in the meantime are not lost. */
 async function saveTitle(itemId: string, url: string, title: string): Promise<void> {
   const item = await getSaved(itemId);
   if (!item) return;

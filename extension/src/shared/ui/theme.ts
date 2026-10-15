@@ -1,6 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 
-/** Тема Material Design: светлая и тёмная схемы, выбор — по теме системы. */
+/** Material Design theme: light and dark schemes, chosen by the system theme. */
 export const theme = createTheme({
   colorSchemes: { light: true, dark: true },
   palette: { primary: { main: '#3b5bdb' } },

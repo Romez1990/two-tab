@@ -3,8 +3,8 @@ import type { WindowTab } from '@/entities/window';
 export type MoveStep = { kind: 'tab'; tabId: number } | { kind: 'group'; groupId: number };
 
 /**
- * Порядок переноса вкладок в новое окно: первая вкладка открывает окно, дальше —
- * вкладки вне групп по одной и группы целиком, один раз на группу, в исходном порядке.
+ * Order of moving tabs to the new window: the first tab opens the window, then
+ * ungrouped tabs one by one and whole groups, once per group, in the original order.
  */
 export function planMoves(tabs: readonly WindowTab[]): { first: number; rest: MoveStep[] } | null {
   const [first, ...others] = [...tabs].sort((a, b) => a.index - b.index);

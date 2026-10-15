@@ -9,7 +9,7 @@ import { formatDateTime } from '@/shared/lib';
 import { sendCheckMessage } from '../model/control';
 import { useCheckState } from '../model/state';
 
-/** Кнопки «Запустить» и «Остановить» фоновой проверки сохранённых и её ход. */
+/** "Start" and "Stop" buttons of the background check of saved items, and its progress. */
 export function BackgroundCheck() {
   const state = useCheckState();
   const [access, requestAccess] = useSiteAccess();

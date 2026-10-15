@@ -3,7 +3,7 @@ export interface SnapshotTab {
   title: string;
   pinned: boolean;
   active: boolean;
-  /** Номер группы в `SnapshotWindow.groups` или -1, если вкладка вне группы. */
+  /** Group index in `SnapshotWindow.groups`, or -1 if the tab is not in a group. */
   group: number;
 }
 
@@ -14,7 +14,7 @@ export interface SnapshotGroup {
 }
 
 export interface SnapshotWindow {
-  /** Постоянный номер окна (docs/extension/specification.md, раздел 3.1). */
+  /** Permanent window id (docs/extension/specification.md, section 3.1). */
   uid: string;
   focused: boolean;
   state: string;
@@ -28,7 +28,7 @@ export interface SnapshotWindow {
 
 export interface Snapshot {
   id?: number;
-  /** Когда окна последний раз менялись. */
+  /** When the windows last changed. */
   takenAt: number;
   windows: SnapshotWindow[];
 }

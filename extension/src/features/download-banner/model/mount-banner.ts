@@ -2,11 +2,11 @@ import { browser } from '@/shared/browser';
 import { DOWNLOAD_BANNER_PAGE, DOWNLOAD_INFO_GLOBAL, type DownloadBannerInfo, type DownloadFrameMessage } from './banner';
 
 const FRAME_ID = 'tabsurd-download-banner';
-/** Адрес, на котором плашку закрыли: повторная вставка её не возвращает. */
+/** Address where the banner was closed: injecting again does not bring it back. */
 const CLOSED_GLOBAL = '__tabsurdDownloadBannerClosedUrl';
 const scope = globalThis as Record<string, unknown>;
 
-/** Вставляет iframe плашки «Скачать» в правый нижний угол; на новом адресе без перезагрузки — заново. */
+/** Inserts the "Download" banner iframe into the bottom right corner; again on a new address without reload. */
 export function mountDownloadBanner(): void {
   if (scope[CLOSED_GLOBAL] === location.href) return;
   const old = document.getElementById(FRAME_ID);

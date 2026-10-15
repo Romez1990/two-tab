@@ -11,12 +11,12 @@ describe('snapshotsToDelete', () => {
   });
 
   it('до 7 дней — самый поздний снимок за час', () => {
-    const base = 2 * DAY + 30 * MINUTE; // 2 дня назад, 11:30
+    const base = 2 * DAY + 30 * MINUTE; // 2 days ago, 11:30
     expect(snapshotsToDelete([at(1, base), at(2, base - 10 * MINUTE), at(3, base - 40 * MINUTE)], now)).toEqual([1]);
   });
 
   it('до 30 дней — один за сутки, сутки с 6:00', () => {
-    // 10 дней назад: 7:00 и 23:00 — одни сутки; 5:00 следующего дня — те же сутки.
+    // 10 days ago: 7:00 and 23:00 are the same day; 5:00 of the next day is the same day too.
     const day = now - 10 * DAY;
     const t = (h: number) => new Date(day).setHours(h, 0, 0, 0);
     const items = [{ id: 1, takenAt: t(7) }, { id: 2, takenAt: t(23) }, { id: 3, takenAt: t(29) }];

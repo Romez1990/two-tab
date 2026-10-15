@@ -16,8 +16,8 @@ function sinceText(since: string): string {
 }
 
 /**
- * Блок «Tidy Reel» для «Первого запуска» и настроек (docs/extension/pages/settings.md, раздел 1).
- * `disabled` — подключаться пока нельзя (на «Первом запуске» не заполнено название профиля).
+ * The "Tidy Reel" block for "First run" and settings (docs/extension/pages/settings.md, section 1).
+ * `disabled`: connecting is not possible yet (on "First run" the profile name is empty).
  */
 export function TidyReelConnection({ disabled = false }: { disabled?: boolean }) {
   const settings = useSettings();
@@ -31,11 +31,11 @@ export function TidyReelConnection({ disabled = false }: { disabled?: boolean })
     if (settings && !port) setPort(String(settings.localServicePort));
   }, [settings, port]);
 
-  // Связь проверяется при открытии блока и после каждого подключения или отключения.
+  // The connection is checked when the block opens and after every connect or disconnect.
   useEffect(() => {
     if (key === undefined) return;
     let alive = true;
-    // «Отключён в Tidy Reel» остаётся, пока не подключились снова: после него ключ пуст, и проверка вернёт «нет».
+    // "Disconnected in Tidy Reel" stays until connected again: after it the key is empty and the check would say "no".
     void checkConnection().then((s) => alive && setStatus((prev) => (prev?.state === 'revoked' && s.state === 'none' ? prev : s)));
     return () => {
       alive = false;

@@ -8,16 +8,16 @@ import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 /**
- * Пагинация длинных списков — один компонент для всех страниц (docs/extension/specification.md, раздел 2):
- * по страницам или по мере прокрутки, выбор запоминается в этом браузере для каждого списка.
+ * Pagination of long lists, one component for all pages (docs/extension/specification.md, section 2):
+ * by pages or while scrolling; the choice is remembered in this browser for each list.
  */
 
-/** Записей на странице и сколько добавляется за раз при прокрутке. */
+/** Records per page and how many are added at a time while scrolling. */
 export const PAGE_SIZE = 50;
 
 type Mode = 'pages' | 'scroll';
 
-/** Многоточие в переключателе страниц: нажатие превращает его в поле, номер страницы и Enter — переход. */
+/** Ellipsis in the page switcher: a click turns it into a field, a page number and Enter navigate. */
 function PageJump({ pages, onJump }: { pages: number; onJump: (page: number) => void }) {
   const [editing, setEditing] = useState(false);
   if (!editing) {
@@ -57,19 +57,19 @@ function readMode(key: string): Mode {
 }
 
 export interface PagingOptions {
-  /** Ключ в localStorage, под которым запоминается режим этого списка. */
+  /** localStorage key under which the mode of this list is remembered. */
   storageKey: string;
-  /** Смена значения возвращает на первую страницу: например, новый запрос поиска. */
+  /** A change of this value returns to the first page: for example a new search query. */
   resetKey?: unknown;
-  /** Запись, которая должна быть на экране (номер в списке), или -1. */
+  /** Record that must be on screen (index in the list), or -1. */
   focusIndex?: number;
   pageSize?: number;
-  /** Номер страницы снаружи (например, в адресе страницы): тогда переход сообщается в `onPageChange`. */
+  /** Page number from outside (for example in the page address): then navigation is reported to `onPageChange`. */
   page?: number;
   onPageChange?: (page: number) => void;
 }
 
-/** Видимая часть списка и подвал: невидимая отметка для прокрутки и панель, прилипшая к низу окна. */
+/** Visible part of the list and the footer: an invisible scroll marker and a panel stuck to the window bottom. */
 export function usePaging<T>(items: readonly T[], options: PagingOptions): { visible: T[]; footer: ReactNode } {
   const { storageKey, resetKey, focusIndex = -1, pageSize = PAGE_SIZE, onPageChange } = options;
   const [mode, setMode] = useState<Mode>(() => readMode(storageKey));
@@ -106,7 +106,7 @@ export function usePaging<T>(items: readonly T[], options: PagingOptions): { vis
     try {
       localStorage.setItem(storageKey, next);
     } catch {
-      // Без хранилища выбор действует до закрытия страницы.
+      // Without storage the choice lasts until the page closes.
     }
   };
   const goTo = (p: number) => {
@@ -116,10 +116,10 @@ export function usePaging<T>(items: readonly T[], options: PagingOptions): { vis
 
   const footer = (
     <>
-      {/* Невидимая отметка конца списка: когда она близко к экрану, подгружается следующая порция. */}
+      {/* Invisible end-of-list marker: when it gets close to the screen, the next portion loads. */}
       {mode === 'scroll' && visible.length < items.length && <Box ref={more} sx={{ height: 1 }} />}
       {items.length > pageSize && (
-        // Тонкая панель всегда прилипает к низу окна: страницы и режим переключаются без прокрутки к концу списка.
+        // The thin panel always sticks to the window bottom: pages and mode switch without scrolling to the end of the list.
         <Stack
           direction="row"
           spacing={2}

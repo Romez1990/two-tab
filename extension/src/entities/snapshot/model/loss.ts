@@ -1,10 +1,10 @@
 import type { Snapshot, SnapshotTab, SnapshotWindow } from './types';
 
-/** Чего не хватает по сравнению с прошлым снимком. */
+/** What is missing compared with the previous snapshot. */
 export interface Loss {
-  /** Окна, которых нет совсем. */
+  /** Windows that are gone completely. */
   windows: SnapshotWindow[];
-  /** Вкладки, пропавшие из окон, которые остались. */
+  /** Tabs missing from windows that remain. */
   tabs: { window: SnapshotWindow; tabs: SnapshotTab[] }[];
 }
 
@@ -13,7 +13,7 @@ export function lossSize(loss: Loss): { windows: number; tabs: number } {
   return { windows: loss.windows.length, tabs };
 }
 
-/** Окна сопоставляются по постоянному номеру, вкладки внутри окна — по адресу (с учётом повторов). */
+/** Windows are matched by permanent id, tabs within a window by address (counting repeats). */
 export function findLoss(previous: Snapshot, current: readonly SnapshotWindow[]): Loss {
   const byUid = new Map(current.map((w) => [w.uid, w]));
   const loss: Loss = { windows: [], tabs: [] };

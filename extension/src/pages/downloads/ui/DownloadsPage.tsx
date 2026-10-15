@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { QueuePage } from './QueuePage';
 import { SubscriptionsPage } from './SubscriptionsPage';
 
-/** «Скачивание»: очередь и подписки (docs/extension/pages/downloads.md). */
+/** "Downloads": queue and subscriptions (docs/extension/pages/downloads.md). */
 export function DownloadsPage() {
   const [tab, setTab] = useState<'queue' | 'subscriptions'>(() => (location.hash.includes('subscriptions') ? 'subscriptions' : 'queue'));
   return (

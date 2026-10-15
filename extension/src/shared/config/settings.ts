@@ -2,26 +2,26 @@ import { useEffect, useState } from 'react';
 import { browser } from '@/shared/browser';
 
 /**
- * Настройки (docs/extension/specification.md, раздел 1.2): общие для компьютеров — в `storage.sync`,
- * только для этого компьютера — в `storage.local`. Изменения сразу видят все части расширения.
+ * Settings (docs/extension/specification.md, section 1.2): shared between computers in `storage.sync`,
+ * this computer only in `storage.local`. All parts of the extension see changes at once.
  */
 export interface SyncSettings {
-  /** Через сколько дней работы Chrome без перехода на вкладки окно или группа закрываются. 0 — не закрывать. */
+  /** After how many days of Chrome running without visiting its tabs a window or group is closed. 0 means never. */
   autoCloseDays: number;
-  /** «Не закрывать»: окна по постоянному номеру. */
+  /** "Do not close": windows by permanent id. */
   keepWindowUids: string[];
-  /** Имена окон по постоянному номеру. */
+  /** Window names by permanent id. */
   windowNames: Record<string, string>;
   syncServerUrl: string;
 }
 
 export interface LocalSettings {
   profileName: string;
-  /** Случайный номер профиля для локального сервиса; создаётся при первом подключении. */
+  /** Random profile id for the local service; created on the first connection. */
   profileId: string;
-  /** Порт локального сервиса Tidy Reel на 127.0.0.1. */
+  /** Port of the local Tidy Reel service on 127.0.0.1. */
   localServicePort: number;
-  /** Ключ доступа к локальному сервису; пустой — профиль не подключён. */
+  /** Access key to the local service; empty means the profile is not connected. */
   localServiceKey: string;
 }
 
@@ -60,7 +60,7 @@ export async function updateSettings(change: Partial<Settings>): Promise<void> {
   await Promise.all([browser.storage.sync.set({ [SYNC_KEY]: sync }), browser.storage.local.set({ [LOCAL_KEY]: local })]);
 }
 
-/** Настройки для страниц; обновляются, когда их меняет любая часть расширения. */
+/** Settings for pages; updated when any part of the extension changes them. */
 export function useSettings(): Settings | undefined {
   const [settings, setSettings] = useState<Settings>();
   useEffect(() => {

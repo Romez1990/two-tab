@@ -1,4 +1,4 @@
-/** Chrome называет цвета групп словами; здесь — близкие цвета для меток. */
+/** Chrome names group colors with words; here are similar colors for badges. */
 export const GROUP_COLORS: Record<string, string> = {
   grey: '#5f6368',
   blue: '#1a73e8',

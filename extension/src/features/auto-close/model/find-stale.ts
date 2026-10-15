@@ -3,7 +3,7 @@ import { dayIndex } from '@/shared/lib';
 export interface StaleInputTab {
   url: string;
   pinned: boolean;
-  /** Когда на вкладку переходили последний раз; нет — не закрывать. */
+  /** When the tab was last visited; none means never close. */
   lastAccessed?: number;
   groupId: number;
 }
@@ -17,16 +17,16 @@ export interface StaleInputWindow {
 export type StaleTarget = { kind: 'window'; windowId: number } | { kind: 'group'; groupId: number };
 
 /**
- * Что закрыть автозакрытием (docs/extension/specification.md, раздел 3.2). Окно или группа устарели, если со дня
- * последнего перехода на любую их вкладку Chrome работал `limitDays` суток или больше. Окно с самой недавней
- * активностью не закрывается никогда — в нём сейчас работают. Окно, устаревшее целиком, закрывается одной записью,
- * иначе закрываются его устаревшие группы.
+ * What auto-close closes (docs/extension/specification.md, section 3.2). A window or group is stale if, since the day
+ * any of its tabs was last visited, Chrome ran for `limitDays` days or more. The window with the most recent
+ * activity is never closed: it is being worked in. A window that is stale as a whole is closed as one record,
+ * otherwise its stale groups are closed.
  */
 export function findStale(input: {
   windows: readonly StaleInputWindow[];
   runDays: readonly number[];
   limitDays: number;
-  /** «Не закрывать»: окна по постоянному номеру. */
+  /** "Do not close": windows by permanent id. */
   keepWindowUids: readonly string[];
 }): StaleTarget[] {
   const { windows, runDays, limitDays, keepWindowUids } = input;

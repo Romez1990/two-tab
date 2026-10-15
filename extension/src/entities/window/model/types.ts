@@ -4,7 +4,7 @@ export interface WindowTab {
   title: string;
   url: string;
   pinned: boolean;
-  /** Номер группы Chrome или -1, если вкладка вне группы. */
+  /** Chrome group id, or -1 if the tab is not in a group. */
   groupId: number;
 }
 
@@ -24,6 +24,6 @@ export interface WindowGroup {
   id: number;
   title: string;
   color: string;
-  /** Вкладок в группе. */
+  /** Tabs in the group. */
   size: number;
 }

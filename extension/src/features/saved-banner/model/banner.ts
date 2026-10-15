@@ -2,33 +2,33 @@ import { savedItemPageUrl, findSavedByUrl, type SavedMatch } from '@/entities/sa
 import { browser, hasSiteAccess } from '@/shared/browser';
 
 /**
- * Плашка «Уже сохранено» на сайте (docs/extension/pages/saved.md, раздел 1). Её скрипт не прописан
- * в манифесте: фоновый скрипт вставляет его, только когда адрес вкладки есть в сохранённых и есть доступ к сайтам.
- * Сама плашка — страница расширения `saved-banner.html` в iframe; найденные записи ей передаются в адресе,
- * чтобы не читать базу второй раз. Плашка вставляется, как только у вкладки начал загружаться новый адрес,
- * не дожидаясь загрузки картинок и прочего.
+ * The "Already saved" banner on a site (docs/extension/pages/saved.md, section 1). Its script is not listed
+ * in the manifest: the background script injects it only when the tab address is saved and there is site access.
+ * The banner itself is the extension page `saved-banner.html` in an iframe; the found records are passed in its address
+ * so the database is not read twice. The banner is injected as soon as the tab starts loading a new address,
+ * without waiting for images and the rest.
  */
 
 const BANNER_SCRIPT = '/content-scripts/saved-banner-loader.js';
 export const BANNER_PAGE = '/saved-banner.html';
 
-/** Сообщения из iframe плашки в скрипт на странице сайта. */
-/** Глобальная переменная изолированного мира скриптов расширения на странице: найденные записи для плашки. */
+/** Messages from the banner iframe to the script on the site page. */
+/** Global variable of the extension isolated world on the page: found records for the banner. */
 export const MATCHES_GLOBAL = '__tabsurdSavedMatches';
 
 export type BannerFrameMessage = { tabsurd: 'banner-height'; height: number } | { tabsurd: 'banner-close' };
 
-/** Открывает «Сохранённые» с раскрытой записью и подсвеченной вкладкой `tabUrl` — из плашки и из всплывающего окна. */
+/** Opens "Saved" with the record expanded and tab `tabUrl` highlighted, from the banner and from the popup. */
 export async function openSavedItem(id: string, tabUrl: string): Promise<void> {
   await browser.tabs.create({ url: savedItemPageUrl(id, tabUrl) });
 }
 
-/** Страница загрузилась — если её адрес сохранён, на неё вставляется плашка. */
+/** The page loaded: if its address is saved, the banner is injected into it. */
 const recent = new Set<string>();
 
 export async function showBannerIfSaved(tabId: number, url: string | undefined, phase: 'start' | 'complete'): Promise<void> {
   if (!url || !/^https?:/i.test(url)) return;
-  // Начало загрузки и смена адреса часто приходят двумя событиями подряд — плашка вставляется один раз.
+  // Load start and address change often come as two events back to back: the banner is injected once.
   const key = `${tabId} ${phase} ${url}`;
   if (recent.has(key)) return;
   recent.add(key);
@@ -45,6 +45,6 @@ export async function showBannerIfSaved(tabId: number, url: string | undefined, 
     });
     await browser.scripting.executeScript({ target: { tabId }, injectImmediately: true, files: [BANNER_SCRIPT as '/content-scripts/saved-banner-loader.js'] });
   } catch {
-    // Страница закрылась или в неё нельзя вставлять скрипты (магазин Chrome и т. п.).
+    // The page closed or scripts cannot be injected into it (Chrome Web Store and the like).
   }
 }

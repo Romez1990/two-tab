@@ -51,10 +51,10 @@ import { useSiteAccess } from '@/shared/browser';
 import { formatDateTime, hostOf, mostCommonHostUrl } from '@/shared/lib';
 import { Favicon, groupColor, usePaging } from '@/shared/ui';
 
-/** Значки сайтов, загруженные расширением, — для сайтов, которых нет в кеше значков Chrome. */
+/** Site icons loaded by the extension, for sites missing from the Chrome icon cache. */
 const SiteIconsContext = createContext<ReadonlyMap<string, string>>(new Map());
 
-/** Подгрузка для развёрнутой записи: проверка страниц (с заголовками) и значки; метки статуса страниц. */
+/** Loading for an expanded record: page checks (with titles) and icons; page status badges. */
 interface Loader {
   loadItem: (item: SavedItem) => () => void;
   loadIcons: (urls: readonly string[]) => () => void;
@@ -63,10 +63,10 @@ interface Loader {
 }
 const LoaderContext = createContext<Loader>({ loadItem: () => () => {}, loadIcons: () => () => {}, checks: new Map(), recheck: () => {} });
 
-/** Пока запись развёрнута (детали аккордеона смонтированы), её страницы проверяются и значки подгружаются. */
+/** While a record is expanded (accordion details are mounted), its pages are checked and icons loaded. */
 function ExpandedLoader({ item }: { item: SavedItem }) {
   const { loadItem, loadIcons } = useContext(LoaderContext);
-  // Запись перерисовывается, когда приходят заголовки, — проверка от этого не перезапускается.
+  // The record re-renders when titles arrive; that does not restart the check.
   const itemRef = useRef(item);
   itemRef.current = item;
   useEffect(() => loadItem(itemRef.current), [loadItem, item.id]);
@@ -80,7 +80,7 @@ function SiteIcon({ url, size }: { url: string; size?: number }) {
   return <Favicon url={url} size={size} src={icons.get(hostOf(url))} />;
 }
 
-/** Значок группы — значок самого частого в ней сайта; цвет группы, если он есть, — полоской снизу. */
+/** Group icon is the icon of its most frequent site; the group color, if any, is a stripe below. */
 function TabStatus({ url }: { url: string }) {
   const { checks, recheck } = useContext(LoaderContext);
   return <PageStatus check={checks.get(url)} onRecheck={() => recheck(url)} />;
@@ -96,10 +96,10 @@ function GroupIcon({ item, color }: { item: SavedItem; color: string | undefined
   );
 }
 
-/** Режим пагинации списка запоминается под этим ключом. */
+/** The list pagination mode is remembered under this key. */
 const PAGING_KEY = 'tabsurd.savedPaging';
 
-/** «Сохранённые» (docs/extension/pages/saved.md, раздел 1): сохранённые окна и группы с поиском по вкладкам. */
+/** "Saved" (docs/extension/pages/saved.md, section 1): saved windows and groups with search by tabs. */
 export function SavedPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
   const [query, setQuery] = useState('');
@@ -114,8 +114,8 @@ export function SavedPage() {
   useEffect(reload, [reload]);
   const shown = useMemo(() => items.filter((i) => matchesQuery(i, query)), [items, query]);
   const openedIndex = opened ? shown.findIndex((i) => i.id === opened.id) : -1;
-  // Записей может быть тысячи: по страницам или, если включено, по мере прокрутки к концу списка.
-  // Запись из плашки «Уже сохранено» должна быть на экране.
+  // There may be thousands of records: by pages or, if enabled, as the list is scrolled to the end.
+  // The record opened from the "Already saved" banner must be on screen.
   const { visible, footer } = usePaging(shown, { storageKey: PAGING_KEY, resetKey: query, focusIndex: openedIndex });
 
   async function run(action: () => Promise<void>, done: string) {
@@ -128,8 +128,8 @@ export function SavedPage() {
     reload();
   }
 
-  /** Правка вкладок записи: сразу на экране, потом в базе. `undefined` — запись удалена вместе с последней вкладкой. */
-  /** Загруженный заголовок — сразу на экране; в базу его уже записала фича загрузки заголовков. */
+  /** Editing record tabs: on screen at once, then in the database. `undefined` means the record was deleted with its last tab. */
+  /** A loaded title goes on screen at once; the title loading feature has already written it to the database. */
   const applyTitle = useCallback((url: string, title: string) => {
     if (!title) return;
     setItems((list) =>
@@ -165,7 +165,7 @@ export function SavedPage() {
     URL.revokeObjectURL(url);
   }
 
-  /** Файлы импортируются по очереди; испорченный файл не мешает остальным. */
+  /** Files are imported one by one; a broken file does not stop the others. */
   async function importFiles(files: readonly File[]) {
     let added = 0;
     let skipped = 0;
@@ -187,8 +187,8 @@ export function SavedPage() {
   }
 
   return (
-    // mb: -3 забирает нижний отступ контейнера (py: 3) внутрь страницы, чтобы панель прилипала к самому низу экрана.
-    // clip, а не hidden: hidden сломал бы прилипание панели.
+    // mb: -3 pulls the container bottom padding (py: 3) into the page so the panel sticks to the very bottom of the screen.
+    // clip, not hidden: hidden would break the sticky panel.
     <Stack spacing={2} sx={{ overflowX: 'clip', mb: -3 }}>
       <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
         <Button startIcon={<FileUploadOutlinedIcon />} onClick={() => fileInput.current?.click()}>
@@ -284,8 +284,8 @@ export function SavedPage() {
 }
 
 /**
- * Запись, которую нужно раскрыть, и вкладка, которую нужно подсветить: `#saved/<id>/<адрес вкладки>` —
- * переход из плашки «Уже сохранено».
+ * Record to expand and tab to highlight: `#saved/<id>/<tab address>`, the transition
+ * from the "Already saved" banner.
  */
 function useOpenedItem(): { id: string; tabUrl?: string } | undefined {
   const read = () => {
@@ -338,10 +338,10 @@ function SavedAccordion({
       sx={opened ? { borderColor: 'primary.main' } : undefined}
       slotProps={{ transition: { unmountOnExit: true } }}
     >
-      {/* minWidth: 0 у содержимого — иначе длинный заголовок растягивает строку и сдвигает иконки. */}
+      {/* minWidth: 0 on the content, otherwise a long title stretches the row and shifts the icons. */}
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ '& .MuiAccordionSummary-content': { minWidth: 0 } }}>
         <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', minWidth: 0, width: '100%' }}>
-          {/* Открыть можно, не разворачивая запись: нажатие не доходит до заголовка аккордеона. */}
+          {/* Can be opened without expanding the record: the click does not reach the accordion header. */}
           <Tooltip title="Открыть">
             <IconButton
               size="small"
@@ -361,7 +361,7 @@ function SavedAccordion({
             <GroupIcon item={item} color={group?.color} />
           )}
           <Box sx={{ minWidth: 0, flex: 1 }}>
-            {/* Без названия — показывается первая вкладка курсивом. */}
+            {/* Without a name the first tab is shown in italics. */}
             <Typography noWrap sx={{ fontWeight: 500, fontStyle: item.title ? undefined : 'italic' }}>
               {item.title || item.window.tabs[0]?.title || item.window.tabs[0]?.url}
             </Typography>
@@ -370,7 +370,7 @@ function SavedAccordion({
             </Typography>
           </Box>
           {item.reason === 'auto' && <Chip size="small" label="автозакрытие" variant="outlined" />}
-          {/* Удалить запись можно, не разворачивая её: кнопка рядом со стрелкой, нажатие не раскрывает аккордеон. */}
+          {/* A record can be deleted without expanding it: the button is next to the arrow, the click does not expand the accordion. */}
           <Tooltip title="Удалить">
             <IconButton
               size="small"
@@ -394,7 +394,7 @@ function SavedAccordion({
             return (
               <ListItem
                 key={`${i}-${t.url}`}
-                // Вкладка, с которой пришли из плашки, — подсвечена и прокручена к середине экрана.
+                // The tab arrived at from the banner is highlighted and scrolled to the middle of the screen.
                 ref={highlighted ? (el: HTMLLIElement | null) => el?.scrollIntoView({ block: 'center', behavior: 'smooth' }) : undefined}
                 disableGutters
                 draggable
@@ -434,7 +434,7 @@ function SavedAccordion({
                   pr: 5,
                 }}
               >
-                {/* Вся строка — ссылка: нажатие открывает в новой вкладке, колёсико — в фоновой. */}
+                {/* The whole row is a link: a click opens it in a new tab, the middle button in a background one. */}
                 <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense selected={highlighted} sx={{ borderRadius: 1, py: 0 }}>
                   <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
                   <Box sx={{ mr: 1.5 }}>

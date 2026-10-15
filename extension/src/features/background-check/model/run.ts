@@ -1,13 +1,13 @@
 import { sendCheckMessage } from './control';
 import { updateCheckState } from './state';
 
-/** Сколько проверено из скольких; в базу пишется не чаще раза в полсекунды. */
+/** How many are checked out of how many; written to the database at most twice a second. */
 export type ReportProgress = (checked: number, total: number) => void;
 
 /**
- * Запуск фоновой проверки в служебной странице. Что проверять, передаёт слой app (`task`): фича не зависит
- * от фич заголовков и значков. Уже проверенное `task` пропускает сама, поэтому после перезапуска Chrome
- * проверка продолжается с того места, где остановилась.
+ * Runs the background check in the service page. The app layer passes what to check (`task`): the feature does not depend
+ * on the title and icon features. `task` skips what is already checked by itself, so after a Chrome restart
+ * the check continues from where it stopped.
  */
 export async function runBackgroundCheck(task: (signal: AbortSignal, report: ReportProgress) => Promise<void>): Promise<void> {
   let last = 0;

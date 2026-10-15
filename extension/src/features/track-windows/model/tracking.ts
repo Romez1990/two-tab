@@ -16,13 +16,13 @@ import { sleep } from '@/shared/lib';
 import { captureWindows, type TabInfo } from './capture';
 
 /**
- * Постоянный снимок окон, история снимков, недавно закрытые вкладки и проверка при запуске
- * (docs/extension/pages/recovery.md, раздел 1; docs/extension/specification.md, раздел 3.1). Всё состояние — в IndexedDB и `storage.session`,
- * потому что фоновый скрипт засыпает.
+ * Permanent window snapshot, snapshot history, recently closed tabs and the startup check
+ * (docs/extension/pages/recovery.md, section 1; docs/extension/specification.md, section 3.1). All state lives in IndexedDB and `storage.session`,
+ * because the background script falls asleep.
  */
 
 const WRITE_DELAY_MS = 1500;
-/** Chrome при запуске открывает окна прошлого сеанса не сразу. */
+/** On startup Chrome does not open the previous session windows at once. */
 const STARTUP_DELAY_MS = 10_000;
 export const HISTORY_ALARM = 'snapshot-history';
 export const HISTORY_PERIOD_MINUTES = 10;
@@ -36,9 +36,9 @@ let ready: Promise<void> | undefined;
 let timer: ReturnType<typeof setTimeout> | undefined;
 
 /**
- * Вызывается при каждом пробуждении фонового скрипта. Один раз за сеанс Chrome (или после перезагрузки расширения)
- * прошлый снимок уходит в историю, окна получают постоянные номера по совпадению адресов, и если чего-то
- * не хватает — показывается уведомление.
+ * Called on every background script wake-up. Once per Chrome session (or after an extension reload)
+ * the previous snapshot goes to history, windows get permanent ids by address overlap, and if something
+ * is missing a notification is shown.
  */
 export function startTracking(): Promise<void> {
   ready ??= init();
@@ -67,7 +67,7 @@ async function init(): Promise<void> {
   }
 }
 
-/** Снимок пишется через 1–2 секунды после изменения; серия изменений подряд даёт одну запись. */
+/** The snapshot is written 1–2 seconds after a change; a series of changes gives one write. */
 export function scheduleSnapshot(): void {
   clearTimeout(timer);
   timer = setTimeout(() => {
@@ -78,7 +78,7 @@ export function scheduleSnapshot(): void {
 async function writeSnapshot(): Promise<SnapshotWindow[] | undefined> {
   const { windows, tabs } = await captureWindows();
   await browser.storage.session.set({ [TABS_KEY]: tabs });
-  // Когда Chrome закрывается, окна закрываются одно за другим. Пустой снимок затёр бы последний настоящий.
+  // When Chrome closes, windows close one after another. An empty snapshot would overwrite the last real one.
   if (windows.length === 0) return undefined;
   const previous = await getCurrentSnapshot();
   if (previous && JSON.stringify(previous.windows) === JSON.stringify(windows)) return windows;
@@ -88,7 +88,7 @@ async function writeSnapshot(): Promise<SnapshotWindow[] | undefined> {
 
 export async function onTabRemoved(tabId: number, info: Browser.tabs.OnRemovedInfo): Promise<void> {
   scheduleSnapshot();
-  // Вкладки закрытого окна остаются в снимках; в «Недавно закрытые» — только вкладки, закрытые по одной.
+  // Tabs of a closed window stay in snapshots; "Recently closed" gets only tabs closed one by one.
   if (info.isWindowClosing) return;
   if (await takeClosingByExtension(tabId)) return;
   const tabs = (await browser.storage.session.get(TABS_KEY))[TABS_KEY] as Record<number, TabInfo> | undefined;

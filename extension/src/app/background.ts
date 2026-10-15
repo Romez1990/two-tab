@@ -19,7 +19,7 @@ import {
 } from '@/features/track-windows';
 import { browser, type Browser } from '@/shared/browser';
 
-/** Обработчики фонового скрипта. Регистрируются синхронно при каждом пробуждении, иначе Chrome их не вызовет. */
+/** Background script handlers. Registered synchronously on every wake-up, otherwise Chrome does not call them. */
 export function startBackground(): void {
   browser.runtime.onInstalled.addListener(onExtensionInstalled);
 
@@ -32,7 +32,7 @@ export function startBackground(): void {
   browser.tabs.onActivated.addListener(changed);
   browser.tabs.onReplaced.addListener(changed);
   browser.tabs.onUpdated.addListener((id, info, tab) => {
-    // Сразу при начале загрузки; при полной загрузке — ещё раз, если в начале во вкладке был старый документ.
+    // Right when loading starts; once more when it completes, in case the tab still held the old document at the start.
     if (info.status === 'loading' || info.url) void showBannerIfSaved(id, tab.url, 'start');
     if (info.status === 'complete') void showBannerIfSaved(id, tab.url, 'complete');
     if (info.status === 'complete' || info.url) void showDownloadBanner(id, tab.url);
@@ -77,7 +77,7 @@ export function startBackground(): void {
   void startTracking();
 }
 
-/** После установки открывается страница «Первый запуск» (docs/extension/pages/onboarding.md). */
+/** After installation the "First run" page opens (docs/extension/pages/onboarding.md). */
 async function onExtensionInstalled(details: Browser.runtime.InstalledDetails): Promise<void> {
   if (details.reason !== 'install') return;
   await browser.tabs.create({ url: browser.runtime.getURL('/onboarding.html') });
@@ -92,7 +92,7 @@ async function restoreLastLoss(): Promise<void> {
   for (const { window, tabs } of loss.tabs) await restoreTabs(window, tabs);
 }
 
-/** Автозакрытие (docs/extension/specification.md, раздел 3.2) — вместе с историей снимков, раз в 10 минут. */
+/** Auto-close (docs/extension/specification.md, section 3.2), together with snapshot history, every 10 minutes. */
 function autoClose(): Promise<void> {
   return runAutoClose({
     window: (id) => saveAndCloseWindow(id, 'auto'),

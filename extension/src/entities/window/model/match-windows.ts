@@ -1,6 +1,6 @@
 /**
- * Сопоставляет открытые окна с окнами прошлого снимка после перезапуска (docs/extension/specification.md, раздел 3.1):
- * то же окно, если в нём есть больше половины адресов старого окна. Пары берутся по убыванию совпадения.
+ * Matches open windows with windows of the previous snapshot after a restart (docs/extension/specification.md, section 3.1):
+ * it is the same window if it has more than half of the old window's addresses. Pairs are taken by descending overlap.
  */
 export function matchWindows(
   previous: readonly { uid: string; urls: readonly string[] }[],
@@ -25,7 +25,7 @@ export function matchWindows(
   return result;
 }
 
-/** Число общих адресов с учётом повторов. */
+/** Number of shared addresses, counting repeats. */
 function common(a: readonly string[], b: readonly string[]): number {
   const left = new Map<string, number>();
   for (const url of b) left.set(url, (left.get(url) ?? 0) + 1);

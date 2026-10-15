@@ -1,13 +1,13 @@
 import { getSettings } from '@/shared/config';
 import { localServiceClient, type LocalServiceClient } from './client';
 
-/** Клиент с портом и ключом из настроек; `undefined` — профиль не подключён к Tidy Reel. */
+/** Client with the port and key from settings; `undefined` means the profile is not connected to Tidy Reel. */
 export async function connectedClient(): Promise<LocalServiceClient | undefined> {
   const { localServicePort, localServiceKey } = await getSettings();
   return localServiceKey ? localServiceClient(localServicePort, localServiceKey) : undefined;
 }
 
-/** Текст ошибки ответа сервиса: `detail` FastAPI или код. */
+/** Error text of a service response: FastAPI `detail` or the code. */
 export function errorText(status: number, error: unknown): string {
   const detail = (error as { detail?: unknown } | undefined)?.detail;
   if (typeof detail === 'string') return detail;

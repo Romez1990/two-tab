@@ -12,7 +12,7 @@ import { deletePreset, listPresets, PresetsUnavailableError, savePreset, type Pr
 import { DEFAULT_FIELDS, trimError, type PresetFields } from '../model/fields';
 import { PresetFieldsEditor } from './PresetFieldsEditor';
 
-/** Черновик пресета на экране; `id` нет — новый. */
+/** Preset draft on screen; no `id` means a new one. */
 interface Draft {
   id?: number;
   name: string;
@@ -32,7 +32,7 @@ function summary(draft: Draft): string {
   return `${sites} · своих полей: ${changed}`;
 }
 
-/** Пресеты сжатия (docs/extension/pages/settings.md, раздел 4): «По умолчанию» и пресеты сайтов. */
+/** Compression presets (docs/extension/pages/settings.md, section 4): "Default" and site presets. */
 export function RecompressPresets() {
   const [drafts, setDrafts] = useState<Draft[] | null>(null);
   const [sites, setSites] = useState<string[]>([]);

@@ -46,7 +46,7 @@ import {
   type QueueMessage,
 } from '@/entities/queue';
 
-/** Состояния очереди по-русски (tidy-reel/docs/downloader.md, разделы 2 и 9). */
+/** Queue states in Russian (tidy-reel/docs/downloader.md, sections 2 and 9). */
 const STATES: Record<string, { label: string; color: 'default' | 'primary' | 'success' | 'error' | 'warning' }> = {
   counting: { label: 'подсчитывается…', color: 'primary' },
   queued: { label: 'в очереди', color: 'default' },
@@ -63,15 +63,15 @@ const STATES: Record<string, { label: string; color: 'default' | 'primary' | 'su
 };
 
 const ACTIVE = new Set(['counting', 'queued', 'paused', 'downloading', 'checking_music', 'checking_duplicates', 'compressing']);
-/** Новое видео сжато: его путь окончательный, «Оставить новое» доступна (tidy-reel/docs/downloader.md, раздел 5.1). */
+/** The new video is compressed: its path is final, "Keep the new one" is available (tidy-reel/docs/downloader.md, section 5.1). */
 const COMPRESSED = new Set(['done', 'original_waiting']);
 const POLL_MS = 1000;
-/** Куки сайтов очереди отправляются не так часто, как опрашивается очередь. */
+/** Queue site cookies are sent less often than the queue is polled. */
 const COOKIES_EVERY = 30;
 
 type Run = (action: () => Promise<void>) => void;
 
-/** Время у видео: пока качается — оставшееся от yt-dlp; оценка сжатия — по длительности с сайта. */
+/** Video time: while downloading, the remainder from yt-dlp; the compression estimate comes from the site duration. */
 function videoTimes(d: DownloadItem): string {
   const parts: string[] = [];
   if (d.state === 'downloading' && d.eta_seconds != null) parts.push(`скачается ${formatDuration(d.eta_seconds)}`);
@@ -83,7 +83,7 @@ function videoTimes(d: DownloadItem): string {
   return parts.join(' · ');
 }
 
-/** Кнопки сообщения о дубликате или части (tidy-reel/docs/downloader.md, раздел 5.1). */
+/** Buttons of a duplicate or part message (tidy-reel/docs/downloader.md, section 5.1). */
 function MessageActions({ message, download, run }: { message: QueueMessage; download: DownloadItem; run: Run }) {
   const archive = (action: 'open' | 'show' | 'play') => run(() => messageAction(message.id, action));
   if (message.code === 'duplicate_found')
@@ -229,7 +229,7 @@ function DownloadRow({ download, target, run }: { download: DownloadItem; target
 function GroupItem({ group, items, target, run }: { group: GroupSummary; items: DownloadItem[]; target: number | null; run: Run }) {
   const live = group.remaining.count > 0 || group.remaining.counting;
   const act = (action: GroupAction) => run(() => groupAction(group.id, action));
-  // Группа из одного видео выглядит как обычная строка (tidy-reel/docs/downloader.md, раздел 2.1).
+  // A group of one video looks like a plain row (tidy-reel/docs/downloader.md, section 2.1).
   if (group.kind === 'video' && group.videos === 1 && items.length === 1) {
     return (
       <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, px: 1.5 }}>
@@ -284,8 +284,8 @@ function GroupItem({ group, items, target, run }: { group: GroupSummary; items: 
 }
 
 /**
- * «Очередь скачивания» (docs/extension/pages/downloads.md, раздел 1; docs/extension/queues.md):
- * опрос раз в секунду, пока страница открыта; видео — страницами по фильтрам, по группам.
+ * "Download queue" (docs/extension/pages/downloads.md, section 1; docs/extension/queues.md):
+ * polled every second while the page is open; videos come in pages by filters, by groups.
  */
 export function QueuePage() {
   const [address, setAddress] = useQueueAddress('downloads');
@@ -321,7 +321,7 @@ export function QueuePage() {
 
   const run: Run = (action) => void action().catch((e: unknown) => setMessage(e instanceof Error ? e.message : String(e)));
 
-  /** Нажатие на счётчик: страница со следующим таким видео при текущих фильтрах, по кругу; фильтр не меняется. */
+  /** Counter click: the page with the next such video under the current filters, wrapping around; the filter does not change. */
   const jump = (kind: CounterKind) =>
     run(async () => {
       const found = await nextItem(kind, lastJump.current[kind] ?? null, address.filters);

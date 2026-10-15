@@ -6,12 +6,12 @@ import { getAttention, muteAttention, type AttentionCase } from '@/entities/queu
 
 const POLL_MS = 5000;
 
-/** Раздел страницы расширения по очереди случая. */
+/** Extension page section by the queue of the case. */
 export const QUEUE_SECTIONS: Record<string, string> = { download: 'downloads', recompress: 'recompress' };
 
 /**
- * Плашка «Нужно ваше решение» (docs/extension/queues.md, раздел 4): случаи, по которым очередь ждёт
- * пользователя, ссылка на очередь и «Заглушить». Звук — уведомление Windows от локального сервиса.
+ * The "Needs your decision" banner (docs/extension/queues.md, section 4): cases the queue waits on
+ * the user for, a link to the queue and "Mute". The sound is a Windows notification from the local service.
  */
 export function AttentionBanner({ onOpen, dense = false }: { onOpen: (section: string) => void; dense?: boolean }) {
   const [cases, setCases] = useState<AttentionCase[]>([]);

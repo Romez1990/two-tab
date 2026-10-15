@@ -1,6 +1,6 @@
 /**
- * Страницы видео и каналов известных сайтов по шаблону адреса (docs/extension/pages/site_page.md,
- * раздел 3): на них плашка «Скачать» показывается сама, без запроса к сайту.
+ * Video and channel pages of known sites by address pattern (docs/extension/pages/site_page.md,
+ * section 3): the "Download" banner shows on them by itself, without a request to the site.
  */
 
 const VIDEO_PAGES: RegExp[] = [
@@ -25,7 +25,7 @@ const CHANNEL_PAGES: RegExp[] = [
 
 export type PageKind = 'video' | 'channel';
 
-/** Видео или канал известного сайта; `undefined` — другая страница. */
+/** Video or channel of a known site; `undefined` for any other page. */
 export function pageKind(url: string): PageKind | undefined {
   if (VIDEO_PAGES.some((re) => re.test(url))) return 'video';
   if (CHANNEL_PAGES.some((re) => re.test(url))) return 'channel';
