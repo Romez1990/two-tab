@@ -1,4 +1,4 @@
-export type { Snapshot, SnapshotGroup, SnapshotTab, SnapshotWindow } from './model/types';
+export type { Snapshot, SnapshotTab, SnapshotWindow } from './model/types';
 export { countTabs } from './model/types';
 export { tabUrl, toSnapshotWindow } from './model/from-chrome';
 export type { Loss } from './model/loss';

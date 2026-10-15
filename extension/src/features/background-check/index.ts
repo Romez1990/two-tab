@@ -1,3 +1,3 @@
 export { onCheckMessage, resumeBackgroundCheck } from './model/control';
-export { runBackgroundCheck, type ReportProgress } from './model/run';
+export { runBackgroundCheck } from './model/run';
 export { BackgroundCheck } from './ui/BackgroundCheck';

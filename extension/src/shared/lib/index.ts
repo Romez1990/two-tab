@@ -9,7 +9,6 @@ export {
   mentionedSources,
   normalize,
   parseQuery,
-  positiveTerms,
   relevance,
   type Condition,
   type SearchDoc,

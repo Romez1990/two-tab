@@ -1,1 +1,1 @@
-export { AttentionBanner, QUEUE_SECTIONS } from './ui/AttentionBanner';
+export { AttentionBanner } from './ui/AttentionBanner';
