@@ -359,27 +359,6 @@ paths:
       security:
       - HTTPBearer: []
   /api/downloads:
-    get:
-      tags:
-      - downloads
-      summary: List Downloads
-      description: 'The queue: its pause, the counters, what is left and the groups; the videos come by
-
-        pages.'
-      operationId: list_downloads
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DownloadQueueModel'
-        '401':
-          description: Wrong key
-        '403':
-          description: Not the connected extension
-      security:
-      - HTTPBearer: []
     post:
       tags:
       - downloads
@@ -465,45 +444,6 @@ paths:
           description: Wrong folder, filter or preset edit
       security:
       - HTTPBearer: []
-  /api/downloads/items:
-    get:
-      tags:
-      - downloads
-      summary: List Download Items
-      description: 'A page of the videos matching the filters (recompress.md, section 6.5): active, decision,
-
-        unread, errors, done; several through commas.'
-      operationId: list_download_items
-      security:
-      - HTTPBearer: []
-      parameters:
-      - name: filter
-        in: query
-        required: false
-        schema:
-          type: string
-          default: active
-          title: Filter
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 0
-          title: Page
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DownloadItemsModel'
-        '401':
-          description: Wrong key
-        '403':
-          description: Not the connected extension
-        '422':
-          description: Unknown filter
   /api/downloads/items/next:
     get:
       tags:
@@ -559,7 +499,7 @@ paths:
       tags:
       - downloads
       summary: Read Download Message
-      description: «Прочитано» at an information or an error.
+      description: '"Read" at an information or an error.'
       operationId: read_download_message
       security:
       - HTTPBearer: []
@@ -890,8 +830,7 @@ paths:
       tags:
       - downloads
       summary: Skip Download
-      description: '«Пропустить» a video with an error: it stays so, the queue goes on (recompress.md,
-        6.3).'
+      description: '"Skip" a video with an error: it stays so, the queue goes on (recompress.md, 6.3).'
       operationId: skip_download
       security:
       - HTTPBearer: []
@@ -1020,7 +959,7 @@ paths:
       tags:
       - downloads
       summary: Original Done
-      description: '«Готово»: the original is deleted for good, a censored version goes into the queue.'
+      description: '"Done": the original is deleted for good, a censored version goes into the queue.'
       operationId: original_done
       security:
       - HTTPBearer: []
@@ -1053,7 +992,7 @@ paths:
       tags:
       - downloads
       summary: Decide Duplicate
-      description: The decision at «Найден дубликат» (downloader.md, section 5.1).
+      description: The decision at "Duplicate found" (downloader.md, section 5.1).
       operationId: decide_duplicate
       security:
       - HTTPBearer: []
@@ -1092,7 +1031,7 @@ paths:
       tags:
       - downloads
       summary: Open Message Video
-      description: «Открыть» the archive video of a duplicate message.
+      description: '"Open" the archive video of a duplicate message.'
       operationId: open_message_video
       security:
       - HTTPBearer: []
@@ -1123,7 +1062,7 @@ paths:
       tags:
       - downloads
       summary: Show Message Video
-      description: «Показать в папке» the archive video of a duplicate message.
+      description: '"Show in folder" the archive video of a duplicate message.'
       operationId: show_message_video
       security:
       - HTTPBearer: []
@@ -1154,7 +1093,7 @@ paths:
       tags:
       - downloads
       summary: Play Message Video
-      description: '«Воспроизвести с этого места»: VLC from the timecode of a part or a shared piece.'
+      description: '"Play from here": VLC from the timecode of a part or a shared piece.'
       operationId: play_message_video
       security:
       - HTTPBearer: []
@@ -1300,27 +1239,6 @@ paths:
       security:
       - HTTPBearer: []
   /api/subscriptions:
-    get:
-      tags:
-      - subscriptions
-      summary: List Subscriptions
-      operationId: list_subscriptions
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/SubscriptionModel'
-                type: array
-                title: Response List Subscriptions
-        '401':
-          description: Wrong key
-        '403':
-          description: Not the connected extension
-      security:
-      - HTTPBearer: []
     post:
       tags:
       - subscriptions
@@ -1469,24 +1387,6 @@ paths:
       security:
       - HTTPBearer: []
   /api/recompress:
-    get:
-      tags:
-      - recompress
-      summary: List Recompress
-      operationId: list_recompress
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecompressQueueModel'
-        '401':
-          description: Wrong key
-        '403':
-          description: Not the connected extension
-      security:
-      - HTTPBearer: []
     post:
       tags:
       - recompress
@@ -1517,43 +1417,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - HTTPBearer: []
-  /api/recompress/items:
-    get:
-      tags:
-      - recompress
-      summary: List Recompress Items
-      description: A page of the files of the jobs matching the filters (recompress.md, section 6.5).
-      operationId: list_recompress_items
-      security:
-      - HTTPBearer: []
-      parameters:
-      - name: filter
-        in: query
-        required: false
-        schema:
-          type: string
-          default: active
-          title: Filter
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 0
-          title: Page
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/JobFilesModel'
-        '401':
-          description: Wrong key
-        '403':
-          description: Not the connected extension
-        '422':
-          description: Unknown filter
   /api/recompress/items/next:
     get:
       tags:
@@ -1609,7 +1472,7 @@ paths:
       tags:
       - recompress
       summary: Read Recompress Message
-      description: «Прочитано» at an information or an error.
+      description: '"Read" at an information or an error.'
       operationId: read_recompress_message
       security:
       - HTTPBearer: []
@@ -1668,7 +1531,7 @@ paths:
       tags:
       - recompress
       summary: Retry Recompress File
-      description: «Повторить» a file with an error; its error pause is taken off (strict order).
+      description: '"Retry" a file with an error; its error pause is taken off (strict order).'
       operationId: retry_recompress_file
       security:
       - HTTPBearer: []
@@ -1701,7 +1564,7 @@ paths:
       tags:
       - recompress
       summary: Skip Recompress File
-      description: '«Пропустить»: the file stays with its error, the queue goes on.'
+      description: '"Skip": the file stays with its error, the queue goes on.'
       operationId: skip_recompress_file
       security:
       - HTTPBearer: []
@@ -1831,35 +1694,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /api/attention:
-    get:
-      tags:
-      - attention
-      summary: Get Attention
-      description: The cases the queues need the user for; empty — nothing (the banner is hidden).
-      operationId: get_attention
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/CaseModel'
-                type: array
-                title: Response Get Attention
-        '401':
-          description: Wrong key
-        '403':
-          description: Not the connected extension
-      security:
-      - HTTPBearer: []
   /api/attention/mute:
     post:
       tags:
       - attention
       summary: Mute Attention
-      description: «Заглушить» the cases there are now; a new case rings again.
+      description: '"Mute" the cases there are now; a new case rings again.'
       operationId: mute_attention
       responses:
         '204':
@@ -1913,25 +1753,6 @@ paths:
           description: Not the connected extension
         '422':
           description: Wrong value
-      security:
-      - HTTPBearer: []
-  /api/trash:
-    get:
-      tags:
-      - trash
-      summary: List Trash
-      operationId: list_trash
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TrashResponse'
-        '401':
-          description: Wrong key
-        '403':
-          description: Not the connected extension
       security:
       - HTTPBearer: []
   /api/trash/groups/{group_id}/restore:
@@ -2013,34 +1834,6 @@ components:
       - op
       - items
       title: AndNode
-    CaseModel:
-      properties:
-        queue:
-          type: string
-          title: Queue
-          description: download or recompress
-        reason:
-          type: string
-          title: Reason
-          description: no_space, error or need_cookies
-        text:
-          type: string
-          title: Text
-        since:
-          type: string
-          title: Since
-        muted:
-          type: boolean
-          title: Muted
-          description: «Заглушить» was pressed for this case
-      type: object
-      required:
-      - queue
-      - reason
-      - text
-      - since
-      - muted
-      title: CaseModel
     ChannelCheckRequest:
       properties:
         url:
@@ -2246,140 +2039,6 @@ components:
       required:
       - sites
       title: CookiesRequest
-    CountersModel:
-      properties:
-        decisions:
-          type: integer
-          title: Decisions
-        unread:
-          type: integer
-          title: Unread
-        errors:
-          type: integer
-          title: Errors
-      type: object
-      required:
-      - decisions
-      - unread
-      - errors
-      title: CountersModel
-      description: 'The counters at the top of a queue: open messages by kind.'
-    DownloadItemModel:
-      properties:
-        id:
-          type: integer
-          title: Id
-        url:
-          type: string
-          title: Url
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        channel:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Channel
-        published_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Published At
-        state:
-          type: string
-          title: State
-        error:
-          anyOf:
-          - $ref: '#/components/schemas/MessageModel'
-          - type: 'null'
-          description: Code and text (docs/codes.md, section 2)
-        progress:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Progress
-        eta_seconds:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Eta Seconds
-          description: Seconds left to download, from yt-dlp
-        folder:
-          type: string
-          title: Folder
-        file_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Path
-        original_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Original Path
-          description: 'The original kept for now: «waits for the original to be deleted», downloader.md
-            section 2.2'
-        compress_seconds:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Compress Seconds
-          description: Recompression time estimate, recompress.md section 2.12.1
-        compress_bytes:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Compress Bytes
-          description: How much the compressed video will take, an estimate
-        compress_approximate:
-          type: boolean
-          title: Compress Approximate
-          default: false
-        group_id:
-          type: integer
-          title: Group Id
-        messages:
-          items:
-            $ref: '#/components/schemas/QueueMessageModel'
-          type: array
-          title: Messages
-      type: object
-      required:
-      - id
-      - url
-      - title
-      - channel
-      - published_at
-      - state
-      - error
-      - progress
-      - folder
-      - file_path
-      - group_id
-      - messages
-      title: DownloadItemModel
-    DownloadItemsModel:
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/DownloadItemModel'
-          type: array
-          title: Items
-        total:
-          type: integer
-          title: Total
-          description: How many videos match the filters
-        page_size:
-          type: integer
-          title: Page Size
-      type: object
-      required:
-      - items
-      - total
-      - page_size
-      title: DownloadItemsModel
     DownloadModel:
       properties:
         id:
@@ -2466,30 +2125,6 @@ components:
       - folder
       - file_path
       title: DownloadModel
-    DownloadQueueModel:
-      properties:
-        pause:
-          anyOf:
-          - $ref: '#/components/schemas/PauseModel'
-          - type: 'null'
-          description: The pause of the whole queue, None — it goes
-        counters:
-          $ref: '#/components/schemas/CountersModel'
-        remaining:
-          $ref: '#/components/schemas/RemainingModel'
-          description: What is left of the whole queue
-        groups:
-          items:
-            $ref: '#/components/schemas/GroupSummaryModel'
-          type: array
-          title: Groups
-      type: object
-      required:
-      - pause
-      - counters
-      - remaining
-      - groups
-      title: DownloadQueueModel
     DuplicateRequest:
       properties:
         keep:
@@ -2706,39 +2341,6 @@ components:
       - paused
       - downloads
       title: GroupModel
-    GroupSummaryModel:
-      properties:
-        id:
-          type: integer
-          title: Id
-        title:
-          type: string
-          title: Title
-        kind:
-          type: string
-          title: Kind
-        paused:
-          type: boolean
-          title: Paused
-        videos:
-          type: integer
-          title: Videos
-        finished:
-          type: integer
-          title: Finished
-        remaining:
-          $ref: '#/components/schemas/RemainingModel'
-      type: object
-      required:
-      - id
-      - title
-      - kind
-      - paused
-      - videos
-      - finished
-      - remaining
-      title: GroupSummaryModel
-      description: 'A group in the queue, without its videos: they come by pages (/api/downloads/items).'
     HTTPValidationError:
       properties:
         detail:
@@ -2748,91 +2350,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    JobFileModel:
-      properties:
-        id:
-          type: integer
-          title: Id
-        job_id:
-          type: integer
-          title: Job Id
-        path:
-          type: string
-          title: Path
-        state:
-          type: string
-          title: State
-          description: queued, running, done or error
-        outcome:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Outcome
-          description: docs/codes.md, section 1; None — not touched
-        size_before:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Size Before
-        size_after:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Size After
-        finished_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Finished At
-        estimate_seconds:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Estimate Seconds
-          description: Recompression time estimate, made when the job was created
-        estimate_frees:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Estimate Frees
-          description: How many bytes it will free, an estimate
-        messages:
-          items:
-            $ref: '#/components/schemas/QueueMessageModel'
-          type: array
-          title: Messages
-      type: object
-      required:
-      - id
-      - job_id
-      - path
-      - state
-      - outcome
-      - size_before
-      - size_after
-      - finished_at
-      - messages
-      title: JobFileModel
-      description: A file of a job in the history (recompress.md, section 6.5).
-    JobFilesModel:
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/JobFileModel'
-          type: array
-          title: Items
-        total:
-          type: integer
-          title: Total
-        page_size:
-          type: integer
-          title: Page Size
-      type: object
-      required:
-      - items
-      - total
-      - page_size
-      title: JobFilesModel
     JobModel:
       properties:
         id:
@@ -3118,20 +2635,6 @@ components:
       - op
       - items
       title: OrNode
-    PauseModel:
-      properties:
-        reason:
-          type: string
-          title: Reason
-          description: user (the user paused it) or no_space (the disk is full)
-        since:
-          type: string
-          title: Since
-      type: object
-      required:
-      - reason
-      - since
-      title: PauseModel
     PauseRequest:
       properties:
         paused:
@@ -3207,44 +2710,6 @@ components:
       - id
       - is_default
       title: PresetResponse
-    QueueMessageModel:
-      properties:
-        id:
-          type: integer
-          title: Id
-        kind:
-          type: string
-          title: Kind
-          description: decision (yellow), info (blue) or error (red)
-        code:
-          type: string
-          title: Code
-        detail:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Detail
-        text:
-          type: string
-          title: Text
-        created_at:
-          type: string
-          title: Created At
-        done:
-          type: boolean
-          title: Done
-          description: The decision is taken or «Прочитано» was pressed
-      type: object
-      required:
-      - id
-      - kind
-      - code
-      - detail
-      - text
-      - created_at
-      - done
-      title: QueueMessageModel
-      description: A message at a video of a queue (recompress.md, section 6.5).
     QueuePauseRequest:
       properties:
         paused:
@@ -3255,30 +2720,6 @@ components:
       required:
       - paused
       title: QueuePauseRequest
-    RecompressQueueModel:
-      properties:
-        pause:
-          anyOf:
-          - $ref: '#/components/schemas/PauseModel'
-          - type: 'null'
-          description: The pause of the whole queue, None — it goes
-        counters:
-          $ref: '#/components/schemas/CountersModel'
-        remaining:
-          $ref: '#/components/schemas/RemainingModel'
-          description: What is left of the whole queue
-        jobs:
-          items:
-            $ref: '#/components/schemas/JobModel'
-          type: array
-          title: Jobs
-      type: object
-      required:
-      - pause
-      - counters
-      - remaining
-      - jobs
-      title: RecompressQueueModel
     RemainingModel:
       properties:
         count:
@@ -3555,69 +2996,6 @@ components:
       - field
       - text
       title: TermNode
-    TrashResponse:
-      properties:
-        groups:
-          items:
-            $ref: '#/components/schemas/TrashedGroupModel'
-          type: array
-          title: Groups
-        subscriptions:
-          items:
-            $ref: '#/components/schemas/TrashedSubscriptionModel'
-          type: array
-          title: Subscriptions
-      type: object
-      required:
-      - groups
-      - subscriptions
-      title: TrashResponse
-    TrashedGroupModel:
-      properties:
-        id:
-          type: integer
-          title: Id
-        title:
-          type: string
-          title: Title
-        kind:
-          type: string
-          title: Kind
-        videos:
-          type: integer
-          title: Videos
-        deleted_at:
-          type: string
-          title: Deleted At
-      type: object
-      required:
-      - id
-      - title
-      - kind
-      - videos
-      - deleted_at
-      title: TrashedGroupModel
-    TrashedSubscriptionModel:
-      properties:
-        id:
-          type: integer
-          title: Id
-        title:
-          type: string
-          title: Title
-        channel_url:
-          type: string
-          title: Channel Url
-        deleted_at:
-          type: string
-          title: Deleted At
-      type: object
-      required:
-      - id
-      - title
-      - channel_url
-      - deleted_at
-      title: TrashedSubscriptionModel
     UpdateRequest:
       properties:
         filters:
@@ -3845,6 +3223,691 @@ components:
       required:
       - steps
       title: StepsRequest
+    AttentionMessage:
+      properties:
+        attention:
+          $ref: '#/components/schemas/AttentionSnapshot'
+      required:
+      - attention
+      title: AttentionMessage
+      type: object
+    AttentionSnapshot:
+      properties:
+        cases:
+          description: What the queues need the user for
+          items:
+            $ref: '#/components/schemas/CaseModel'
+          title: Cases
+          type: array
+        downloads:
+          $ref: '#/components/schemas/CountersModel'
+        recompress:
+          $ref: '#/components/schemas/CountersModel'
+      required:
+      - cases
+      - downloads
+      - recompress
+      title: AttentionSnapshot
+      type: object
+    AuthMessage:
+      properties:
+        auth:
+          description: The key; the first message, else the service closes the socket
+          title: Auth
+          type: string
+      required:
+      - auth
+      title: AuthMessage
+      type: object
+    CaseModel:
+      properties:
+        queue:
+          description: download or recompress
+          title: Queue
+          type: string
+        reason:
+          description: no_space, error or need_cookies
+          title: Reason
+          type: string
+        text:
+          title: Text
+          type: string
+        since:
+          title: Since
+          type: string
+        muted:
+          description: «Заглушить» was pressed for this case
+          title: Muted
+          type: boolean
+      required:
+      - queue
+      - reason
+      - text
+      - since
+      - muted
+      title: CaseModel
+      type: object
+    CountersModel:
+      description: 'The counters at the top of a queue: open messages by kind.'
+      properties:
+        decisions:
+          title: Decisions
+          type: integer
+        unread:
+          title: Unread
+          type: integer
+        errors:
+          title: Errors
+          type: integer
+      required:
+      - decisions
+      - unread
+      - errors
+      title: CountersModel
+      type: object
+    DownloadItemModel:
+      properties:
+        id:
+          title: Id
+          type: integer
+        url:
+          title: Url
+          type: string
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        channel:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Channel
+        published_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Published At
+        state:
+          title: State
+          type: string
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/MessageModel'
+          - type: 'null'
+          description: Code and text (docs/codes.md, section 2)
+        progress:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Progress
+        eta_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          default: null
+          description: Seconds left to download, from yt-dlp
+          title: Eta Seconds
+        folder:
+          title: Folder
+          type: string
+        file_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Path
+        original_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: 'The original kept for now: «waits for the original to be deleted», downloader.md
+            section 2.2'
+          title: Original Path
+        compress_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          default: null
+          description: Recompression time estimate, recompress.md section 2.12.1
+          title: Compress Seconds
+        compress_bytes:
+          anyOf:
+          - type: number
+          - type: 'null'
+          default: null
+          description: How much the compressed video will take, an estimate
+          title: Compress Bytes
+        compress_approximate:
+          default: false
+          title: Compress Approximate
+          type: boolean
+        group_id:
+          title: Group Id
+          type: integer
+        messages:
+          items:
+            $ref: '#/components/schemas/QueueMessageModel'
+          title: Messages
+          type: array
+      required:
+      - id
+      - url
+      - title
+      - channel
+      - published_at
+      - state
+      - error
+      - progress
+      - folder
+      - file_path
+      - group_id
+      - messages
+      title: DownloadItemModel
+      type: object
+    DownloadItemsModel:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/DownloadItemModel'
+          title: Items
+          type: array
+        total:
+          description: How many videos match the filters
+          title: Total
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+      required:
+      - items
+      - total
+      - page_size
+      title: DownloadItemsModel
+      type: object
+    DownloadQueueModel:
+      properties:
+        pause:
+          anyOf:
+          - $ref: '#/components/schemas/PauseModel'
+          - type: 'null'
+          description: The pause of the whole queue, None — it goes
+        counters:
+          $ref: '#/components/schemas/CountersModel'
+        remaining:
+          $ref: '#/components/schemas/RemainingModel'
+          description: What is left of the whole queue
+        groups:
+          items:
+            $ref: '#/components/schemas/GroupSummaryModel'
+          title: Groups
+          type: array
+      required:
+      - pause
+      - counters
+      - remaining
+      - groups
+      title: DownloadQueueModel
+      type: object
+    DownloadsMessage:
+      properties:
+        downloads:
+          $ref: '#/components/schemas/DownloadsSnapshot'
+      required:
+      - downloads
+      title: DownloadsMessage
+      type: object
+    DownloadsSnapshot:
+      properties:
+        queue:
+          $ref: '#/components/schemas/DownloadQueueModel'
+        items:
+          $ref: '#/components/schemas/DownloadItemsModel'
+      required:
+      - queue
+      - items
+      title: DownloadsSnapshot
+      type: object
+    ErrorMessage:
+      properties:
+        error:
+          description: A message the service did not understand
+          title: Error
+          type: string
+      required:
+      - error
+      title: ErrorMessage
+      type: object
+    GroupSummaryModel:
+      description: 'A group in the queue, without its videos: they come by pages (/api/downloads/items).'
+      properties:
+        id:
+          title: Id
+          type: integer
+        title:
+          title: Title
+          type: string
+        kind:
+          title: Kind
+          type: string
+        paused:
+          title: Paused
+          type: boolean
+        videos:
+          title: Videos
+          type: integer
+        finished:
+          title: Finished
+          type: integer
+        remaining:
+          $ref: '#/components/schemas/RemainingModel'
+      required:
+      - id
+      - title
+      - kind
+      - paused
+      - videos
+      - finished
+      - remaining
+      title: GroupSummaryModel
+      type: object
+    JobFileModel:
+      description: A file of a job in the history (recompress.md, section 6.5).
+      properties:
+        id:
+          title: Id
+          type: integer
+        job_id:
+          title: Job Id
+          type: integer
+        path:
+          title: Path
+          type: string
+        state:
+          description: queued, running, done or error
+          title: State
+          type: string
+        outcome:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: docs/codes.md, section 1; None — not touched
+          title: Outcome
+        size_before:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size Before
+        size_after:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size After
+        finished_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Finished At
+        estimate_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          default: null
+          description: Recompression time estimate, made when the job was created
+          title: Estimate Seconds
+        estimate_frees:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: null
+          description: How many bytes it will free, an estimate
+          title: Estimate Frees
+        messages:
+          items:
+            $ref: '#/components/schemas/QueueMessageModel'
+          title: Messages
+          type: array
+      required:
+      - id
+      - job_id
+      - path
+      - state
+      - outcome
+      - size_before
+      - size_after
+      - finished_at
+      - messages
+      title: JobFileModel
+      type: object
+    JobFilesModel:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/JobFileModel'
+          title: Items
+          type: array
+        total:
+          title: Total
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+      required:
+      - items
+      - total
+      - page_size
+      title: JobFilesModel
+      type: object
+    NeedCookiesMessage:
+      properties:
+        need_cookies:
+          description: Address of a video of the site whose cookies are needed
+          title: Need Cookies
+          type: string
+      required:
+      - need_cookies
+      title: NeedCookiesMessage
+      type: object
+    PauseModel:
+      properties:
+        reason:
+          description: user (the user paused it) or no_space (the disk is full)
+          title: Reason
+          type: string
+        since:
+          title: Since
+          type: string
+      required:
+      - reason
+      - since
+      title: PauseModel
+      type: object
+    PingMessage:
+      properties:
+        ping:
+          const: true
+          description: 'Every 25 seconds: keeps the extension awake'
+          title: Ping
+          type: boolean
+      required:
+      - ping
+      title: PingMessage
+      type: object
+    QueueMessageModel:
+      description: A message at a video of a queue (recompress.md, section 6.5).
+      properties:
+        id:
+          title: Id
+          type: integer
+        kind:
+          description: decision (yellow), info (blue) or error (red)
+          title: Kind
+          type: string
+        code:
+          title: Code
+          type: string
+        detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Detail
+        text:
+          title: Text
+          type: string
+        created_at:
+          title: Created At
+          type: string
+        done:
+          description: The decision is taken or «Прочитано» was pressed
+          title: Done
+          type: boolean
+      required:
+      - id
+      - kind
+      - code
+      - detail
+      - text
+      - created_at
+      - done
+      title: QueueMessageModel
+      type: object
+    QueueTopic:
+      properties:
+        filter:
+          default:
+          - active
+          description: active, decision, unread, errors, done
+          items:
+            type: string
+          title: Filter
+          type: array
+        page:
+          default: 0
+          description: From 0, 50 items a page
+          minimum: 0
+          title: Page
+          type: integer
+      title: QueueTopic
+      type: object
+    RecompressMessage:
+      properties:
+        recompress:
+          $ref: '#/components/schemas/RecompressSnapshot'
+      required:
+      - recompress
+      title: RecompressMessage
+      type: object
+    RecompressQueueModel:
+      properties:
+        pause:
+          anyOf:
+          - $ref: '#/components/schemas/PauseModel'
+          - type: 'null'
+          description: The pause of the whole queue, None — it goes
+        counters:
+          $ref: '#/components/schemas/CountersModel'
+        remaining:
+          $ref: '#/components/schemas/RemainingModel'
+          description: What is left of the whole queue
+        jobs:
+          items:
+            $ref: '#/components/schemas/JobModel'
+          title: Jobs
+          type: array
+      required:
+      - pause
+      - counters
+      - remaining
+      - jobs
+      title: RecompressQueueModel
+      type: object
+    RecompressSnapshot:
+      properties:
+        queue:
+          $ref: '#/components/schemas/RecompressQueueModel'
+        items:
+          $ref: '#/components/schemas/JobFilesModel'
+      required:
+      - queue
+      - items
+      title: RecompressSnapshot
+      type: object
+    SubscribeMessage:
+      properties:
+        subscribe:
+          $ref: '#/components/schemas/Topics'
+      required:
+      - subscribe
+      title: SubscribeMessage
+      type: object
+    SubscriptionDownloaded:
+      properties:
+        group_id:
+          title: Group Id
+          type: integer
+        title:
+          title: Title
+          type: string
+        count:
+          description: Videos finished in the group
+          title: Count
+          type: integer
+        download_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: A downloaded video, for «Показать в папке»
+          title: Download Id
+      required:
+      - group_id
+      - title
+      - count
+      - download_id
+      title: SubscriptionDownloaded
+      type: object
+    SubscriptionDownloadedMessage:
+      properties:
+        subscription_downloaded:
+          $ref: '#/components/schemas/SubscriptionDownloaded'
+      required:
+      - subscription_downloaded
+      title: SubscriptionDownloadedMessage
+      type: object
+    SubscriptionFound:
+      properties:
+        subscription_id:
+          title: Subscription Id
+          type: integer
+        title:
+          title: Title
+          type: string
+        count:
+          description: New videos the check found
+          title: Count
+          type: integer
+      required:
+      - subscription_id
+      - title
+      - count
+      title: SubscriptionFound
+      type: object
+    SubscriptionFoundMessage:
+      properties:
+        subscription_found:
+          $ref: '#/components/schemas/SubscriptionFound'
+      required:
+      - subscription_found
+      title: SubscriptionFoundMessage
+      type: object
+    SubscriptionsMessage:
+      properties:
+        subscriptions:
+          items:
+            $ref: '#/components/schemas/SubscriptionModel'
+          title: Subscriptions
+          type: array
+      required:
+      - subscriptions
+      title: SubscriptionsMessage
+      type: object
+    Topics:
+      description: What the connection wants; a new subscription replaces the old one, {} — silence.
+      properties:
+        attention:
+          default: false
+          title: Attention
+          type: boolean
+        downloads:
+          anyOf:
+          - $ref: '#/components/schemas/QueueTopic'
+          - type: 'null'
+          default: null
+        recompress:
+          anyOf:
+          - $ref: '#/components/schemas/QueueTopic'
+          - type: 'null'
+          default: null
+        subscriptions:
+          default: false
+          title: Subscriptions
+          type: boolean
+        trash:
+          default: false
+          title: Trash
+          type: boolean
+      title: Topics
+      type: object
+    TrashMessage:
+      properties:
+        trash:
+          $ref: '#/components/schemas/TrashResponse'
+      required:
+      - trash
+      title: TrashMessage
+      type: object
+    TrashResponse:
+      properties:
+        groups:
+          items:
+            $ref: '#/components/schemas/TrashedGroupModel'
+          title: Groups
+          type: array
+        subscriptions:
+          items:
+            $ref: '#/components/schemas/TrashedSubscriptionModel'
+          title: Subscriptions
+          type: array
+      required:
+      - groups
+      - subscriptions
+      title: TrashResponse
+      type: object
+    TrashedGroupModel:
+      properties:
+        id:
+          title: Id
+          type: integer
+        title:
+          title: Title
+          type: string
+        kind:
+          title: Kind
+          type: string
+        videos:
+          title: Videos
+          type: integer
+        deleted_at:
+          title: Deleted At
+          type: string
+      required:
+      - id
+      - title
+      - kind
+      - videos
+      - deleted_at
+      title: TrashedGroupModel
+      type: object
+    TrashedSubscriptionModel:
+      properties:
+        id:
+          title: Id
+          type: integer
+        title:
+          title: Title
+          type: string
+        channel_url:
+          title: Channel Url
+          type: string
+        deleted_at:
+          title: Deleted At
+          type: string
+      required:
+      - id
+      - title
+      - channel_url
+      - deleted_at
+      title: TrashedSubscriptionModel
+      type: object
   securitySchemes:
     HTTPBearer:
       type: http

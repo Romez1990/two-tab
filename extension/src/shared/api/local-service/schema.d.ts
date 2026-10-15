@@ -168,12 +168,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Downloads
-         * @description The queue: its pause, the counters, what is left and the groups; the videos come by
-         *     pages.
-         */
-        get: operations["list_downloads"];
+        get?: never;
         put?: never;
         /** Enqueue Download */
         post: operations["enqueue_download"];
@@ -221,27 +216,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/downloads/items": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Download Items
-         * @description A page of the videos matching the filters (recompress.md, section 6.5): active, decision,
-         *     unread, errors, done; several through commas.
-         */
-        get: operations["list_download_items"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/downloads/items/next": {
         parameters: {
             query?: never;
@@ -274,7 +248,7 @@ export interface paths {
         put?: never;
         /**
          * Read Download Message
-         * @description «Прочитано» at an information or an error.
+         * @description "Read" at an information or an error.
          */
         post: operations["read_download_message"];
         delete?: never;
@@ -453,7 +427,7 @@ export interface paths {
         put?: never;
         /**
          * Skip Download
-         * @description «Пропустить» a video with an error: it stays so, the queue goes on (recompress.md, 6.3).
+         * @description "Skip" a video with an error: it stays so, the queue goes on (recompress.md, 6.3).
          */
         post: operations["skip_download"];
         delete?: never;
@@ -524,7 +498,7 @@ export interface paths {
         put?: never;
         /**
          * Original Done
-         * @description «Готово»: the original is deleted for good, a censored version goes into the queue.
+         * @description "Done": the original is deleted for good, a censored version goes into the queue.
          */
         post: operations["original_done"];
         delete?: never;
@@ -544,7 +518,7 @@ export interface paths {
         put?: never;
         /**
          * Decide Duplicate
-         * @description The decision at «Найден дубликат» (downloader.md, section 5.1).
+         * @description The decision at "Duplicate found" (downloader.md, section 5.1).
          */
         post: operations["decide_duplicate"];
         delete?: never;
@@ -564,7 +538,7 @@ export interface paths {
         put?: never;
         /**
          * Open Message Video
-         * @description «Открыть» the archive video of a duplicate message.
+         * @description "Open" the archive video of a duplicate message.
          */
         post: operations["open_message_video"];
         delete?: never;
@@ -584,7 +558,7 @@ export interface paths {
         put?: never;
         /**
          * Show Message Video
-         * @description «Показать в папке» the archive video of a duplicate message.
+         * @description "Show in folder" the archive video of a duplicate message.
          */
         post: operations["show_message_video"];
         delete?: never;
@@ -604,7 +578,7 @@ export interface paths {
         put?: never;
         /**
          * Play Message Video
-         * @description «Воспроизвести с этого места»: VLC from the timecode of a part or a shared piece.
+         * @description "Play from here": VLC from the timecode of a part or a shared piece.
          */
         post: operations["play_message_video"];
         delete?: never;
@@ -691,8 +665,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Subscriptions */
-        get: operations["list_subscriptions"];
+        get?: never;
         put?: never;
         /** Subscribe */
         post: operations["subscribe"];
@@ -761,31 +734,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Recompress */
-        get: operations["list_recompress"];
+        get?: never;
         put?: never;
         /** Create Recompress */
         post: operations["create_recompress"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/recompress/items": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Recompress Items
-         * @description A page of the files of the jobs matching the filters (recompress.md, section 6.5).
-         */
-        get: operations["list_recompress_items"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -824,7 +776,7 @@ export interface paths {
         put?: never;
         /**
          * Read Recompress Message
-         * @description «Прочитано» at an information or an error.
+         * @description "Read" at an information or an error.
          */
         post: operations["read_recompress_message"];
         delete?: never;
@@ -864,7 +816,7 @@ export interface paths {
         put?: never;
         /**
          * Retry Recompress File
-         * @description «Повторить» a file with an error; its error pause is taken off (strict order).
+         * @description "Retry" a file with an error; its error pause is taken off (strict order).
          */
         post: operations["retry_recompress_file"];
         delete?: never;
@@ -884,7 +836,7 @@ export interface paths {
         put?: never;
         /**
          * Skip Recompress File
-         * @description «Пропустить»: the file stays with its error, the queue goes on.
+         * @description "Skip": the file stays with its error, the queue goes on.
          */
         post: operations["skip_recompress_file"];
         delete?: never;
@@ -944,26 +896,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/attention": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Attention
-         * @description The cases the queues need the user for; empty — nothing (the banner is hidden).
-         */
-        get: operations["get_attention"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/attention/mute": {
         parameters: {
             query?: never;
@@ -975,7 +907,7 @@ export interface paths {
         put?: never;
         /**
          * Mute Attention
-         * @description «Заглушить» the cases there are now; a new case rings again.
+         * @description "Mute" the cases there are now; a new case rings again.
          */
         post: operations["mute_attention"];
         delete?: never;
@@ -995,23 +927,6 @@ export interface paths {
         get: operations["get_settings"];
         /** Put Settings */
         put: operations["put_settings"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/trash": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Trash */
-        get: operations["list_trash"];
-        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1066,28 +981,6 @@ export interface components {
             op: "and";
             /** Items */
             items: components["schemas"]["Node"][];
-        };
-        /** CaseModel */
-        CaseModel: {
-            /**
-             * Queue
-             * @description download or recompress
-             */
-            queue: string;
-            /**
-             * Reason
-             * @description no_space, error or need_cookies
-             */
-            reason: string;
-            /** Text */
-            text: string;
-            /** Since */
-            since: string;
-            /**
-             * Muted
-             * @description «Заглушить» was pressed for this case
-             */
-            muted: boolean;
         };
         /** ChannelCheckRequest */
         ChannelCheckRequest: {
@@ -1233,82 +1126,6 @@ export interface components {
                 [key: string]: components["schemas"]["Cookie"][];
             };
         };
-        /**
-         * CountersModel
-         * @description The counters at the top of a queue: open messages by kind.
-         */
-        CountersModel: {
-            /** Decisions */
-            decisions: number;
-            /** Unread */
-            unread: number;
-            /** Errors */
-            errors: number;
-        };
-        /** DownloadItemModel */
-        DownloadItemModel: {
-            /** Id */
-            id: number;
-            /** Url */
-            url: string;
-            /** Title */
-            title: string | null;
-            /** Channel */
-            channel: string | null;
-            /** Published At */
-            published_at: string | null;
-            /** State */
-            state: string;
-            /** @description Code and text (docs/codes.md, section 2) */
-            error: components["schemas"]["MessageModel"] | null;
-            /** Progress */
-            progress: number | null;
-            /**
-             * Eta Seconds
-             * @description Seconds left to download, from yt-dlp
-             */
-            eta_seconds?: number | null;
-            /** Folder */
-            folder: string;
-            /** File Path */
-            file_path: string | null;
-            /**
-             * Original Path
-             * @description The original kept for now: «waits for the original to be deleted», downloader.md section 2.2
-             */
-            original_path?: string | null;
-            /**
-             * Compress Seconds
-             * @description Recompression time estimate, recompress.md section 2.12.1
-             */
-            compress_seconds?: number | null;
-            /**
-             * Compress Bytes
-             * @description How much the compressed video will take, an estimate
-             */
-            compress_bytes?: number | null;
-            /**
-             * Compress Approximate
-             * @default false
-             */
-            compress_approximate: boolean;
-            /** Group Id */
-            group_id: number;
-            /** Messages */
-            messages: components["schemas"]["QueueMessageModel"][];
-        };
-        /** DownloadItemsModel */
-        DownloadItemsModel: {
-            /** Items */
-            items: components["schemas"]["DownloadItemModel"][];
-            /**
-             * Total
-             * @description How many videos match the filters
-             */
-            total: number;
-            /** Page Size */
-            page_size: number;
-        };
         /** DownloadModel */
         DownloadModel: {
             /** Id */
@@ -1356,16 +1173,6 @@ export interface components {
              * @default false
              */
             compress_approximate: boolean;
-        };
-        /** DownloadQueueModel */
-        DownloadQueueModel: {
-            /** @description The pause of the whole queue, None — it goes */
-            pause: components["schemas"]["PauseModel"] | null;
-            counters: components["schemas"]["CountersModel"];
-            /** @description What is left of the whole queue */
-            remaining: components["schemas"]["RemainingModel"];
-            /** Groups */
-            groups: components["schemas"]["GroupSummaryModel"][];
         };
         /** DuplicateRequest */
         DuplicateRequest: {
@@ -1518,78 +1325,10 @@ export interface components {
             /** Downloads */
             downloads: components["schemas"]["DownloadModel"][];
         };
-        /**
-         * GroupSummaryModel
-         * @description A group in the queue, without its videos: they come by pages (/api/downloads/items).
-         */
-        GroupSummaryModel: {
-            /** Id */
-            id: number;
-            /** Title */
-            title: string;
-            /** Kind */
-            kind: string;
-            /** Paused */
-            paused: boolean;
-            /** Videos */
-            videos: number;
-            /** Finished */
-            finished: number;
-            remaining: components["schemas"]["RemainingModel"];
-        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
-        };
-        /**
-         * JobFileModel
-         * @description A file of a job in the history (recompress.md, section 6.5).
-         */
-        JobFileModel: {
-            /** Id */
-            id: number;
-            /** Job Id */
-            job_id: number;
-            /** Path */
-            path: string;
-            /**
-             * State
-             * @description queued, running, done or error
-             */
-            state: string;
-            /**
-             * Outcome
-             * @description docs/codes.md, section 1; None — not touched
-             */
-            outcome: string | null;
-            /** Size Before */
-            size_before: number | null;
-            /** Size After */
-            size_after: number | null;
-            /** Finished At */
-            finished_at: string | null;
-            /**
-             * Estimate Seconds
-             * @description Recompression time estimate, made when the job was created
-             */
-            estimate_seconds?: number | null;
-            /**
-             * Estimate Frees
-             * @description How many bytes it will free, an estimate
-             */
-            estimate_frees?: number | null;
-            /** Messages */
-            messages: components["schemas"]["QueueMessageModel"][];
-        };
-        /** JobFilesModel */
-        JobFilesModel: {
-            /** Items */
-            items: components["schemas"]["JobFileModel"][];
-            /** Total */
-            total: number;
-            /** Page Size */
-            page_size: number;
         };
         /** JobModel */
         JobModel: {
@@ -1754,16 +1493,6 @@ export interface components {
             /** Items */
             items: components["schemas"]["Node"][];
         };
-        /** PauseModel */
-        PauseModel: {
-            /**
-             * Reason
-             * @description user (the user paused it) or no_space (the disk is full)
-             */
-            reason: string;
-            /** Since */
-            since: string;
-        };
         /** PauseRequest */
         PauseRequest: {
             /** Paused */
@@ -1817,32 +1546,6 @@ export interface components {
             /** Is Default */
             is_default: boolean;
         };
-        /**
-         * QueueMessageModel
-         * @description A message at a video of a queue (recompress.md, section 6.5).
-         */
-        QueueMessageModel: {
-            /** Id */
-            id: number;
-            /**
-             * Kind
-             * @description decision (yellow), info (blue) or error (red)
-             */
-            kind: string;
-            /** Code */
-            code: string;
-            /** Detail */
-            detail: string | null;
-            /** Text */
-            text: string;
-            /** Created At */
-            created_at: string;
-            /**
-             * Done
-             * @description The decision is taken or «Прочитано» was pressed
-             */
-            done: boolean;
-        };
         /** QueuePauseRequest */
         QueuePauseRequest: {
             /**
@@ -1850,16 +1553,6 @@ export interface components {
              * @description True — pause the whole queue (user), false — go on
              */
             paused: boolean;
-        };
-        /** RecompressQueueModel */
-        RecompressQueueModel: {
-            /** @description The pause of the whole queue, None — it goes */
-            pause: components["schemas"]["PauseModel"] | null;
-            counters: components["schemas"]["CountersModel"];
-            /** @description What is left of the whole queue */
-            remaining: components["schemas"]["RemainingModel"];
-            /** Jobs */
-            jobs: components["schemas"]["JobModel"][];
         };
         /**
          * RemainingModel
@@ -2052,37 +1745,6 @@ export interface components {
              */
             phrase: boolean;
         };
-        /** TrashResponse */
-        TrashResponse: {
-            /** Groups */
-            groups: components["schemas"]["TrashedGroupModel"][];
-            /** Subscriptions */
-            subscriptions: components["schemas"]["TrashedSubscriptionModel"][];
-        };
-        /** TrashedGroupModel */
-        TrashedGroupModel: {
-            /** Id */
-            id: number;
-            /** Title */
-            title: string;
-            /** Kind */
-            kind: string;
-            /** Videos */
-            videos: number;
-            /** Deleted At */
-            deleted_at: string;
-        };
-        /** TrashedSubscriptionModel */
-        TrashedSubscriptionModel: {
-            /** Id */
-            id: number;
-            /** Title */
-            title: string;
-            /** Channel Url */
-            channel_url: string;
-            /** Deleted At */
-            deleted_at: string;
-        };
         /** UpdateRequest */
         UpdateRequest: {
             filters?: components["schemas"]["FiltersModel"] | null;
@@ -2206,6 +1868,422 @@ export interface components {
              * @description Minus is up
              */
             steps: number;
+        };
+        /** AttentionMessage */
+        AttentionMessage: {
+            attention: components["schemas"]["AttentionSnapshot"];
+        };
+        /** AttentionSnapshot */
+        AttentionSnapshot: {
+            /**
+             * Cases
+             * @description What the queues need the user for
+             */
+            cases: components["schemas"]["CaseModel"][];
+            downloads: components["schemas"]["CountersModel"];
+            recompress: components["schemas"]["CountersModel"];
+        };
+        /** AuthMessage */
+        AuthMessage: {
+            /**
+             * Auth
+             * @description The key; the first message, else the service closes the socket
+             */
+            auth: string;
+        };
+        /** CaseModel */
+        CaseModel: {
+            /**
+             * Queue
+             * @description download or recompress
+             */
+            queue: string;
+            /**
+             * Reason
+             * @description no_space, error or need_cookies
+             */
+            reason: string;
+            /** Text */
+            text: string;
+            /** Since */
+            since: string;
+            /**
+             * Muted
+             * @description «Заглушить» was pressed for this case
+             */
+            muted: boolean;
+        };
+        /**
+         * CountersModel
+         * @description The counters at the top of a queue: open messages by kind.
+         */
+        CountersModel: {
+            /** Decisions */
+            decisions: number;
+            /** Unread */
+            unread: number;
+            /** Errors */
+            errors: number;
+        };
+        /** DownloadItemModel */
+        DownloadItemModel: {
+            /** Id */
+            id: number;
+            /** Url */
+            url: string;
+            /** Title */
+            title: string | null;
+            /** Channel */
+            channel: string | null;
+            /** Published At */
+            published_at: string | null;
+            /** State */
+            state: string;
+            /** @description Code and text (docs/codes.md, section 2) */
+            error: components["schemas"]["MessageModel"] | null;
+            /** Progress */
+            progress: number | null;
+            /**
+             * Eta Seconds
+             * @description Seconds left to download, from yt-dlp
+             * @default null
+             */
+            eta_seconds: number | null;
+            /** Folder */
+            folder: string;
+            /** File Path */
+            file_path: string | null;
+            /**
+             * Original Path
+             * @description The original kept for now: «waits for the original to be deleted», downloader.md section 2.2
+             * @default null
+             */
+            original_path: string | null;
+            /**
+             * Compress Seconds
+             * @description Recompression time estimate, recompress.md section 2.12.1
+             * @default null
+             */
+            compress_seconds: number | null;
+            /**
+             * Compress Bytes
+             * @description How much the compressed video will take, an estimate
+             * @default null
+             */
+            compress_bytes: number | null;
+            /**
+             * Compress Approximate
+             * @default false
+             */
+            compress_approximate: boolean;
+            /** Group Id */
+            group_id: number;
+            /** Messages */
+            messages: components["schemas"]["QueueMessageModel"][];
+        };
+        /** DownloadItemsModel */
+        DownloadItemsModel: {
+            /** Items */
+            items: components["schemas"]["DownloadItemModel"][];
+            /**
+             * Total
+             * @description How many videos match the filters
+             */
+            total: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** DownloadQueueModel */
+        DownloadQueueModel: {
+            /** @description The pause of the whole queue, None — it goes */
+            pause: components["schemas"]["PauseModel"] | null;
+            counters: components["schemas"]["CountersModel"];
+            /** @description What is left of the whole queue */
+            remaining: components["schemas"]["RemainingModel"];
+            /** Groups */
+            groups: components["schemas"]["GroupSummaryModel"][];
+        };
+        /** DownloadsMessage */
+        DownloadsMessage: {
+            downloads: components["schemas"]["DownloadsSnapshot"];
+        };
+        /** DownloadsSnapshot */
+        DownloadsSnapshot: {
+            queue: components["schemas"]["DownloadQueueModel"];
+            items: components["schemas"]["DownloadItemsModel"];
+        };
+        /** ErrorMessage */
+        ErrorMessage: {
+            /**
+             * Error
+             * @description A message the service did not understand
+             */
+            error: string;
+        };
+        /**
+         * GroupSummaryModel
+         * @description A group in the queue, without its videos: they come by pages (/api/downloads/items).
+         */
+        GroupSummaryModel: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Kind */
+            kind: string;
+            /** Paused */
+            paused: boolean;
+            /** Videos */
+            videos: number;
+            /** Finished */
+            finished: number;
+            remaining: components["schemas"]["RemainingModel"];
+        };
+        /**
+         * JobFileModel
+         * @description A file of a job in the history (recompress.md, section 6.5).
+         */
+        JobFileModel: {
+            /** Id */
+            id: number;
+            /** Job Id */
+            job_id: number;
+            /** Path */
+            path: string;
+            /**
+             * State
+             * @description queued, running, done or error
+             */
+            state: string;
+            /**
+             * Outcome
+             * @description docs/codes.md, section 1; None — not touched
+             */
+            outcome: string | null;
+            /** Size Before */
+            size_before: number | null;
+            /** Size After */
+            size_after: number | null;
+            /** Finished At */
+            finished_at: string | null;
+            /**
+             * Estimate Seconds
+             * @description Recompression time estimate, made when the job was created
+             * @default null
+             */
+            estimate_seconds: number | null;
+            /**
+             * Estimate Frees
+             * @description How many bytes it will free, an estimate
+             * @default null
+             */
+            estimate_frees: number | null;
+            /** Messages */
+            messages: components["schemas"]["QueueMessageModel"][];
+        };
+        /** JobFilesModel */
+        JobFilesModel: {
+            /** Items */
+            items: components["schemas"]["JobFileModel"][];
+            /** Total */
+            total: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** NeedCookiesMessage */
+        NeedCookiesMessage: {
+            /**
+             * Need Cookies
+             * @description Address of a video of the site whose cookies are needed
+             */
+            need_cookies: string;
+        };
+        /** PauseModel */
+        PauseModel: {
+            /**
+             * Reason
+             * @description user (the user paused it) or no_space (the disk is full)
+             */
+            reason: string;
+            /** Since */
+            since: string;
+        };
+        /** PingMessage */
+        PingMessage: {
+            /**
+             * Ping
+             * @description Every 25 seconds: keeps the extension awake
+             * @constant
+             */
+            ping: true;
+        };
+        /**
+         * QueueMessageModel
+         * @description A message at a video of a queue (recompress.md, section 6.5).
+         */
+        QueueMessageModel: {
+            /** Id */
+            id: number;
+            /**
+             * Kind
+             * @description decision (yellow), info (blue) or error (red)
+             */
+            kind: string;
+            /** Code */
+            code: string;
+            /** Detail */
+            detail: string | null;
+            /** Text */
+            text: string;
+            /** Created At */
+            created_at: string;
+            /**
+             * Done
+             * @description The decision is taken or «Прочитано» was pressed
+             */
+            done: boolean;
+        };
+        /** QueueTopic */
+        QueueTopic: {
+            /**
+             * Filter
+             * @description active, decision, unread, errors, done
+             * @default [
+             *       "active"
+             *     ]
+             */
+            filter: string[];
+            /**
+             * Page
+             * @description From 0, 50 items a page
+             * @default 0
+             */
+            page: number;
+        };
+        /** RecompressMessage */
+        RecompressMessage: {
+            recompress: components["schemas"]["RecompressSnapshot"];
+        };
+        /** RecompressQueueModel */
+        RecompressQueueModel: {
+            /** @description The pause of the whole queue, None — it goes */
+            pause: components["schemas"]["PauseModel"] | null;
+            counters: components["schemas"]["CountersModel"];
+            /** @description What is left of the whole queue */
+            remaining: components["schemas"]["RemainingModel"];
+            /** Jobs */
+            jobs: components["schemas"]["JobModel"][];
+        };
+        /** RecompressSnapshot */
+        RecompressSnapshot: {
+            queue: components["schemas"]["RecompressQueueModel"];
+            items: components["schemas"]["JobFilesModel"];
+        };
+        /** SubscribeMessage */
+        SubscribeMessage: {
+            subscribe: components["schemas"]["Topics"];
+        };
+        /** SubscriptionDownloaded */
+        SubscriptionDownloaded: {
+            /** Group Id */
+            group_id: number;
+            /** Title */
+            title: string;
+            /**
+             * Count
+             * @description Videos finished in the group
+             */
+            count: number;
+            /**
+             * Download Id
+             * @description A downloaded video, for «Показать в папке»
+             */
+            download_id: number | null;
+        };
+        /** SubscriptionDownloadedMessage */
+        SubscriptionDownloadedMessage: {
+            subscription_downloaded: components["schemas"]["SubscriptionDownloaded"];
+        };
+        /** SubscriptionFound */
+        SubscriptionFound: {
+            /** Subscription Id */
+            subscription_id: number;
+            /** Title */
+            title: string;
+            /**
+             * Count
+             * @description New videos the check found
+             */
+            count: number;
+        };
+        /** SubscriptionFoundMessage */
+        SubscriptionFoundMessage: {
+            subscription_found: components["schemas"]["SubscriptionFound"];
+        };
+        /** SubscriptionsMessage */
+        SubscriptionsMessage: {
+            /** Subscriptions */
+            subscriptions: components["schemas"]["SubscriptionModel"][];
+        };
+        /**
+         * Topics
+         * @description What the connection wants; a new subscription replaces the old one, {} — silence.
+         */
+        Topics: {
+            /**
+             * Attention
+             * @default false
+             */
+            attention: boolean;
+            /** @default null */
+            downloads: components["schemas"]["QueueTopic"] | null;
+            /** @default null */
+            recompress: components["schemas"]["QueueTopic"] | null;
+            /**
+             * Subscriptions
+             * @default false
+             */
+            subscriptions: boolean;
+            /**
+             * Trash
+             * @default false
+             */
+            trash: boolean;
+        };
+        /** TrashMessage */
+        TrashMessage: {
+            trash: components["schemas"]["TrashResponse"];
+        };
+        /** TrashResponse */
+        TrashResponse: {
+            /** Groups */
+            groups: components["schemas"]["TrashedGroupModel"][];
+            /** Subscriptions */
+            subscriptions: components["schemas"]["TrashedSubscriptionModel"][];
+        };
+        /** TrashedGroupModel */
+        TrashedGroupModel: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Kind */
+            kind: string;
+            /** Videos */
+            videos: number;
+            /** Deleted At */
+            deleted_at: string;
+        };
+        /** TrashedSubscriptionModel */
+        TrashedSubscriptionModel: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Channel Url */
+            channel_url: string;
+            /** Deleted At */
+            deleted_at: string;
         };
     };
     responses: never;
@@ -2820,40 +2898,6 @@ export interface operations {
             };
         };
     };
-    list_downloads: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DownloadQueueModel"];
-                };
-            };
-            /** @description Wrong key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not the connected extension */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     enqueue_download: {
         parameters: {
             query?: never;
@@ -2988,50 +3032,6 @@ export interface operations {
                 content?: never;
             };
             /** @description Wrong folder, filter or preset edit */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    list_download_items: {
-        parameters: {
-            query?: {
-                filter?: string;
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DownloadItemsModel"];
-                };
-            };
-            /** @description Wrong key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not the connected extension */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unknown filter */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4324,40 +4324,6 @@ export interface operations {
             };
         };
     };
-    list_subscriptions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SubscriptionModel"][];
-                };
-            };
-            /** @description Wrong key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not the connected extension */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     subscribe: {
         parameters: {
             query?: never;
@@ -4616,40 +4582,6 @@ export interface operations {
             };
         };
     };
-    list_recompress: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecompressQueueModel"];
-                };
-            };
-            /** @description Wrong key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not the connected extension */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     create_recompress: {
         parameters: {
             query?: never;
@@ -4694,50 +4626,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
-            };
-        };
-    };
-    list_recompress_items: {
-        parameters: {
-            query?: {
-                filter?: string;
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JobFilesModel"];
-                };
-            };
-            /** @description Wrong key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not the connected extension */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unknown filter */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -5153,40 +5041,6 @@ export interface operations {
             };
         };
     };
-    get_attention: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CaseModel"][];
-                };
-            };
-            /** @description Wrong key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not the connected extension */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     mute_attention: {
         parameters: {
             query?: never;
@@ -5291,40 +5145,6 @@ export interface operations {
             };
             /** @description Wrong value */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    list_trash: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TrashResponse"];
-                };
-            };
-            /** @description Wrong key */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not the connected extension */
-            403: {
                 headers: {
                     [name: string]: unknown;
                 };
