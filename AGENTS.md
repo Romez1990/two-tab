@@ -67,6 +67,7 @@ Scope называет конкретную страницу, фичу, сущн
 | `docs/extension` | `docs(extension): AI …`                                                                                                                                                                        |
 | `docs/sync_server` | `docs(sync_server): AI …`                                                                                                                                                                      |
 | Общие документы | `docs: AI …`                                                                                                                                                                                   |
+| Форматирование и автоисправления линтера без смены поведения | `style: AI …` |
 | Несколько несвязанных мест | без scope: `refactor: AI drop experiment wording from comments`                                                                                                                                |
 | `docs/plan.md` | отдельным коммитом, сообщение ровно `plan`                                                                                                                                                     |
 | Результат `pnpm api:update` | отдельным коммитом, только эти файлы                                                                                                                                                           |
