@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { TidyReelConnection } from '@/features/connect-tidy-reel';
 import { updateSettings, useSettings } from '@/shared/config';
 

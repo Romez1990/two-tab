@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SearchSyntaxError, matches, mentionedSources, parseQuery, relevance, type SearchDoc } from './smart-search';
+import { matches, mentionedSources, parseQuery, relevance, type SearchDoc, SearchSyntaxError } from './smart-search';
 
 const term = (text: string, field = 'name', phrase = false) => ({ op: 'term', field, text, phrase });
 

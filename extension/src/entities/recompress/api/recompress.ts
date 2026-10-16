@@ -1,4 +1,4 @@
-import { connectedClient, serviceErrorText, type LocalServiceSchemas } from '@/shared/api';
+import { connectedClient, type LocalServiceSchemas, serviceErrorText } from '@/shared/api';
 
 /** Archive compression queue in the local service (tidy-reel/docs/local_service/local_service.md, section 7.5). */
 

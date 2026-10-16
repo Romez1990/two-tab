@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_FIELDS, SLIDERS, describeStep, trimError } from './fields';
+import { DEFAULT_FIELDS, describeStep, SLIDERS, trimError } from './fields';
 
 describe('recompress preset fields', () => {
   it('every slider has its default value', () => {

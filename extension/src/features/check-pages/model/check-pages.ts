@@ -1,6 +1,6 @@
-import { getSaved, addSaved, type SavedItem } from '@/entities/saved';
+import { addSaved, getSaved, type SavedItem } from '@/entities/saved';
 import { db } from '@/shared/db';
-import { DAY, runBySite, siteFetch, SiteSkippedError } from '@/shared/lib';
+import { DAY, runBySite, SiteSkippedError, siteFetch } from '@/shared/lib';
 import { detectCharset, needsTitle, titleFromHtml } from './needs-title';
 import type { PageCheck } from './page-status';
 

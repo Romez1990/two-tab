@@ -18,14 +18,14 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { useEffect, useRef, useState } from 'react';
 import { savedItemPageUrl } from '@/entities/saved';
-import { forgetSearch, listSearchHistory, rememberSearch, suggest, type SearchQuery } from '@/entities/search-query';
+import { forgetSearch, listSearchHistory, rememberSearch, type SearchQuery, suggest } from '@/entities/search-query';
 import { localServiceClient, ServiceUnreachableError } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
-import { SEARCH_SOURCES, SearchSyntaxError, formatDateTime, mentionedSources, parseQuery } from '@/shared/lib';
+import { formatDateTime, mentionedSources, parseQuery, SEARCH_SOURCES, SearchSyntaxError } from '@/shared/lib';
 import { Favicon, SMART_SEARCH_HINT, SmartHint, usePaging } from '@/shared/ui';
-import { ARCHIVE_SHOWN_LIMIT, SOURCE_TITLES, search, type Found, type Sort, type Source } from '../model/collect';
-import { EMPTY_STATE, readState, writeState, type SearchState } from '../model/url-state';
+import { ARCHIVE_SHOWN_LIMIT, type Found, SOURCE_TITLES, type Sort, type Source, search } from '../model/collect';
+import { EMPTY_STATE, readState, type SearchState, writeState } from '../model/url-state';
 
 /** "Search" (docs/extension/pages/search.md): tabs and archive in one list, "smart search" on Enter. */
 export function SearchPage() {

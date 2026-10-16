@@ -1,7 +1,7 @@
 import { listSaved } from '@/entities/saved';
 import { runBackgroundCheck } from '@/features/background-check';
-import { fillIcons, missingIconSites } from '@/features/fetch-favicons';
 import { checkPages, pendingCheckUrls } from '@/features/check-pages';
+import { fillIcons, missingIconSites } from '@/features/fetch-favicons';
 
 /**
  * Hidden service page of the background check of saved items (docs/extension/pages/saved.md, section 1):

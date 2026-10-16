@@ -9,7 +9,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useState } from 'react';
-import { listClosedTabs, type ClosedTab } from '@/entities/closed-tab';
+import { type ClosedTab, listClosedTabs } from '@/entities/closed-tab';
 import { countTabs, listHistory, type Snapshot } from '@/entities/snapshot';
 import { errorText, formatDateTime } from '@/shared/lib';
 import { ClosedTabsList } from './ClosedTabsList';

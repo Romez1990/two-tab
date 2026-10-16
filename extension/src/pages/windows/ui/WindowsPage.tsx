@@ -12,13 +12,13 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import { useWindows, type BrowserWindow } from '@/entities/window';
+import { type BrowserWindow, useWindows } from '@/entities/window';
 import { reorderWindows } from '@/features/recreate-window';
 import { SaveCloseButton } from '@/features/save-close';
 import { browser } from '@/shared/browser';
-import { updateSettings, useSettings, type Settings } from '@/shared/config';
-import { groupColor, KeepLockButton } from '@/shared/ui';
+import { type Settings, updateSettings, useSettings } from '@/shared/config';
 import { errorText } from '@/shared/lib';
+import { groupColor, KeepLockButton } from '@/shared/ui';
 
 /**
  * "Windows" (docs/extension/pages/windows.md, section 1): window names, order by dragging (windows are recreated

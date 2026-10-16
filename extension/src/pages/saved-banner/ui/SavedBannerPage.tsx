@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { SavedMatches, type SavedMatch } from '@/entities/saved';
-import { openSavedItem, type BannerFrameMessage } from '@/features/saved-banner';
+import { type SavedMatch, SavedMatches } from '@/entities/saved';
+import { type BannerFrameMessage, openSavedItem } from '@/features/saved-banner';
 
 /** The "Already saved" banner in an iframe on a site (docs/extension/pages/saved.md, section 1); found records come in `?matches=`, the site address in `&url=`. */
 export function SavedBannerPage() {

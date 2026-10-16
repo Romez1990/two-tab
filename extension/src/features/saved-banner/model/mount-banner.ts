@@ -1,6 +1,6 @@
-import { browser } from '@/shared/browser';
 import type { SavedMatch } from '@/entities/saved';
-import { BANNER_PAGE, MATCHES_GLOBAL, type BannerFrameMessage } from './banner';
+import { browser } from '@/shared/browser';
+import { BANNER_PAGE, type BannerFrameMessage, MATCHES_GLOBAL } from './banner';
 
 const FRAME_ID = 'tabsurd-saved-banner';
 /**

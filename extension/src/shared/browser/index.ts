@@ -1,2 +1,2 @@
-export { browser, type Browser } from 'wxt/browser';
+export { type Browser, browser } from 'wxt/browser';
 export { hasSiteAccess, useSiteAccess } from './site-access';

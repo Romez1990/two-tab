@@ -1,7 +1,7 @@
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
-import { statusBadge, type PageCheck } from '../model/page-status';
+import { type PageCheck, statusBadge } from '../model/page-status';
 
 /**
  * Page status badge on a tab; nothing when the page is fine. A click checks the page again.

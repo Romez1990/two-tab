@@ -14,31 +14,31 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useRef, useState } from 'react';
 import {
+  type DownloadAction,
+  type DownloadItem,
   decideDuplicate,
   downloadAction,
+  type GroupAction,
+  type GroupSummary,
   groupAction,
   messageAction,
   nextItem,
   pauseQueue,
   readMessage,
-  type DownloadAction,
-  type DownloadItem,
-  type GroupAction,
-  type GroupSummary,
 } from '@/entities/download';
 import {
+  type CounterKind,
+  formatDuration,
+  formatSize,
   MessageLine,
   QueueCounters,
   QueueFilters,
+  type QueueMessage,
   QueuePager,
   QueuePanel,
-  formatDuration,
-  formatSize,
   remainingText,
   useQueueAddress,
   useScrollTarget,
-  type CounterKind,
-  type QueueMessage,
 } from '@/entities/queue';
 import { useServiceTopic } from '@/shared/api';
 import { errorText } from '@/shared/lib';

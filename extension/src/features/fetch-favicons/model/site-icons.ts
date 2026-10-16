@@ -1,5 +1,5 @@
 import { db } from '@/shared/db';
-import { DAY, hostOf, siteFetch, SiteSkippedError } from '@/shared/lib';
+import { DAY, hostOf, SiteSkippedError, siteFetch } from '@/shared/lib';
 import { faviconUrl } from '@/shared/ui';
 
 /**

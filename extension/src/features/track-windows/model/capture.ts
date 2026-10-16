@@ -1,4 +1,4 @@
-import { toSnapshotWindow, type SnapshotWindow } from '@/entities/snapshot';
+import { type SnapshotWindow, toSnapshotWindow } from '@/entities/snapshot';
 import { getWindowUids, newWindowUid, setWindowUids } from '@/entities/window';
 import { browser } from '@/shared/browser';
 

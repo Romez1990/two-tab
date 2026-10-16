@@ -1,5 +1,5 @@
-import { browser, hasSiteAccess, type Browser } from '@/shared/browser';
-import { updateCheckState, getCheckState } from './state';
+import { type Browser, browser, hasSiteAccess } from '@/shared/browser';
+import { getCheckState, updateCheckState } from './state';
 
 /**
  * Controls the background check from the background script. The check itself runs in the hidden service page

@@ -1,4 +1,4 @@
-import { connectedClient, serviceErrorText, type LocalServiceClient, type LocalServiceSchemas } from '@/shared/api';
+import { connectedClient, type LocalServiceClient, type LocalServiceSchemas, serviceErrorText } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { parseUrl } from '@/shared/lib';
 

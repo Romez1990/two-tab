@@ -2,22 +2,22 @@ import { getSaved } from '@/entities/saved';
 import { AUTO_CLOSE_NOTIFICATION_PREFIX, runAutoClose } from '@/features/auto-close';
 import { onCheckMessage, resumeBackgroundCheck } from '@/features/background-check';
 import { showDownloadBanner } from '@/features/download-banner';
-import { showBannerIfSaved } from '@/features/saved-banner';
 import { restoreTabs, restoreWindows, returnSaved } from '@/features/restore-windows';
 import { saveAndCloseGroup, saveAndCloseWindow } from '@/features/save-close';
-import { SUBSCRIPTION_NOTIFICATION_PREFIX, onSubscriptionButton, startServiceEvents } from '@/features/service-events';
+import { showBannerIfSaved } from '@/features/saved-banner';
+import { onSubscriptionButton, SUBSCRIPTION_NOTIFICATION_PREFIX, startServiceEvents } from '@/features/service-events';
 import {
-  HISTORY_ALARM,
-  LOSS_NOTIFICATION,
   clearLastLoss,
   ensureHistoryAlarm,
   getLastLoss,
+  HISTORY_ALARM,
+  LOSS_NOTIFICATION,
   onHistoryAlarm,
   onTabRemoved,
   scheduleSnapshot,
   startTracking,
 } from '@/features/track-windows';
-import { browser, type Browser } from '@/shared/browser';
+import { type Browser, browser } from '@/shared/browser';
 
 /** Background script handlers. Registered synchronously on every wake-up, otherwise Chrome does not call them. */
 export function startBackground(): void {

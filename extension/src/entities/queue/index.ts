@@ -1,15 +1,15 @@
+export { getQueueSettings, muteAttention, type QueueSettings, saveQueueSettings } from './api/service';
 export { type QueueFilter } from './model/address';
-export { formatDuration, formatSize, remainingText, type Remaining } from './model/format';
-export { getQueueSettings, muteAttention, saveQueueSettings, type QueueSettings } from './api/service';
-export { saveAttention, useAttention, type AttentionCase, type AttentionSnapshot } from './model/attention-store';
+export { type AttentionCase, type AttentionSnapshot, saveAttention, useAttention } from './model/attention-store';
+export { formatDuration, formatSize, type Remaining, remainingText } from './model/format';
+export { MessageLine, type QueueMessage } from './ui/MessageLine';
 export {
+  type CounterKind,
   CreateFooter,
   QueueCounters,
   QueueFilters,
   QueuePager,
   QueuePanel,
-  type CounterKind,
   type QueuePause,
 } from './ui/QueuePanel';
-export { MessageLine, type QueueMessage } from './ui/MessageLine';
 export { useQueueAddress, useScrollTarget } from './ui/useQueueAddress';

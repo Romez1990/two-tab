@@ -1,1 +1,1 @@
-export { restoreTabs, restoreWindows, openSaved, returnSaved } from './model/restore';
+export { openSaved, restoreTabs, restoreWindows, returnSaved } from './model/restore';

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { queueStateOfHash, writeQueueState, type QueueState } from '../model/address';
+import { type QueueState, queueStateOfHash, writeQueueState } from '../model/address';
 
 /**
  * Queue filters and page live in the section address (`#downloads?…`): a change is a new browser

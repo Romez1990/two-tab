@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useEffect, useRef } from 'react';
-import { openDownloadWindow, type DownloadFrameMessage } from '@/features/download-banner';
+import { type DownloadFrameMessage, openDownloadWindow } from '@/features/download-banner';
 import { AttentionBanner } from '@/features/queue-attention';
 import { browser } from '@/shared/browser';
 

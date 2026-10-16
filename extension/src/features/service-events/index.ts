@@ -1,1 +1,1 @@
-export { SUBSCRIPTION_NOTIFICATION_PREFIX, onSubscriptionButton, startServiceEvents } from './model/service-events';
+export { onSubscriptionButton, SUBSCRIPTION_NOTIFICATION_PREFIX, startServiceEvents } from './model/service-events';

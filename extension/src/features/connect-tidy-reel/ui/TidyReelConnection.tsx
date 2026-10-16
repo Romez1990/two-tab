@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { useSettings } from '@/shared/config';
-import { checkConnection, connectTidyReel, disconnectTidyReel, type ConnectionStatus } from '../model/connection';
+import { type ConnectionStatus, checkConnection, connectTidyReel, disconnectTidyReel } from '../model/connection';
 
 type Message = { severity: 'success' | 'info' | 'warning' | 'error'; text: string };
 

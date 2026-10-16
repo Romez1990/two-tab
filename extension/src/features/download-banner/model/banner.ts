@@ -1,4 +1,4 @@
-import { knownDownload, pageKind, type PageKind } from '@/entities/download';
+import { knownDownload, type PageKind, pageKind } from '@/entities/download';
 import { connectedClient, ServiceUnreachableError } from '@/shared/api';
 import { browser, hasSiteAccess } from '@/shared/browser';
 

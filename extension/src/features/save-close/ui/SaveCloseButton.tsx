@@ -3,8 +3,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
-import { saveAndCloseGroup, saveAndCloseWindow } from '../model/save-close';
 import { errorText } from '@/shared/lib';
+import { saveAndCloseGroup, saveAndCloseWindow } from '../model/save-close';
 
 /** "Save and close" button for a window (`windowId`) or a group (`groupId`). */
 export function SaveCloseButton({

@@ -8,11 +8,11 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useState } from 'react';
-import { deletePreset, listPresets, PresetsUnavailableError, savePreset, type Preset } from '../api/presets';
-import { DEFAULT_FIELDS, trimError, type PresetFields } from '../model/fields';
-import { PresetFieldsEditor } from './PresetFieldsEditor';
 import { ServiceUnreachableError } from '@/shared/api';
 import { errorText } from '@/shared/lib';
+import { deletePreset, listPresets, type Preset, PresetsUnavailableError, savePreset } from '../api/presets';
+import { DEFAULT_FIELDS, type PresetFields, trimError } from '../model/fields';
+import { PresetFieldsEditor } from './PresetFieldsEditor';
 
 /** Preset draft on screen; no `id` means a new one. */
 interface Draft {

@@ -6,17 +6,17 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState, type ReactNode } from 'react';
-import { getQueueSettings, saveQueueSettings, type QueueSettings } from '@/entities/queue';
+import { type ReactNode, useEffect, useState } from 'react';
+import { getQueueSettings, type QueueSettings, saveQueueSettings } from '@/entities/queue';
 import { useWindows } from '@/entities/window';
 import { BackgroundCheck } from '@/features/background-check';
-import { RecompressPresets } from '@/features/recompress-presets';
 import { TidyReelConnection } from '@/features/connect-tidy-reel';
+import { RecompressPresets } from '@/features/recompress-presets';
 import { captureWindows } from '@/features/track-windows';
-import { updateSettings, useSettings, type Settings } from '@/shared/config';
+import { type Settings, updateSettings, useSettings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
-import { KeepLockButton } from '@/shared/ui';
 import { errorText } from '@/shared/lib';
+import { KeepLockButton } from '@/shared/ui';
 
 /** Settings (docs/extension/specification.md, section 1.2): auto-close, "Do not close", profile, Tidy Reel, sync server. */
 export function SettingsPage() {

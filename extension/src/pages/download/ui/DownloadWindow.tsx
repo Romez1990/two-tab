@@ -14,29 +14,29 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  DEFAULT_FIELDS,
-  listPresets,
-  PresetFieldsEditor,
-  type Preset,
-  type PresetFields,
-} from '@/features/recompress-presets';
-import { CreateFooter } from '@/entities/queue';
-import {
-  categories as listCategories,
+  type ChannelCheck,
+  type Check,
   checkChannel,
   checkVideo,
   createModel,
   enqueueChannel,
   enqueueVideo,
+  type Filters,
+  categories as listCategories,
+  type PageKind,
   pageKind,
   pickFolder,
   requestCookieAccess,
   subscribe,
-  type ChannelCheck,
-  type Check,
-  type Filters,
-  type PageKind,
 } from '@/entities/download';
+import { CreateFooter } from '@/entities/queue';
+import {
+  DEFAULT_FIELDS,
+  listPresets,
+  type Preset,
+  type PresetFields,
+  PresetFieldsEditor,
+} from '@/features/recompress-presets';
 import { errorText, hostOf } from '@/shared/lib';
 
 /** Where to: the model's `New` folder, a tag inside a model, a new model or a folder without a model. */

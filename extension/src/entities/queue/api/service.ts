@@ -1,4 +1,4 @@
-import { connectedClient, serviceErrorText, type LocalServiceSchemas } from '@/shared/api';
+import { connectedClient, type LocalServiceSchemas, serviceErrorText } from '@/shared/api';
 
 /**
  * Shared by both queues of the local service (tidy-reel/docs/local_service/local_service.md,

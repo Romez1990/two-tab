@@ -21,39 +21,39 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useRef, useState } from 'react';
 import { pickFolder } from '@/entities/download';
 import {
+  type CounterKind,
   CreateFooter,
+  formatDuration,
+  formatSize,
   MessageLine,
   QueueCounters,
   QueueFilters,
   QueuePager,
   QueuePanel,
-  formatDuration,
-  formatSize,
   remainingText,
   useQueueAddress,
   useScrollTarget,
-  type CounterKind,
 } from '@/entities/queue';
 import {
   checkJob,
   createJob,
-  fileAction,
-  jobAction,
-  nextItem,
-  pauseQueue,
-  readMessage,
   type FileCheck,
+  fileAction,
   type Job,
   type JobAction,
   type JobCheck,
   type JobFile,
+  jobAction,
+  nextItem,
+  pauseQueue,
+  readMessage,
 } from '@/entities/recompress';
 import {
   DEFAULT_FIELDS,
   listPresets,
-  PresetFieldsEditor,
   type Preset,
   type PresetFields,
+  PresetFieldsEditor,
 } from '@/features/recompress-presets';
 import { useServiceTopic } from '@/shared/api';
 import { errorText } from '@/shared/lib';

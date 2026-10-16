@@ -2,15 +2,15 @@ import { addClosedTab, pruneClosedTabs, takeClosingByExtension } from '@/entitie
 import {
   archiveSnapshot,
   findLoss,
-  tabUrl,
   getCurrentSnapshot,
-  lossSize,
-  saveCurrentSnapshot,
   type Loss,
+  lossSize,
   type SnapshotWindow,
+  saveCurrentSnapshot,
+  tabUrl,
 } from '@/entities/snapshot';
 import { matchWindows, setWindowUids } from '@/entities/window';
-import { browser, type Browser } from '@/shared/browser';
+import { type Browser, browser } from '@/shared/browser';
 import { db } from '@/shared/db';
 import { sleep } from '@/shared/lib';
 import { captureWindows, type TabInfo } from './capture';

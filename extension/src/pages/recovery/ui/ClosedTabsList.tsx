@@ -6,7 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
-import { deleteClosedTab, type ClosedTab } from '@/entities/closed-tab';
+import { type ClosedTab, deleteClosedTab } from '@/entities/closed-tab';
 import { browser } from '@/shared/browser';
 import { formatDateTime } from '@/shared/lib';
 import type { RunAction } from './RecoveryPage';

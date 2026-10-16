@@ -9,12 +9,12 @@ import Typography from '@mui/material/Typography';
 import { SMART_TIME_HINT, SmartHint } from '@/shared/ui';
 import {
   DEFAULT_FIELDS,
-  SLIDERS,
   describeStep,
-  trimError,
   type PresetFields,
+  SLIDERS,
   type SliderDef,
   type SliderField,
+  trimError,
 } from '../model/fields';
 
 /** Form order, the same for "Download", "Compression queue" and settings (docs/extension/queues.md, section 1). */

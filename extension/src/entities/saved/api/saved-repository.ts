@@ -1,5 +1,5 @@
-import { db } from '@/shared/db';
 import { browser } from '@/shared/browser';
+import { db } from '@/shared/db';
 import { findMatches, type SavedMatch } from '../model/match-url';
 import type { SavedItem } from '../model/types';
 

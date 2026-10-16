@@ -1,4 +1,4 @@
-import { getWindowUids, setWindowUid, type BrowserWindow } from '@/entities/window';
+import { type BrowserWindow, getWindowUids, setWindowUid } from '@/entities/window';
 import { browser } from '@/shared/browser';
 import { planMoves } from './plan-moves';
 

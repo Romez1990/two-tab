@@ -1,4 +1,4 @@
-import { savedItemPageUrl, findSavedByUrl, type SavedMatch } from '@/entities/saved';
+import { findSavedByUrl, type SavedMatch, savedItemPageUrl } from '@/entities/saved';
 import { browser, hasSiteAccess } from '@/shared/browser';
 
 /**

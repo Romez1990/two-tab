@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { editDistance, remember, similarity, suggest, type SearchQuery } from './similar';
+import { editDistance, remember, type SearchQuery, similarity, suggest } from './similar';
 
 const q = (query: string, usedAt: number, count = 1): SearchQuery => ({ query, usedAt, count });
 

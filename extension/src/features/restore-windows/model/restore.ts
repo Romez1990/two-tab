@@ -1,7 +1,7 @@
 import { deleteSaved, type SavedItem } from '@/entities/saved';
 import { archiveCurrentSnapshot, type SnapshotTab, type SnapshotWindow } from '@/entities/snapshot';
 import { getWindowUids, newWindowUid, setWindowUid } from '@/entities/window';
-import { browser, type Browser } from '@/shared/browser';
+import { type Browser, browser } from '@/shared/browser';
 
 /** "Open" a saved item: tabs open in the current window in the background, without a group; the record stays in "Saved". */
 export async function openSaved(item: SavedItem): Promise<void> {

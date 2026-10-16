@@ -9,9 +9,9 @@ import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useState } from 'react';
 import { addSaved, deleteSaved, getSaved, listSaved, removeSavedTab, savedItemPageUrl } from '@/entities/saved';
 import { browser } from '@/shared/browser';
-import { Favicon, usePaging } from '@/shared/ui';
-import { findDuplicates, placeOf, type Copy, type Duplicate } from '../model/duplicates';
 import { errorText } from '@/shared/lib';
+import { Favicon, usePaging } from '@/shared/ui';
+import { type Copy, type Duplicate, findDuplicates, placeOf } from '../model/duplicates';
 
 /** "Duplicates" (docs/extension/pages/duplicates.md): identical open and saved tabs. */
 export function DuplicatesPage() {

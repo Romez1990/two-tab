@@ -1,10 +1,10 @@
 import { listClosedTabs } from '@/entities/closed-tab';
 import { listSaved } from '@/entities/saved';
 import { listHistory } from '@/entities/snapshot';
-import { localServiceClient, type LocalServiceSchemas } from '@/shared/api';
+import { type LocalServiceSchemas, localServiceClient } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
-import { errorText, matches, relevance, type Condition, type SearchDoc, type SearchSource } from '@/shared/lib';
+import { type Condition, errorText, matches, relevance, type SearchDoc, type SearchSource } from '@/shared/lib';
 
 /** Search sources (docs/extension/pages/search.md, section 1). */
 export type Source = SearchSource;

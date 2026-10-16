@@ -1,5 +1,5 @@
 import { getSettings } from '@/shared/config';
-import { localServiceClient, type LocalServiceClient } from './client';
+import { type LocalServiceClient, localServiceClient } from './client';
 
 /** Client with the port and key from settings; `undefined` means the profile is not connected to Tidy Reel. */
 export async function connectedClient(): Promise<LocalServiceClient | undefined> {

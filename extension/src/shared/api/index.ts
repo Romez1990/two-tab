@@ -1,8 +1,8 @@
 export {
-  localServiceClient,
-  ServiceUnreachableError,
   type LocalServiceClient,
   type LocalServiceSchemas,
+  localServiceClient,
+  ServiceUnreachableError,
 } from './local-service/client';
 export { connectedClient, serviceErrorText } from './local-service/connected';
 export {
