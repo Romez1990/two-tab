@@ -138,7 +138,9 @@
 - [x] Тексты остатка и времени в очередях — целыми строками с подстановками, без склейки (`STYLE.md`, «Тексты для пользователя»).
 - [ ] Подписки на изменения базы в репозиториях на `liveQuery` Dexie; «Проверка сохранённых» в настройках — без опроса раз в секунду (`docs/extension/technologies.md`, раздел 2.5).
 - [ ] Форма «Скачать»: «Добавить к модели…» и галочка «Сохранить ссылку в модели» (`docs/extension/pages/downloads.md`, раздел 0).
-- [ ] Состояние Tidy Reel `useServiceStatus` (`not_connected`, `online`, `offline`, `revoked`) в `chrome.storage.session` от фонового скрипта; `ServiceUnreachableError` сообщает фону; переподключение 5 с → 30 с, во сне — `chrome.alarms` раз в минуту, сразу при открытии страницы или popup (`docs/extension/technologies.md`, раздел 2.6.1).
+- [ ] Состояние серверов `useServerStatus('local' | 'sync')` (`not_connected`, `online`, `offline`, `lost`, `revoked`) в `chrome.storage.session` от фонового скрипта; общий модуль в `shared` на оба сервера; «был online в этом запуске» там же (`docs/extension/technologies.md`, раздел 2.6.1).
+- [ ] `ServerUnreachableError` с полем `server` вместо `ServiceUnreachableError`; пойманная сообщает фону. Проверка: Tidy Reel — WebSocket, раз в 5 с, во сне — `chrome.alarms` раз в минуту; sync — `GET /api/v1/health` раз в 10 минут тем же будильником; оба — сразу при открытии страницы или popup (раздел 2.6.1).
+- [ ] Тревога при `lost`: случаи «сервер перестал отвечать» в плашке «Нужно ваше решение», уведомление `chrome.notifications` со звуком раз в `notify_every_minutes` (последнее значение в `chrome.storage.local`, по умолчанию 1), «Заглушить» по случаю (раздел 2.6.1; `docs/extension/queues.md`, раздел 4).
 - [ ] При `offline` функции недоступны с подсказкой; страницы очередей, «Подписки», «Корзина» не подключаются сами, снимок приглушён; плашка «Скачать» на сайтах исчезает и возвращается при `online` на видимой вкладке; состояние вживую в настройках (раздел 2.6.1).
 - [ ] Скрытые вкладки не перерисовываются: общий помощник в `shared` для хуков данных, то же в content script (раздел 2.6.2).
 - [ ] «Всплывающее окно» → popup в текстах интерфейса (`QueuePage`, `SavedPage`).
