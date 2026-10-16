@@ -18,13 +18,13 @@ const item = (urls: string[]): SavedItem => ({
 });
 const urls = (i: SavedItem | undefined) => i?.window.tabs.map((t) => t.url);
 
-describe('правка вкладок сохранённого', () => {
-  it('перетаскивание вниз и вверх', () => {
+describe('editing tabs of a saved item', () => {
+  it('moves a tab down and up', () => {
     expect(urls(moveSavedTab(item(['a', 'b', 'c']), 0, 2))).toEqual(['b', 'c', 'a']);
     expect(urls(moveSavedTab(item(['a', 'b', 'c']), 2, 0))).toEqual(['c', 'a', 'b']);
   });
 
-  it('удаление вкладки, последняя — удаляет запись', () => {
+  it('removes a tab, and the last one removes the record', () => {
     expect(urls(removeSavedTab(item(['a', 'b']), 0))).toEqual(['b']);
     expect(removeSavedTab(item(['a']), 0)).toBeUndefined();
   });

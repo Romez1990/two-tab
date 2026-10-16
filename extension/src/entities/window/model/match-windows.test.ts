@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { matchWindows } from './match-windows';
 
 describe('matchWindows', () => {
-  it('то же окно, если совпадает больше половины адресов, даже если часть вкладок поменялась', () => {
+  it('matches the same window when more than half of the addresses match, even if some tabs changed', () => {
     const result = matchWindows(
       [
         { uid: 'a', urls: ['1', '2', '3'] },
@@ -21,11 +21,11 @@ describe('matchWindows', () => {
     );
   });
 
-  it('половина — это ещё не то же окно', () => {
+  it('does not match at exactly half', () => {
     expect(matchWindows([{ uid: 'a', urls: ['1', '2'] }], [{ id: 1, urls: ['1', '3'] }]).size).toBe(0);
   });
 
-  it('одно старое окно достаётся только одному новому — с большим совпадением', () => {
+  it('gives an old window to only one new window, the one with the larger overlap', () => {
     const result = matchWindows(
       [{ uid: 'a', urls: ['1', '2', '3', '4'] }],
       [

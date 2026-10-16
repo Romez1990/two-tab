@@ -17,12 +17,12 @@ const item: SavedItem = {
   },
 };
 
-describe('экспорт и импорт сохранённых', () => {
-  it('экспорт читается обратно без потерь', () => {
+describe('export and import of saved items', () => {
+  it('reads an export back without losses', () => {
     expect(parseExport(JSON.stringify(toExport([item], 5)))).toEqual([item]);
   });
 
-  it('чужой файл, другая версия и испорченная запись не импортируются', () => {
+  it('rejects a foreign file, another version and a broken record', () => {
     expect(() => parseExport('не json')).toThrow('Это не файл JSON');
     expect(() => parseExport('{"items":[]}')).toThrow('Это не файл экспорта Tabsurd, BetterOneTab или SupaTabs');
     expect(() => parseExport(JSON.stringify({ ...toExport([]), version: 2 }))).toThrow('Неизвестная версия');
@@ -30,13 +30,13 @@ describe('экспорт и импорт сохранённых', () => {
     expect(() => parseExport(JSON.stringify(toExport([item, broken])))).toThrow('Запись 2 испорчена');
   });
 
-  it('имя файла с датой', () => {
+  it('names the file with the date', () => {
     expect(exportFileName(new Date(2026, 9, 3).getTime())).toBe('tabsurd-saved-2026-10-03.json');
   });
 });
 
-describe('импорт из BetterOneTab и SupaTabs', () => {
-  it('BetterOneTab: название из файла или пустое, время из файла, без цвета, пустые вкладки пропускаются', () => {
+describe('import from BetterOneTab and SupaTabs', () => {
+  it('BetterOneTab: name from the file or empty, time from the file, no color, empty tabs skipped', () => {
     const file =
       '﻿' +
       JSON.stringify([
@@ -58,7 +58,7 @@ describe('импорт из BetterOneTab и SupaTabs', () => {
     ]);
   });
 
-  it('повторный импорт даёт те же номера записей, разные группы — разные', () => {
+  it('gives the same record ids on a repeated import and different ids to different groups', () => {
     const file = JSON.stringify([
       { title: '', time: 1, tabs: [{ url: 'https://a/', title: '' }] },
       { title: '', time: 2, tabs: [{ url: 'https://a/', title: '' }] },
@@ -68,7 +68,7 @@ describe('импорт из BetterOneTab и SupaTabs', () => {
     expect(new Set(ids).size).toBe(2);
   });
 
-  it('SupaTabs: группы по порядку рабочего пространства, вкладки по tabIds, цвет не берётся', () => {
+  it('SupaTabs: groups in workspace order, tabs by tabIds, no color', () => {
     const file = JSON.stringify({
       groups: {
         g2: { title: '', date: 20, color: 'green', tabIds: ['t2'] },

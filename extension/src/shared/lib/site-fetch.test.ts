@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { pauseAfter, runBySite } from './site-fetch';
 
 describe('pauseAfter', () => {
-  it('Retry-After в секундах и датой', () => {
+  it('reads Retry-After in seconds and as a date', () => {
     expect(pauseAfter('120', 1)).toBe(120_000);
     expect(pauseAfter(new Date(61_000).toUTCString(), 1, 1_000)).toBe(60_000);
   });
 
-  it('без Retry-After — 5 минут, каждая следующая пауза вдвое дольше', () => {
+  it('pauses 5 minutes without Retry-After, doubling each time', () => {
     expect(pauseAfter(null, 1)).toBe(300_000);
     expect(pauseAfter(null, 2)).toBe(600_000);
     expect(pauseAfter('мусор', 3)).toBe(1_200_000);
@@ -15,7 +15,7 @@ describe('pauseAfter', () => {
 });
 
 describe('runBySite', () => {
-  it('адреса одного сайта — по очереди, разные сайты — параллельно', async () => {
+  it('runs addresses of one site in turn and different sites in parallel', async () => {
     const log: string[] = [];
     const running = new Set<string>();
     let overlapSameSite = false;

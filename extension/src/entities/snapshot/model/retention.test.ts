@@ -6,16 +6,16 @@ const now = new Date(2026, 9, 12, 12, 0).getTime();
 const at = (id: number, ago: number) => ({ id, takenAt: now - ago });
 
 describe('snapshotsToDelete', () => {
-  it('за последние сутки хранятся все', () => {
+  it('keeps everything from the last day', () => {
     expect(snapshotsToDelete([at(1, 10 * MINUTE), at(2, 20 * MINUTE), at(3, 23 * HOUR)], now)).toEqual([]);
   });
 
-  it('до 7 дней — самый поздний снимок за час', () => {
+  it('keeps the latest snapshot per hour up to 7 days', () => {
     const base = 2 * DAY + 30 * MINUTE; // 2 days ago, 11:30
     expect(snapshotsToDelete([at(1, base), at(2, base - 10 * MINUTE), at(3, base - 40 * MINUTE)], now)).toEqual([1]);
   });
 
-  it('до 30 дней — один за сутки, сутки с 6:00', () => {
+  it('keeps one per day up to 30 days, days starting at 6:00', () => {
     // 10 days ago: 7:00 and 23:00 are the same day; 5:00 of the next day is the same day too.
     const day = now - 10 * DAY;
     const t = (h: number) => new Date(day).setHours(h, 0, 0, 0);
@@ -27,7 +27,7 @@ describe('snapshotsToDelete', () => {
     expect(snapshotsToDelete(items, now)).toEqual([2, 1]);
   });
 
-  it('старше 30 дней — один за месяц, без срока', () => {
+  it('keeps one per month after 30 days, forever', () => {
     const items = [
       { id: 1, takenAt: new Date(2025, 2, 3, 12).getTime() },
       { id: 2, takenAt: new Date(2025, 2, 20, 12).getTime() },

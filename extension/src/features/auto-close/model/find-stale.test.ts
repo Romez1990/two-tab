@@ -20,7 +20,7 @@ const run = (
 ) => findStale({ windows, runDays: days, limitDays: 30, keepWindowUids });
 
 describe('findStale', () => {
-  it('окно без переходов 30 дней работы Chrome закрывается, текущее — никогда', () => {
+  it('closes a window not visited for 30 Chrome days, never the current one', () => {
     expect(
       run([
         { id: 1, uid: 'a', tabs: [tab(0)] },
@@ -29,7 +29,7 @@ describe('findStale', () => {
     ).toEqual([{ kind: 'window', windowId: 2 }]);
   });
 
-  it('считаются только дни, когда Chrome работал', () => {
+  it('counts only the days Chrome was running', () => {
     const fewDays = [today, today - 1, today - 2];
     expect(
       run(
@@ -43,7 +43,7 @@ describe('findStale', () => {
     ).toEqual([]);
   });
 
-  it('свежая вкладка держит окно, но устаревшая группа в нём закрывается', () => {
+  it('keeps a window with a fresh tab but closes its stale group', () => {
     const w = {
       id: 2,
       uid: 'b',
@@ -52,7 +52,7 @@ describe('findStale', () => {
     expect(run([{ id: 1, uid: 'a', tabs: [tab(0)] }, w])).toEqual([{ kind: 'group', groupId: 7 }]);
   });
 
-  it('«Не закрывать»: окно; закреплённые вкладки', () => {
+  it('respects "Do not close" windows and pinned tabs', () => {
     const current = { id: 1, uid: 'a', tabs: [tab(0)] };
     expect(run([current, { id: 2, uid: 'b', tabs: [tab(40)] }], ['b'])).toEqual([]);
     expect(run([current, { id: 2, uid: 'b', tabs: [tab(40, { pinned: true })] }])).toEqual([]);

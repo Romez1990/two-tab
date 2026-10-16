@@ -12,11 +12,11 @@ const tab = (id: number, index: number, groupId = -1): WindowTab => ({
 });
 
 describe('planMoves', () => {
-  it('пустое окно — нечего переносить', () => {
+  it('moves nothing for an empty window', () => {
     expect(planMoves([])).toBeNull();
   });
 
-  it('вкладки вне групп переносятся по одной в исходном порядке', () => {
+  it('moves ungrouped tabs one by one in the original order', () => {
     expect(planMoves([tab(3, 2), tab(1, 0), tab(2, 1)])).toEqual({
       first: 1,
       rest: [
@@ -26,7 +26,7 @@ describe('planMoves', () => {
     });
   });
 
-  it('группа переносится один раз, на месте первой своей вкладки', () => {
+  it('moves a group once, at the place of its first tab', () => {
     expect(planMoves([tab(1, 0), tab(2, 1, 7), tab(3, 2, 7), tab(4, 3)])).toEqual({
       first: 1,
       rest: [

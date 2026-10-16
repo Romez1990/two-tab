@@ -11,12 +11,12 @@ const win = (uid: string, urls: string[]): SnapshotWindow => ({
 });
 
 describe('findLoss', () => {
-  it('ничего не пропало', () => {
+  it('finds nothing missing', () => {
     const loss = findLoss({ takenAt: 0, windows: [win('a', ['x', 'y'])] }, [win('a', ['y', 'x', 'z'])]);
     expect(lossSize(loss)).toEqual({ windows: 0, tabs: 0 });
   });
 
-  it('пропавшее окно и пропавшие вкладки, повторы считаются', () => {
+  it('finds a missing window and missing tabs, counting repeats', () => {
     const loss = findLoss({ takenAt: 0, windows: [win('a', ['x', 'x', 'y']), win('b', ['p', 'q'])] }, [
       win('a', ['x']),
     ]);
