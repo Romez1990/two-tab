@@ -55,7 +55,8 @@ export function SearchPage() {
     try {
       condition = parseQuery(state.query);
     } catch (e) {
-      setError(e instanceof SearchSyntaxError ? e.message : String(e));
+      if (!(e instanceof SearchSyntaxError)) throw e;
+      setError(e.message);
       return;
     }
     if (!condition) {
@@ -98,7 +99,8 @@ export function SearchPage() {
     try {
       if (!parseQuery(query)) return;
     } catch (e) {
-      setError(e instanceof SearchSyntaxError ? e.message : String(e));
+      if (!(e instanceof SearchSyntaxError)) throw e;
+      setError(e.message);
       return;
     }
     setHistory(await rememberSearch(query));
