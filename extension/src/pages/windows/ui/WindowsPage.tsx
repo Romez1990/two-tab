@@ -18,6 +18,7 @@ import { SaveCloseButton } from '@/features/save-close';
 import { browser } from '@/shared/browser';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { groupColor, KeepLockButton } from '@/shared/ui';
+import { errorText } from '@/shared/lib';
 
 /**
  * "Windows" (docs/extension/pages/windows.md, section 1): window names, order by dragging (windows are recreated
@@ -56,7 +57,7 @@ export function WindowsPage() {
       await reorderWindows(windows, shown);
       setDraft(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(errorText(e));
     } finally {
       setBusy(false);
       reload();

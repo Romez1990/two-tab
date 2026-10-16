@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useState } from 'react';
 import { listClosedTabs, type ClosedTab } from '@/entities/closed-tab';
 import { countTabs, listHistory, type Snapshot } from '@/entities/snapshot';
-import { formatDateTime } from '@/shared/lib';
+import { errorText, formatDateTime } from '@/shared/lib';
 import { ClosedTabsList } from './ClosedTabsList';
 import { SnapshotDetails } from './SnapshotDetails';
 
@@ -39,7 +39,7 @@ export function RecoveryPage() {
       await action();
       setStatus({ text: done, error: false });
     } catch (e) {
-      setStatus({ text: `Ошибка: ${e instanceof Error ? e.message : String(e)}`, error: true });
+      setStatus({ text: `Ошибка: ${errorText(e)}`, error: true });
     }
     reload();
   };

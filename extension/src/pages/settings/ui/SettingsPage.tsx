@@ -16,6 +16,7 @@ import { captureWindows } from '@/features/track-windows';
 import { updateSettings, useSettings, type Settings } from '@/shared/config';
 import { formatBytes, getDbUsageBytes } from '@/shared/db';
 import { KeepLockButton } from '@/shared/ui';
+import { errorText } from '@/shared/lib';
 
 /** Settings (docs/extension/specification.md, section 1.2): auto-close, "Do not close", profile, Tidy Reel, sync server. */
 export function SettingsPage() {
@@ -177,12 +178,12 @@ function QueueSettingsForm() {
   useEffect(() => {
     void getQueueSettings()
       .then(setValue)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setError(errorText(e)));
   }, []);
   const save = (next: QueueSettings) =>
     void saveQueueSettings(next)
       .then(setValue)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setError(errorText(e)));
   if (!value) return <Typography color={error ? 'error' : 'text.secondary'}>{error || '…'}</Typography>;
   return (
     <Stack spacing={1}>

@@ -48,7 +48,7 @@ import { openSaved } from '@/features/restore-windows';
 import { useSiteIcons } from '@/features/fetch-favicons';
 import { needsTitle, PageStatus, usePageChecks, type PageCheck } from '@/features/check-pages';
 import { useSiteAccess } from '@/shared/browser';
-import { formatDateTime, hostOf, mostCommonHostUrl } from '@/shared/lib';
+import { errorText, formatDateTime, hostOf, mostCommonHostUrl } from '@/shared/lib';
 import { Favicon, groupColor, usePaging } from '@/shared/ui';
 
 /** Site icons loaded by the extension, for sites missing from the Chrome icon cache. */
@@ -90,7 +90,7 @@ export function SavedPage() {
       await action();
       setStatus({ text: done, error: false });
     } catch (e) {
-      setStatus({ text: `Ошибка: ${e instanceof Error ? e.message : String(e)}`, error: true });
+      setStatus({ text: `Ошибка: ${errorText(e)}`, error: true });
     }
     reload();
   }
@@ -117,7 +117,7 @@ export function SavedPage() {
       if (after) await addSaved(after);
       else await deleteSaved(before.id);
     } catch (e) {
-      setStatus({ text: `Ошибка: ${e instanceof Error ? e.message : String(e)}`, error: true });
+      setStatus({ text: `Ошибка: ${errorText(e)}`, error: true });
       reload();
     }
   }
@@ -143,7 +143,7 @@ export function SavedPage() {
         added += result.added;
         skipped += result.skipped;
       } catch (e) {
-        failed.push(`${file.name} (${e instanceof Error ? e.message : String(e)})`);
+        failed.push(`${file.name} (${errorText(e)})`);
       }
     }
     const done = `Добавлено: ${added}, уже были: ${skipped}.`;

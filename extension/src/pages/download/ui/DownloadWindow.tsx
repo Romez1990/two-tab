@@ -31,7 +31,7 @@ import {
   type Filters,
   type PageKind,
 } from '@/entities/download';
-import { hostOf } from '@/shared/lib';
+import { errorText, hostOf } from '@/shared/lib';
 
 /** Where to: the model's `New` folder, a tag inside a model, a new model or a folder without a model. */
 type Target = { kind: 'folder'; folder: string } | { kind: 'create' } | { kind: 'other' };
@@ -60,7 +60,7 @@ export function DownloadWindow() {
     try {
       setCheck(nextKind === 'video' ? await checkVideo(url) : await checkChannel(url));
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(errorText(e));
     } finally {
       setBusy(false);
     }
@@ -103,7 +103,7 @@ export function DownloadWindow() {
       else await subscribe(url, folder, filters, presetEdits, onlyNew);
       location.hash = action === 'subscribe' ? 'downloads/subscriptions' : 'downloads';
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(errorText(e));
     } finally {
       setBusy(false);
     }
@@ -245,7 +245,7 @@ function FolderChoice({
       const folder = await pickFolder(initial);
       if (folder) setTarget({ kind: 'folder', folder });
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(errorText(e));
     }
   }
 
@@ -253,7 +253,7 @@ function FolderChoice({
     try {
       setTarget({ kind: 'folder', folder: await createModel(category, channelUrl, name) });
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(errorText(e));
     }
   }
 

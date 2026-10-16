@@ -50,6 +50,7 @@ import {
 } from '@/entities/recompress';
 import { DEFAULT_FIELDS, listPresets, PresetFieldsEditor, type Preset, type PresetFields } from '@/features/recompress-presets';
 import { useServiceTopic } from '@/shared/api';
+import { errorText } from '@/shared/lib';
 
 
 type Run = (action: () => Promise<void>) => void;
@@ -86,7 +87,7 @@ export function RecompressPage() {
   const { target, setTarget } = useScrollTarget((items?.items ?? []).map((f) => f.id));
   const lastJump = useRef<Partial<Record<CounterKind, number>>>({});
 
-  const run: Run = (action) => void action().catch((e: unknown) => setMessage(e instanceof Error ? e.message : String(e)));
+  const run: Run = (action) => void action().catch((e: unknown) => setMessage(errorText(e)));
 
   const jump = (kind: CounterKind) =>
     run(async () => {

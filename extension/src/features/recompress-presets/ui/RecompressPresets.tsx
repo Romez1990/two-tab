@@ -11,6 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { deletePreset, listPresets, PresetsUnavailableError, savePreset, type Preset } from '../api/presets';
 import { DEFAULT_FIELDS, trimError, type PresetFields } from '../model/fields';
 import { PresetFieldsEditor } from './PresetFieldsEditor';
+import { errorText } from '@/shared/lib';
 
 /** Preset draft on screen; no `id` means a new one. */
 interface Draft {
@@ -56,7 +57,7 @@ export function RecompressPresets() {
       setMessage({ text: `Пресет «${draft.name}» сохранён`, error: false });
       reload();
     } catch (e) {
-      setMessage({ text: e instanceof Error ? e.message : String(e), error: true });
+      setMessage({ text: errorText(e), error: true });
     }
   }
 
@@ -69,7 +70,7 @@ export function RecompressPresets() {
       await deletePreset(draft.id);
       reload();
     } catch (e) {
-      setMessage({ text: e instanceof Error ? e.message : String(e), error: true });
+      setMessage({ text: errorText(e), error: true });
     }
   }
 

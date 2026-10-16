@@ -41,6 +41,7 @@ import {
   type QueueMessage,
 } from '@/entities/queue';
 import { useServiceTopic } from '@/shared/api';
+import { errorText } from '@/shared/lib';
 
 /** Queue states in Russian (tidy-reel/docs/downloader.md, sections 2 and 9). */
 const STATES: Record<string, { label: string; color: 'default' | 'primary' | 'success' | 'error' | 'warning' }> = {
@@ -77,7 +78,7 @@ export function QueuePage() {
   const { target, setTarget } = useScrollTarget((items?.items ?? []).map((d) => d.id));
   const lastJump = useRef<Partial<Record<CounterKind, number>>>({});
 
-  const run: Run = (action) => void action().catch((e: unknown) => setMessage(e instanceof Error ? e.message : String(e)));
+  const run: Run = (action) => void action().catch((e: unknown) => setMessage(errorText(e)));
 
   /** Counter click: the page with the next such video under the current filters, wrapping around; the filter does not change. */
   const jump = (kind: CounterKind) =>

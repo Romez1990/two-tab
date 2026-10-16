@@ -8,7 +8,7 @@ export async function connectedClient(): Promise<LocalServiceClient | undefined>
 }
 
 /** Error text of a service response: FastAPI `detail` or the code. */
-export function errorText(status: number, error: unknown): string {
+export function serviceErrorText(status: number, error: unknown): string {
   const detail = (error as { detail?: unknown } | undefined)?.detail;
   if (typeof detail === 'string') return detail;
   if (Array.isArray(detail)) return detail.map((d) => (d as { msg?: string }).msg ?? JSON.stringify(d)).join('; ');

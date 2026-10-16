@@ -1,4 +1,4 @@
-import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/api';
+import { connectedClient, serviceErrorText, type LocalServiceSchemas } from '@/shared/api';
 
 /**
  * Shared by both queues of the local service (tidy-reel/docs/local_service/local_service.md,
@@ -11,7 +11,7 @@ export type QueueSettings = LocalServiceSchemas['SettingsModel'];
 /** "Mute": the sound notification for the current cases no longer plays. */
 export async function muteAttention(): Promise<void> {
   const { response, error } = await (await client()).POST('/api/attention/mute');
-  if (!response.ok) throw new Error(errorText(response.status, error));
+  if (!response.ok) throw new Error(serviceErrorText(response.status, error));
 }
 
 async function client() {
@@ -22,12 +22,12 @@ async function client() {
 
 export async function getQueueSettings(): Promise<QueueSettings> {
   const { data, error, response } = await (await client()).GET('/api/settings');
-  if (!data) throw new Error(errorText(response.status, error));
+  if (!data) throw new Error(serviceErrorText(response.status, error));
   return data;
 }
 
 export async function saveQueueSettings(settings: QueueSettings): Promise<QueueSettings> {
   const { data, error, response } = await (await client()).PUT('/api/settings', { body: settings });
-  if (!data) throw new Error(errorText(response.status, error));
+  if (!data) throw new Error(serviceErrorText(response.status, error));
   return data;
 }

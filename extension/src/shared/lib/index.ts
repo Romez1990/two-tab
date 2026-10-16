@@ -14,3 +14,4 @@ export {
   type SearchDoc,
   type SearchSource,
 } from './smart-search';
+export { errorText } from './errors';

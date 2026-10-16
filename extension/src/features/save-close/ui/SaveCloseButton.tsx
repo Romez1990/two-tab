@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useState } from 'react';
 import { saveAndCloseGroup, saveAndCloseWindow } from '../model/save-close';
+import { errorText } from '@/shared/lib';
 
 /** "Save and close" button for a window (`windowId`) or a group (`groupId`). */
 export function SaveCloseButton({
@@ -29,7 +30,7 @@ export function SaveCloseButton({
       else if (windowId !== undefined) await saveAndCloseWindow(windowId);
       onDone?.();
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(errorText(e));
     } finally {
       setBusy(false);
     }

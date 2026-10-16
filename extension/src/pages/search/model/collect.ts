@@ -4,7 +4,7 @@ import { listHistory } from '@/entities/snapshot';
 import { localServiceClient, type LocalServiceSchemas } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
-import { matches, relevance, type Condition, type SearchDoc, type SearchSource } from '@/shared/lib';
+import { errorText, matches, relevance, type Condition, type SearchDoc, type SearchSource } from '@/shared/lib';
 
 /** Search sources (docs/extension/pages/search.md, section 1). */
 export type Source = SearchSource;
@@ -65,7 +65,7 @@ export async function search(query: Condition, sources: readonly Source[], sort:
       results.push(...archived.found);
       archiveTotal = archived.total;
     } catch (error) {
-      archiveError = error instanceof Error ? error.message : String(error);
+      archiveError = errorText(error);
     }
   }
   results.sort(sort === 'date' ? (a, b) => b.date - a.date : (a, b) => b.rank - a.rank || b.date - a.date);

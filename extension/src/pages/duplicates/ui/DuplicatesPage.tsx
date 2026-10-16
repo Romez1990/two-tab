@@ -11,6 +11,7 @@ import { addSaved, deleteSaved, getSaved, listSaved, removeSavedTab, savedItemPa
 import { browser } from '@/shared/browser';
 import { Favicon, usePaging } from '@/shared/ui';
 import { findDuplicates, placeOf, type Copy, type Duplicate } from '../model/duplicates';
+import { errorText } from '@/shared/lib';
 
 /** "Duplicates" (docs/extension/pages/duplicates.md): identical open and saved tabs. */
 export function DuplicatesPage() {
@@ -19,7 +20,7 @@ export function DuplicatesPage() {
   const reload = useCallback(() => {
     void loadDuplicates()
       .then(setDuplicates)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setError(errorText(e)));
   }, []);
   useEffect(reload, [reload]);
   const { visible, footer } = usePaging(duplicates ?? [], { storageKey: 'tabsurd.duplicatesPaging' });
@@ -28,7 +29,7 @@ export function DuplicatesPage() {
     try {
       await removeCopy(copy);
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(errorText(e));
     }
     reload();
   }

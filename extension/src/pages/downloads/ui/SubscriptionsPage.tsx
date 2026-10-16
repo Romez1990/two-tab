@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { checkSubscriptionsNow, unsubscribe, updateSubscription } from '@/entities/download';
 import { useServiceTopic } from '@/shared/api';
-import { formatDateTime } from '@/shared/lib';
+import { errorText, formatDateTime } from '@/shared/lib';
 import { describeFilters } from '../model/filters';
 
 /** "Subscriptions" (docs/extension/pages/downloads.md, section 2): filters, pause, "Check now". */
@@ -20,7 +20,7 @@ export function SubscriptionsPage() {
       .then(() => {
         if (done) setMessage({ text: done, error: false });
       })
-      .catch((e: unknown) => setMessage({ text: e instanceof Error ? e.message : String(e), error: true }));
+      .catch((e: unknown) => setMessage({ text: errorText(e), error: true }));
 
   return (
     <Stack spacing={1}>

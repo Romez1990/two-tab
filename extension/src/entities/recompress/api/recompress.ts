@@ -1,4 +1,4 @@
-import { connectedClient, errorText, type LocalServiceSchemas } from '@/shared/api';
+import { connectedClient, serviceErrorText, type LocalServiceSchemas } from '@/shared/api';
 
 /** Archive compression queue in the local service (tidy-reel/docs/local_service/local_service.md, section 7.5). */
 
@@ -19,7 +19,7 @@ export async function checkJob(folder: string, preset: string, edits: Record<str
 }
 
 function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T {
-  if (result.data === undefined) throw new Error(errorText(result.response.status, result.error));
+  if (result.data === undefined) throw new Error(serviceErrorText(result.response.status, result.error));
   return result.data;
 }
 
@@ -42,7 +42,7 @@ export async function pauseQueue(paused: boolean): Promise<void> {
 }
 
 function done(result: { error?: unknown; response: Response }): void {
-  if (!result.response.ok) throw new Error(errorText(result.response.status, result.error));
+  if (!result.response.ok) throw new Error(serviceErrorText(result.response.status, result.error));
 }
 
 export async function readMessage(id: number): Promise<void> {
