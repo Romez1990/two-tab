@@ -5,6 +5,7 @@ import { browser, type Browser } from '@/shared/browser';
 
 /** "Open" a saved item: tabs open in the current window in the background, without a group; the record stays in "Saved". */
 export async function openSaved(item: SavedItem): Promise<void> {
+  // Chrome rejects when there are no normal windows: then a new one is created.
   const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
   if (target?.id === undefined) {
     await browser.windows.create({ url: item.window.tabs.map((t) => t.url) });
@@ -54,6 +55,7 @@ async function createDiscardedTab(windowId: number, tab: SnapshotTab): Promise<n
   const created = await browser.tabs.create({ windowId, url: tab.url, pinned: tab.pinned, active: false });
   const id = created.id;
   if (id === undefined) throw new Error('Chrome не вернул вкладку');
+  // The user may close or open the tab before it is discarded: then it simply stays loaded.
   void waitForUrl(id).then(() => browser.tabs.discard(id)).catch(() => undefined);
   return id;
 }
@@ -101,6 +103,7 @@ async function applyGroups(
 
 /** Opens a group in the last focused window (or in a new one if there are no windows). */
 export async function restoreGroup(group: SnapshotWindow): Promise<void> {
+  // Chrome rejects when there are no normal windows: then a new one is created.
   const target = await browser.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => undefined);
   const uid = target?.id !== undefined ? (await getWindowUids()).get(target.id) : undefined;
   await restoreTabs({ ...group, uid: uid ?? newWindowUid() }, group.tabs);

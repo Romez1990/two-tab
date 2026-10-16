@@ -41,8 +41,9 @@ async function ensureOffscreen(): Promise<void> {
       reasons: ['DOM_PARSER' as Browser.offscreen.Reason],
       justification: 'Загрузка заголовков и значков сохранённых вкладок',
     });
-  } catch {
-    // A parallel call has already created the page.
+  } catch (error) {
+    // A parallel call may have created the page in the meantime; any other failure is real.
+    if (!(await hasOffscreen())) throw error;
   }
 }
 
@@ -57,6 +58,7 @@ async function stopCheck(): Promise<void> {
 }
 
 async function closeOffscreen(): Promise<void> {
+  // A parallel call may have closed the page already.
   if (await hasOffscreen()) await browser.offscreen.closeDocument().catch(() => undefined);
 }
 
