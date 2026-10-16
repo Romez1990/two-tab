@@ -14,9 +14,14 @@ export function mostCommonHostUrl(urls: readonly string[]): string | undefined {
 
 /** Domain of the address without `www.`; an empty string if the address does not parse. */
 export function hostOf(url: string): string {
+  return parseUrl(url)?.hostname.replace(/^www\./, '') ?? '';
+}
+
+/** Parsed address; `undefined` if it is not a valid URL. */
+export function parseUrl(url: string, base?: string): URL | undefined {
   try {
-    return new URL(url).hostname.replace(/^www\./, '');
+    return new URL(url, base);
   } catch {
-    return '';
+    return undefined;
   }
 }

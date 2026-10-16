@@ -1,4 +1,5 @@
 import type { SavedItem } from '@/entities/saved';
+import { parseUrl } from '@/shared/lib';
 
 /**
  * "Duplicates" (docs/extension/pages/duplicates.md): open and saved tabs with the same address.
@@ -58,12 +59,8 @@ export function findDuplicates(open: readonly OpenTab[], saved: readonly SavedIt
 
 /** Page key: without `#…`, tags, `www.`, the `http`/`https` difference, case and the trailing `/`. */
 export function duplicateKey(url: string): string | undefined {
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    return undefined;
-  }
+  const parsed = parseUrl(url);
+  if (!parsed) return undefined;
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return undefined;
   const params = [...parsed.searchParams].filter(([key]) => !TRACKING.has(key.toLowerCase()) && !key.toLowerCase().startsWith('utm_'));
   const query = params.length ? `?${new URLSearchParams(params).toString()}` : '';

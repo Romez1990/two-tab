@@ -1,3 +1,5 @@
+import { hostOf } from './url';
+
 /**
  * Gentle requests to sites (docs/extension/pages/saved.md, section 1): one request at a time per site
  * and at most once in 10 seconds; on 429 and 503 a pause (`Retry-After` or 5 minutes, each next one twice as long),
@@ -67,11 +69,7 @@ export async function siteFetch(url: string, signal: AbortSignal, init: RequestI
 }
 
 function siteOf(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return url;
-  }
+  return hostOf(url) || url;
 }
 
 function wait(ms: number, signal: AbortSignal): Promise<void> {

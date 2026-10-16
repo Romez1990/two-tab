@@ -1,3 +1,5 @@
+import { parseUrl } from '@/shared/lib';
+
 /** Result of checking a page with a GET request (docs/extension/pages/saved.md, section 1). */
 export interface PageCheck {
   url: string;
@@ -56,13 +58,9 @@ export function statusBadge(check: PageCheck | undefined): StatusBadge | null {
 
 /** Redirect to another site or to the home page; a `http`→`https` or `www` change does not count. */
 export function isSuspiciousRedirect(from: string, to: string): boolean {
-  let a: URL, b: URL;
-  try {
-    a = new URL(from);
-    b = new URL(to);
-  } catch {
-    return false;
-  }
+  const a = parseUrl(from);
+  const b = parseUrl(to);
+  if (!a || !b) return false;
   const host = (u: URL) => u.hostname.replace(/^www\./, '');
   if (host(a) !== host(b)) return true;
   const home = (u: URL) => u.pathname === '/' && !u.search;

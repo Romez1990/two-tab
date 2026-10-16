@@ -1,5 +1,6 @@
 import { connectedClient, serviceErrorText, type LocalServiceClient, type LocalServiceSchemas } from '@/shared/api';
 import { browser } from '@/shared/browser';
+import { parseUrl } from '@/shared/lib';
 
 /**
  * Downloading through the local service (tidy-reel/docs/local_service/local_service.md, section 7.4).
@@ -64,14 +65,12 @@ export async function checkVideo(url: string): Promise<Check> {
 
 /** Site cookies of the address; empty without site access (the service tries without them). */
 export async function siteCookies(url: string): Promise<Cookie[]> {
-  try {
-    const origin = `${new URL(url).origin}/*`;
-    if (!(await browser.permissions.contains({ permissions: ['cookies'], origins: [origin] }))) return [];
-    const cookies = await browser.cookies.getAll({ url });
-    return cookies.map((c) => ({ domain: c.domain, name: c.name, value: c.value, path: c.path, secure: c.secure, expirationDate: c.expirationDate ?? null }));
-  } catch {
-    return [];
-  }
+  const parsed = parseUrl(url);
+  if (!parsed) return [];
+  const origin = `${parsed.origin}/*`;
+  if (!(await browser.permissions.contains({ permissions: ['cookies'], origins: [origin] }))) return [];
+  const cookies = await browser.cookies.getAll({ url });
+  return cookies.map((c) => ({ domain: c.domain, name: c.name, value: c.value, path: c.path, secure: c.secure, expirationDate: c.expirationDate ?? null }));
 }
 
 /** Channel before queueing: video count and how many pass the filters; the service keeps the channel list for 10 minutes (tidy-reel/docs/downloader.md, section 6.0). */
