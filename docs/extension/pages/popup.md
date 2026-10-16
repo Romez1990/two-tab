@@ -1,4 +1,4 @@
-# Всплывающее окно
+# Popup
 
 Часть требований расширения Tabsurd, общее — `docs/extension/specification.md`.
 Связанные документы: `docs/extension/pages/saved.md`, `docs/extension/pages/site_page.md`.
