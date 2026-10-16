@@ -279,19 +279,22 @@ export function SavedPage() {
  * Record to expand and tab to highlight: `#saved/<id>/<tab address>`, the transition
  * from the "Already saved" banner.
  */
-function useOpenedItem(): { id: string; tabUrl?: string } | undefined {
-  const read = () => {
-    const [section, id, tabUrl] = location.hash.slice(1).split('/');
-    if (section !== 'saved' || !id) return undefined;
-    return { id: decodeURIComponent(id), tabUrl: tabUrl ? decodeURIComponent(tabUrl) : undefined };
-  };
-  const [id, setId] = useState(read);
+function useOpenedItem(): OpenedItem | undefined {
+  const [id, setId] = useState(readOpenedItem);
   useEffect(() => {
-    const onHash = () => setId(read());
+    const onHash = () => setId(readOpenedItem());
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
   return id;
+}
+
+type OpenedItem = { id: string; tabUrl?: string };
+
+function readOpenedItem(): OpenedItem | undefined {
+  const [section, id, tabUrl] = location.hash.slice(1).split('/');
+  if (section !== 'saved' || !id) return undefined;
+  return { id: decodeURIComponent(id), tabUrl: tabUrl ? decodeURIComponent(tabUrl) : undefined };
 }
 
 function SavedAccordion({
@@ -486,6 +489,7 @@ function ExpandedLoader({ item }: { item: SavedItem }) {
   // The record re-renders when titles arrive; that does not restart the check.
   const itemRef = useRef(item);
   itemRef.current = item;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: restart only for another record, not on every title update.
   useEffect(() => loadItem(itemRef.current), [loadItem, item.id]);
   const urls = useMemo(() => item.window.tabs.map((t) => t.url), [item]);
   useEffect(() => loadIcons(urls), [loadIcons, urls]);

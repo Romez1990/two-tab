@@ -38,10 +38,12 @@ export function usePaging<T>(items: readonly T[], options: PagingOptions): { vis
   const [ownPage, setOwnPage] = useState(1);
   const page = options.page ?? ownPage;
   const setPage = onPageChange ?? setOwnPage;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `resetKey` is a trigger; `options.page` only decides whether the own page is used.
   useEffect(() => {
     setLimit(pageSize);
     if (options.page === undefined) setOwnPage(1);
   }, [resetKey, pageSize]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `setPage` may be a new callback on every render; jump only when the focus changes.
   useEffect(() => {
     if (focusIndex >= 0) setPage(Math.floor(focusIndex / pageSize) + 1);
   }, [focusIndex, pageSize]);
@@ -52,6 +54,7 @@ export function usePaging<T>(items: readonly T[], options: PagingOptions): { vis
       ? items.slice((current - 1) * pageSize, current * pageSize)
       : items.slice(0, Math.max(limit, focusIndex + 1));
   const more = useRef<HTMLDivElement>(null);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-observe after the list grows: the marker may still be in view.
   useEffect(() => {
     const el = more.current;
     if (mode !== 'scroll' || !el) return;

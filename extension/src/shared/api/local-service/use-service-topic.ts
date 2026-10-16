@@ -36,6 +36,7 @@ export function useServiceTopic<T extends TopicName>(
     };
   }, [name]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `params` is a new object on every render; `key` changes only with its content.
   useEffect(() => {
     topics.current = { [name]: params };
     if (document.visibilityState === 'visible') connection.current?.subscribe(topics.current);

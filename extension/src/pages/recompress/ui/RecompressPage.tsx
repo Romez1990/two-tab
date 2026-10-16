@@ -171,6 +171,7 @@ function NewJob({ run }: { run: Run }) {
       });
   }, []);
   // Any edit makes the previous check invalid.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the values are triggers, the effect does not read them.
   useEffect(() => setCheck(null), [folder, preset, edits]);
 
   const defaults = presets.find((p) => p.is_default);

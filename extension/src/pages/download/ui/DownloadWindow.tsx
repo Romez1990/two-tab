@@ -88,8 +88,9 @@ export function DownloadWindow() {
       alive = false;
       clearTimeout(timer);
     };
-  }, [filters, check, kind]);
+  }, [url, filters, check, kind]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the check runs once when the window opens; later only on demand.
   useEffect(() => {
     void load();
     void listPresets()

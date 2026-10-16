@@ -88,6 +88,7 @@ export function SearchPage() {
     }
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: subscribes once; `show` always reads the current address.
   useEffect(() => {
     void listSearchHistory().then(setHistory);
     void getSettings().then((s) => {
