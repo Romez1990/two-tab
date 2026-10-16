@@ -13,7 +13,9 @@ const TYPES = 'src/shared/api/local-service/schema.d.ts';
 if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 const dir = process.env.TIDY_REEL_DIR;
 if (!dir) {
-  console.error(`Задайте путь к Tidy Reel в extension/${ENV_FILE}:\nTIDY_REEL_DIR=D:/.../tidy-reel (образец — extension/.env.local.example)`);
+  console.error(
+    `Задайте путь к Tidy Reel в extension/${ENV_FILE}:\nTIDY_REEL_DIR=D:/.../tidy-reel (образец — extension/.env.local.example)`,
+  );
   process.exit(1);
 }
 const source = join(dir, 'api', 'openapi.yaml');
@@ -24,4 +26,6 @@ if (!existsSync(source)) {
 copyFileSync(source, CONTRACT);
 console.log(`Скопирован ${source} → ${CONTRACT}`);
 // The CLI runs with the same Node directly, without the shell Windows needs for pnpm.cmd.
-execFileSync(process.execPath, ['node_modules/openapi-typescript/bin/cli.js', CONTRACT, '-o', TYPES], { stdio: 'inherit' });
+execFileSync(process.execPath, ['node_modules/openapi-typescript/bin/cli.js', CONTRACT, '-o', TYPES], {
+  stdio: 'inherit',
+});

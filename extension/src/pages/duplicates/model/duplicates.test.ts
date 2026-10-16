@@ -9,7 +9,13 @@ function saved(id: string, title: string, urls: string[]): SavedItem {
     title,
     savedAt: 1,
     reason: 'manual',
-    window: { uid: id, focused: false, state: 'normal', tabs: urls.map((url) => ({ url, title: url, pinned: false, active: false, group: 0 })), groups: [{ title, color: 'blue', collapsed: false }] },
+    window: {
+      uid: id,
+      focused: false,
+      state: 'normal',
+      tabs: urls.map((url) => ({ url, title: url, pinned: false, active: false, group: 0 })),
+      groups: [{ title, color: 'blue', collapsed: false }],
+    },
   };
 }
 
@@ -26,7 +32,9 @@ describe('duplicates', () => {
       { id: 2, windowId: 20, title: 'A', url: 'https://www.a.com' },
       { id: 3, windowId: 20, title: 'B', url: 'https://b.com/' },
     ];
-    const found = findDuplicates(open, [saved('s', 'Музыка', ['https://a.com/#x', 'https://b.com', 'https://b.com/?utm_x=1'])]);
+    const found = findDuplicates(open, [
+      saved('s', 'Музыка', ['https://a.com/#x', 'https://b.com', 'https://b.com/?utm_x=1']),
+    ]);
     expect(found.map((d) => [d.key, d.copies.length])).toEqual([
       ['a.com', 3],
       ['b.com', 3],

@@ -20,7 +20,9 @@ export async function getChecks(urls: readonly string[]): Promise<Map<string, Pa
 
 /** Tab addresses of `items` not checked in the last 30 days. */
 export async function pendingCheckUrls(items: readonly SavedItem[], now = Date.now()): Promise<string[]> {
-  const urls = [...new Set(items.flatMap((i) => i.window.tabs.map((t) => t.url).filter((u) => /^https?:\/\//i.test(u))))];
+  const urls = [
+    ...new Set(items.flatMap((i) => i.window.tabs.map((t) => t.url).filter((u) => /^https?:\/\//i.test(u)))),
+  ];
   const checks = await db.pageChecks.bulkGet(urls);
   // Records without a code and without the "no response" mark are left from title-only loading: check them again.
   return urls.filter((_, n) => {
@@ -42,10 +44,11 @@ export async function checkPages(
   signal: AbortSignal,
 ): Promise<void> {
   const itemIdsByUrl = new Map<string, Set<string>>();
-  for (const item of items) for (const t of item.window.tabs) {
-    if (!itemIdsByUrl.has(t.url)) itemIdsByUrl.set(t.url, new Set());
-    itemIdsByUrl.get(t.url)!.add(item.id);
-  }
+  for (const item of items)
+    for (const t of item.window.tabs) {
+      if (!itemIdsByUrl.has(t.url)) itemIdsByUrl.set(t.url, new Set());
+      itemIdsByUrl.get(t.url)!.add(item.id);
+    }
   await runBySite(urls, signal, async (url) => {
     const { check, title } = await checkPage(url, signal);
     if (signal.aborted) return;
@@ -61,7 +64,12 @@ export async function checkPage(url: string, signal: AbortSignal): Promise<{ che
   let title: string | undefined;
   try {
     const response = await siteFetch(url, signal);
-    check = { url, at, code: response.status, ...(response.url && response.url !== url ? { finalUrl: response.url } : {}) };
+    check = {
+      url,
+      at,
+      code: response.status,
+      ...(response.url && response.url !== url ? { finalUrl: response.url } : {}),
+    };
     if (response.ok && (response.headers.get('content-type') ?? '').includes('html')) {
       const bytes = await response.arrayBuffer();
       const head = new TextDecoder('latin1').decode(bytes.slice(0, 4096));

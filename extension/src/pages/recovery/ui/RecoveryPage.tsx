@@ -59,7 +59,9 @@ export function RecoveryPage() {
             Снимков пока нет: первый появится через 10 минут работы или при следующем запуске Chrome.
           </Alert>
         ) : (
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '320px 1fr' }, gap: 2, alignItems: 'start' }}>
+          <Box
+            sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '320px 1fr' }, gap: 2, alignItems: 'start' }}
+          >
             <Paper variant="outlined" sx={{ maxHeight: 'calc(100vh - 180px)', overflowY: 'auto' }}>
               <List disablePadding>
                 {history.map((s) => (

@@ -20,7 +20,9 @@ export function DownloadBannerPage() {
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const observer = new ResizeObserver(() => post({ tabsurd: 'download-banner-height', height: Math.ceil(el.getBoundingClientRect().height) }));
+    const observer = new ResizeObserver(() =>
+      post({ tabsurd: 'download-banner-height', height: Math.ceil(el.getBoundingClientRect().height) }),
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -28,7 +30,10 @@ export function DownloadBannerPage() {
   return (
     <Paper ref={box} sx={{ px: 1.5, py: 1 }}>
       {/* "Needs your decision" goes where the video banner is (docs/extension/queues.md, section 4). */}
-      <AttentionBanner dense onOpen={(section) => void browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#${section}` })} />
+      <AttentionBanner
+        dense
+        onOpen={(section) => void browser.tabs.create({ url: `${browser.runtime.getURL('/app.html')}#${section}` })}
+      />
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography variant="body2" noWrap title={downloaded} sx={{ flex: 1, minWidth: 0 }}>
           {downloaded ? `Скачано: ${downloaded}` : channel ? 'Канал' : 'Видео'}

@@ -10,7 +10,13 @@ export function WindowRow({ window, actions }: { window: BrowserWindow; actions?
   return (
     <ListItem secondaryAction={actions} sx={{ pr: 12 }}>
       <ListItemAvatar>
-        <Avatar sx={{ bgcolor: window.focused ? 'primary.main' : 'action.selected', color: window.focused ? undefined : 'text.primary', fontSize: 14 }}>
+        <Avatar
+          sx={{
+            bgcolor: window.focused ? 'primary.main' : 'action.selected',
+            color: window.focused ? undefined : 'text.primary',
+            fontSize: 14,
+          }}
+        >
           {window.tabs.length}
         </Avatar>
       </ListItemAvatar>

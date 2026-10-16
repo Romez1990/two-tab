@@ -48,7 +48,14 @@ export function findDuplicates(open: readonly OpenTab[], saved: readonly SavedIt
   for (const item of saved) {
     item.window.tabs.forEach((tab, index) => {
       const group = tab.group >= 0 ? item.window.groups[tab.group]?.title : undefined;
-      add(tab.url, { kind: 'saved', title: tab.title, url: tab.url, savedId: item.id, index, place: group || item.title });
+      add(tab.url, {
+        kind: 'saved',
+        title: tab.title,
+        url: tab.url,
+        savedId: item.id,
+        index,
+        place: group || item.title,
+      });
     });
   }
   return [...byKey.entries()]
@@ -62,7 +69,9 @@ export function duplicateKey(url: string): string | undefined {
   const parsed = parseUrl(url);
   if (!parsed) return undefined;
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return undefined;
-  const params = [...parsed.searchParams].filter(([key]) => !TRACKING.has(key.toLowerCase()) && !key.toLowerCase().startsWith('utm_'));
+  const params = [...parsed.searchParams].filter(
+    ([key]) => !TRACKING.has(key.toLowerCase()) && !key.toLowerCase().startsWith('utm_'),
+  );
   const query = params.length ? `?${new URLSearchParams(params).toString()}` : '';
   const host = parsed.hostname.replace(/^www\./, '');
   return `${host}${parsed.pathname}`.replace(/\/+$/, '').toLowerCase() + query.toLowerCase();
@@ -70,5 +79,7 @@ export function duplicateKey(url: string): string | undefined {
 
 /** Where the copy is, like "Open, window 3" or "Saved, group 'Music'" (shown in Russian). */
 export function placeOf(copy: Copy): string {
-  return copy.kind === 'open' ? `Открыта, окно ${copy.windowNumber}` : `Сохранена, группа «${copy.place || 'без названия'}»`;
+  return copy.kind === 'open'
+    ? `Открыта, окно ${copy.windowNumber}`
+    : `Сохранена, группа «${copy.place || 'без названия'}»`;
 }

@@ -12,7 +12,11 @@ export function snapshotsToDelete(items: readonly { id: number; takenAt: number 
     const age = now - item.takenAt;
     if (age < DAY) continue;
     const bucket =
-      age < 7 * DAY ? `h ${hourKey(item.takenAt)}` : age < 30 * DAY ? `d ${dayKey(item.takenAt)}` : `m ${monthKey(item.takenAt)}`;
+      age < 7 * DAY
+        ? `h ${hourKey(item.takenAt)}`
+        : age < 30 * DAY
+          ? `d ${dayKey(item.takenAt)}`
+          : `m ${monthKey(item.takenAt)}`;
     if (kept.has(bucket)) toDelete.push(item.id);
     else kept.add(bucket);
   }

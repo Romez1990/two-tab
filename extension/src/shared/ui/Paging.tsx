@@ -55,9 +55,12 @@ export function usePaging<T>(items: readonly T[], options: PagingOptions): { vis
   useEffect(() => {
     const el = more.current;
     if (mode !== 'scroll' || !el) return;
-    const observer = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && setLimit((n) => n + pageSize), {
-      rootMargin: '800px',
-    });
+    const observer = new IntersectionObserver(
+      (entries) => entries.some((e) => e.isIntersecting) && setLimit((n) => n + pageSize),
+      {
+        rootMargin: '800px',
+      },
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, [mode, visible.length, items.length, pageSize]);
@@ -106,7 +109,11 @@ export function usePaging<T>(items: readonly T[], options: PagingOptions): { vis
               color="primary"
               size="small"
               renderItem={(it) =>
-                it.type === 'start-ellipsis' || it.type === 'end-ellipsis' ? <PageJump pages={pages} onJump={goTo} /> : <PaginationItem {...it} />
+                it.type === 'start-ellipsis' || it.type === 'end-ellipsis' ? (
+                  <PageJump pages={pages} onJump={goTo} />
+                ) : (
+                  <PaginationItem {...it} />
+                )
               }
             />
           ) : (
@@ -138,7 +145,11 @@ function PageJump({ pages, onJump }: { pages: number; onJump: (page: number) => 
   if (!editing) {
     return (
       <Tooltip title="Перейти к странице">
-        <Button size="small" onClick={() => setEditing(true)} sx={{ minWidth: 26, height: 26, px: 0.5, color: 'text.primary' }}>
+        <Button
+          size="small"
+          onClick={() => setEditing(true)}
+          sx={{ minWidth: 26, height: 26, px: 0.5, color: 'text.primary' }}
+        >
           …
         </Button>
       </Tooltip>
@@ -157,7 +168,9 @@ function PageJump({ pages, onJump }: { pages: number; onJump: (page: number) => 
         if (Number.isInteger(page) && page >= 1 && page <= pages) onJump(page);
         setEditing(false);
       }}
-      slotProps={{ htmlInput: { inputMode: 'numeric', 'aria-label': 'Номер страницы', style: { textAlign: 'center' } } }}
+      slotProps={{
+        htmlInput: { inputMode: 'numeric', 'aria-label': 'Номер страницы', style: { textAlign: 'center' } },
+      }}
       sx={{ width: 64, mx: 0.5, '& input': { py: 0.25 } }}
     />
   );

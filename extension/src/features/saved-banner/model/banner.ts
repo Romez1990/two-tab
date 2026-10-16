@@ -26,7 +26,11 @@ export async function openSavedItem(id: string, tabUrl: string): Promise<void> {
   await browser.tabs.create({ url: savedItemPageUrl(id, tabUrl) });
 }
 
-export async function showBannerIfSaved(tabId: number, url: string | undefined, phase: 'start' | 'complete'): Promise<void> {
+export async function showBannerIfSaved(
+  tabId: number,
+  url: string | undefined,
+  phase: 'start' | 'complete',
+): Promise<void> {
   if (!url || !/^https?:/i.test(url)) return;
   // Load start and address change often come as two events back to back: the banner is injected once.
   const key = `${tabId} ${phase} ${url}`;
@@ -43,7 +47,11 @@ export async function showBannerIfSaved(tabId: number, url: string | undefined, 
       func: (name: string, value: SavedMatch[]) => void ((globalThis as Record<string, unknown>)[name] = value),
       args: [MATCHES_GLOBAL, matches],
     });
-    await browser.scripting.executeScript({ target: { tabId }, injectImmediately: true, files: [BANNER_SCRIPT as '/content-scripts/saved-banner-loader.js'] });
+    await browser.scripting.executeScript({
+      target: { tabId },
+      injectImmediately: true,
+      files: [BANNER_SCRIPT as '/content-scripts/saved-banner-loader.js'],
+    });
   } catch {
     // The page closed or scripts cannot be injected into it (Chrome Web Store and the like).
   }

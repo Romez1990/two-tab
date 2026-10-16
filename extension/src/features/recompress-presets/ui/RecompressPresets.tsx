@@ -36,7 +36,11 @@ export function RecompressPresets() {
         setDrafts(presets.map(toDraft));
         setSites(sites);
       })
-      .catch((e: unknown) => setUnavailable(e instanceof PresetsUnavailableError || e instanceof ServiceUnreachableError ? e.message : errorText(e)));
+      .catch((e: unknown) =>
+        setUnavailable(
+          e instanceof PresetsUnavailableError || e instanceof ServiceUnreachableError ? e.message : errorText(e),
+        ),
+      );
   }, []);
   useEffect(reload, [reload]);
 
@@ -45,7 +49,8 @@ export function RecompressPresets() {
   const base = { ...DEFAULT_FIELDS, ...(drafts.find((d) => d.isDefault)?.fields ?? {}) };
   const taken = (draft: Draft) => new Set(drafts.filter((d) => d !== draft).flatMap((d) => d.sites));
 
-  const update = (draft: Draft, next: Partial<Draft>) => setDrafts((list) => list!.map((d) => (d === draft ? { ...d, ...next } : d)));
+  const update = (draft: Draft, next: Partial<Draft>) =>
+    setDrafts((list) => list!.map((d) => (d === draft ? { ...d, ...next } : d)));
 
   async function save(draft: Draft) {
     const bad = trimError(draft.fields.trim_start ?? '', false) || trimError(draft.fields.trim_end ?? '', true);
@@ -83,7 +88,12 @@ export function RecompressPresets() {
         </Alert>
       )}
       {drafts.map((draft, i) => (
-        <Accordion key={draft.id ?? `new${i}`} disableGutters variant="outlined" defaultExpanded={draft.id === undefined}>
+        <Accordion
+          key={draft.id ?? `new${i}`}
+          disableGutters
+          variant="outlined"
+          defaultExpanded={draft.id === undefined}
+        >
           <AccordionSummary>
             <Stack>
               <Typography>{draft.name || 'Новый пресет'}</Typography>
@@ -96,7 +106,13 @@ export function RecompressPresets() {
             <Stack spacing={2}>
               {!draft.isDefault && (
                 <Stack direction="row" spacing={2}>
-                  <TextField size="small" label="Название" value={draft.name} onChange={(e) => update(draft, { name: e.target.value })} sx={{ width: 220 }} />
+                  <TextField
+                    size="small"
+                    label="Название"
+                    value={draft.name}
+                    onChange={(e) => update(draft, { name: e.target.value })}
+                    sx={{ width: 220 }}
+                  />
                   <Autocomplete
                     multiple
                     size="small"
@@ -108,7 +124,11 @@ export function RecompressPresets() {
                   />
                 </Stack>
               )}
-              <PresetFieldsEditor fields={draft.fields} base={draft.isDefault ? undefined : base} onChange={(fields) => update(draft, { fields })} />
+              <PresetFieldsEditor
+                fields={draft.fields}
+                base={draft.isDefault ? undefined : base}
+                onChange={(fields) => update(draft, { fields })}
+              />
               <Stack direction="row" spacing={1}>
                 <Button variant="contained" disabled={!draft.name.trim()} onClick={() => void save(draft)}>
                   Сохранить
@@ -123,7 +143,10 @@ export function RecompressPresets() {
           </AccordionDetails>
         </Accordion>
       ))}
-      <Button sx={{ alignSelf: 'flex-start' }} onClick={() => setDrafts((list) => [...list!, { name: '', sites: [], fields: {}, isDefault: false }])}>
+      <Button
+        sx={{ alignSelf: 'flex-start' }}
+        onClick={() => setDrafts((list) => [...list!, { name: '', sites: [], fields: {}, isDefault: false }])}
+      >
         Добавить пресет сайта
       </Button>
     </Stack>
@@ -131,7 +154,13 @@ export function RecompressPresets() {
 }
 
 function toDraft(preset: Preset): Draft {
-  return { id: preset.id, name: preset.name, sites: preset.sites, fields: preset.fields as Partial<PresetFields>, isDefault: preset.is_default };
+  return {
+    id: preset.id,
+    name: preset.name,
+    sites: preset.sites,
+    fields: preset.fields as Partial<PresetFields>,
+    isDefault: preset.is_default,
+  };
 }
 
 function summary(draft: Draft): string {

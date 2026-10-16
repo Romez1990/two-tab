@@ -20,10 +20,13 @@ export function remainingText(remaining: Remaining, unit: keyof typeof UNITS): s
   if (!count) return 'ничего не осталось';
   if (remaining.seconds == null) return `осталось ${count} ${items}`;
   const time = formatDuration(remaining.seconds);
-  if (remaining.frees != null) return `осталось ${count} ${items} · ${time} · ≈ освободится ${formatSize(remaining.frees)}`;
+  if (remaining.frees != null)
+    return `осталось ${count} ${items} · ${time} · ≈ освободится ${formatSize(remaining.frees)}`;
   if (remaining.bytes == null) return `осталось ${count} ${items} · ${time}`;
   const size = formatSize(remaining.bytes);
-  return remaining.approximate ? `осталось ${count} ${items} · ${time} · ≈ ${size} (приблизительно)` : `осталось ${count} ${items} · ${time} · ≈ ${size}`;
+  return remaining.approximate
+    ? `осталось ${count} ${items} · ${time} · ≈ ${size} (приблизительно)`
+    : `осталось ${count} ${items} · ${time} · ≈ ${size}`;
 }
 
 /** Count with the Russian plural form of "file": 1 file, 2 files, 5 files. */

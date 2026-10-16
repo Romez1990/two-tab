@@ -41,12 +41,20 @@ export function SavedMatches({
       <Stack spacing={0.5}>
         {matches.map((m) => (
           <Stack key={m.id} direction="row" spacing={1} sx={{ alignItems: 'center', minWidth: 0 }}>
-            {m.color && <Box sx={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, bgcolor: groupColor(m.color) }} />}
+            {m.color && (
+              <Box sx={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, bgcolor: groupColor(m.color) }} />
+            )}
             <Link
               component="button"
               underline="hover"
               onClick={() => onOpen(m.id)}
-              sx={{ textAlign: 'left', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              sx={{
+                textAlign: 'left',
+                minWidth: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
             >
               {m.title || 'Без названия'}
             </Link>

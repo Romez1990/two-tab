@@ -20,7 +20,11 @@ describe('findMatches', () => {
   });
 
   it('returns every item with the address and skips others', () => {
-    const items = [item('1', ['https://a.com/']), item('2', ['https://b.com/']), item('3', ['https://b.com/', 'https://a.com/'], 'G')];
+    const items = [
+      item('1', ['https://a.com/']),
+      item('2', ['https://b.com/']),
+      item('3', ['https://b.com/', 'https://a.com/'], 'G'),
+    ];
     const found = findMatches(items, 'https://a.com/');
     expect(found.map((m) => m.id)).toEqual(['1', '3']);
     expect(found[1]).toMatchObject({ title: 'G', color: 'blue', tabs: 2 });

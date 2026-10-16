@@ -7,7 +7,15 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { SMART_TIME_HINT, SmartHint } from '@/shared/ui';
-import { DEFAULT_FIELDS, SLIDERS, describeStep, trimError, type PresetFields, type SliderDef, type SliderField } from '../model/fields';
+import {
+  DEFAULT_FIELDS,
+  SLIDERS,
+  describeStep,
+  trimError,
+  type PresetFields,
+  type SliderDef,
+  type SliderField,
+} from '../model/fields';
 
 /** Form order, the same for "Download", "Compression queue" and settings (docs/extension/queues.md, section 1). */
 const ORDER: SliderField[] = ['resolution', 'crf', 'fps', 'speed', 'opus_kbps', 'grain'];
@@ -56,7 +64,14 @@ export function PresetFieldsEditor({
         />
       </Stack>
       {ORDERED.map((def) => (
-        <SliderRow key={def.field} def={def} value={full[def.field]} disabled={disabled || !own(def.field)} own={ownBox(def.field)} onChange={(v) => set(def.field, v)} />
+        <SliderRow
+          key={def.field}
+          def={def}
+          value={full[def.field]}
+          disabled={disabled || !own(def.field)}
+          own={ownBox(def.field)}
+          onChange={(v) => set(def.field, v)}
+        />
       ))}
       <Stack direction="row" sx={{ alignItems: 'center' }}>
         {ownBox('normalize')}
@@ -68,9 +83,21 @@ export function PresetFieldsEditor({
       </Stack>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'flex-start' }}>
         {ownBox('trim_start')}
-        <TrimField label="Обрезать начало" value={full.trim_start} end={false} disabled={disabled || !own('trim_start')} onChange={(v) => set('trim_start', v)} />
+        <TrimField
+          label="Обрезать начало"
+          value={full.trim_start}
+          end={false}
+          disabled={disabled || !own('trim_start')}
+          onChange={(v) => set('trim_start', v)}
+        />
         {ownBox('trim_end')}
-        <TrimField label="Обрезать конец" value={full.trim_end} end disabled={disabled || !own('trim_end')} onChange={(v) => set('trim_end', v)} />
+        <TrimField
+          label="Обрезать конец"
+          value={full.trim_end}
+          end
+          disabled={disabled || !own('trim_end')}
+          onChange={(v) => set('trim_end', v)}
+        />
         <Box sx={{ pt: 2 }}>
           <SmartHint rows={SMART_TIME_HINT} />
         </Box>
@@ -92,8 +119,23 @@ export function PresetFieldsEditor({
   );
 }
 
-function SliderRow({ def, value, disabled, own, onChange }: { def: SliderDef; value: number; disabled: boolean; own: React.ReactNode; onChange: (value: number) => void }) {
-  const index = Math.max(0, def.steps.findIndex((s) => s.value === value));
+function SliderRow({
+  def,
+  value,
+  disabled,
+  own,
+  onChange,
+}: {
+  def: SliderDef;
+  value: number;
+  disabled: boolean;
+  own: React.ReactNode;
+  onChange: (value: number) => void;
+}) {
+  const index = Math.max(
+    0,
+    def.steps.findIndex((s) => s.value === value),
+  );
   const step = def.steps[index]!;
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -122,7 +164,19 @@ function SliderRow({ def, value, disabled, own, onChange }: { def: SliderDef; va
   );
 }
 
-function TrimField({ label, value, end, disabled, onChange }: { label: string; value: string; end: boolean; disabled: boolean; onChange: (v: string) => void }) {
+function TrimField({
+  label,
+  value,
+  end,
+  disabled,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  end: boolean;
+  disabled: boolean;
+  onChange: (v: string) => void;
+}) {
   const error = trimError(value, end);
   return (
     <TextField

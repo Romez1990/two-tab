@@ -33,10 +33,7 @@ export function WindowsPage() {
   // The new order (window ids) until it is applied. Windows closed meanwhile drop out, new ones go to the end.
   const [draft, setDraft] = useState<number[] | null>(null);
   const shown = draft
-    ? [
-        ...draft.flatMap((id) => windows.filter((w) => w.id === id)),
-        ...windows.filter((w) => !draft.includes(w.id)),
-      ]
+    ? [...draft.flatMap((id) => windows.filter((w) => w.id === id)), ...windows.filter((w) => !draft.includes(w.id))]
     : windows;
   const changed = draft !== null && shown.some((w, i) => w.id !== windows[i]?.id);
 
@@ -90,7 +87,15 @@ export function WindowsPage() {
         // Panel over the page at the bottom: windows are not touched until "Apply" is pressed.
         <Paper
           elevation={6}
-          sx={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 'snackbar', px: 2, py: 1 }}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 'snackbar',
+            px: 2,
+            py: 1,
+          }}
         >
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             <Typography>Порядок окон изменён</Typography>
@@ -169,7 +174,11 @@ function WindowCard({
         <Stack direction="row" spacing={1} sx={{ mt: 1, ml: 4, flexWrap: 'wrap', rowGap: 1 }}>
           {window.groups.map((g) => (
             <Stack key={g.id} direction="row" sx={{ alignItems: 'center' }}>
-              <Chip size="small" label={`${g.title || 'Без названия'} · ${g.size}`} sx={{ bgcolor: groupColor(g.color), color: '#fff' }} />
+              <Chip
+                size="small"
+                label={`${g.title || 'Без названия'} · ${g.size}`}
+                sx={{ bgcolor: groupColor(g.color), color: '#fff' }}
+              />
               <SaveCloseButton groupId={g.id} onDone={onChanged} size="small" />
             </Stack>
           ))}

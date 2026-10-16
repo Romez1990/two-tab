@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { isSuspiciousRedirect, statusBadge } from './page-status';
 
 const check = (code: number | undefined, finalUrl?: string) =>
-  code === undefined ? { url: 'https://a.com/page', at: 1, failed: true as const } : { url: 'https://a.com/page', at: 1, code, finalUrl };
+  code === undefined
+    ? { url: 'https://a.com/page', at: 1, failed: true as const }
+    : { url: 'https://a.com/page', at: 1, code, finalUrl };
 
 describe('statusBadge', () => {
   it('всё хорошо — без метки', () => {

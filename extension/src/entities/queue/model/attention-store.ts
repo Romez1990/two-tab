@@ -22,9 +22,12 @@ export async function saveAttention(snapshot: AttentionSnapshot | null): Promise
 export function useAttention(): AttentionSnapshot | null {
   const [snapshot, setSnapshot] = useState<AttentionSnapshot | null>(null);
   useEffect(() => {
-    void browser.storage.session.get(KEY).then((stored) => setSnapshot((stored[KEY] as AttentionSnapshot | undefined) ?? null));
+    void browser.storage.session
+      .get(KEY)
+      .then((stored) => setSnapshot((stored[KEY] as AttentionSnapshot | undefined) ?? null));
     const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {
-      if (area === 'session' && KEY in changes) setSnapshot((changes[KEY]!.newValue as AttentionSnapshot | undefined) ?? null);
+      if (area === 'session' && KEY in changes)
+        setSnapshot((changes[KEY]!.newValue as AttentionSnapshot | undefined) ?? null);
     };
     browser.storage.onChanged.addListener(onChanged);
     return () => browser.storage.onChanged.removeListener(onChanged);

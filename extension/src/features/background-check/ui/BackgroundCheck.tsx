@@ -30,11 +30,20 @@ export function BackgroundCheck() {
     <Stack spacing={1}>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         {state.running ? (
-          <Button variant="outlined" color="error" startIcon={<StopIcon />} onClick={() => void sendCheckMessage({ type: 'tabsurd:check-stop' })}>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<StopIcon />}
+            onClick={() => void sendCheckMessage({ type: 'tabsurd:check-stop' })}
+          >
             Остановить
           </Button>
         ) : (
-          <Button variant="contained" startIcon={<PlayArrowIcon />} onClick={() => void sendCheckMessage({ type: 'tabsurd:check-start' })}>
+          <Button
+            variant="contained"
+            startIcon={<PlayArrowIcon />}
+            onClick={() => void sendCheckMessage({ type: 'tabsurd:check-start' })}
+          >
             Запустить
           </Button>
         )}
@@ -51,7 +60,10 @@ export function BackgroundCheck() {
         </Typography>
       </Stack>
       {state.running && (
-        <LinearProgress variant={state.total === 0 ? 'indeterminate' : 'determinate'} value={state.total ? (state.checked / state.total) * 100 : 0} />
+        <LinearProgress
+          variant={state.total === 0 ? 'indeterminate' : 'determinate'}
+          value={state.total ? (state.checked / state.total) * 100 : 0}
+        />
       )}
     </Stack>
   );

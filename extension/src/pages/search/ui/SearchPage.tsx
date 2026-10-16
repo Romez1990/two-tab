@@ -219,7 +219,11 @@ export function SearchPage() {
       )}
       {busy && <LinearProgress />}
       {error && <Alert severity="error">{error}</Alert>}
-      {note && <Alert severity="info" onClose={() => setNote('')}>{note}</Alert>}
+      {note && (
+        <Alert severity="info" onClose={() => setNote('')}>
+          {note}
+        </Alert>
+      )}
       {ran && !busy && (
         <Typography variant="body2" color="text.secondary">
           Найдено: {results.length}
@@ -268,10 +272,16 @@ function ResultRow({ found, onMessage }: { found: Found; onMessage: (text: strin
         </Typography>
         {isArchive ? (
           <>
-            <Button size="small" onClick={() => void archiveAction(found.fileId, 'open').then((m) => m && onMessage(m))}>
+            <Button
+              size="small"
+              onClick={() => void archiveAction(found.fileId, 'open').then((m) => m && onMessage(m))}
+            >
               Открыть
             </Button>
-            <Button size="small" onClick={() => void archiveAction(found.fileId, 'show').then((m) => m && onMessage(m))}>
+            <Button
+              size="small"
+              onClick={() => void archiveAction(found.fileId, 'show').then((m) => m && onMessage(m))}
+            >
               Показать в папке
             </Button>
           </>
@@ -310,7 +320,9 @@ async function archiveAction(fileId: number, action: 'open' | 'show'): Promise<s
   try {
     const { response, error } = await client.POST(path, { params: { path: { file_id: fileId } } });
     if (response.ok) return undefined;
-    return response.status === 404 ? 'Файл переместили, нужна индексация' : `Ошибка ${response.status}: ${JSON.stringify(error)}`;
+    return response.status === 404
+      ? 'Файл переместили, нужна индексация'
+      : `Ошибка ${response.status}: ${JSON.stringify(error)}`;
   } catch (error) {
     if (!(error instanceof ServiceUnreachableError)) throw error;
     return error.message;

@@ -1,5 +1,10 @@
 import { browser } from '@/shared/browser';
-import { DOWNLOAD_BANNER_PAGE, DOWNLOAD_INFO_GLOBAL, type DownloadBannerInfo, type DownloadFrameMessage } from './banner';
+import {
+  DOWNLOAD_BANNER_PAGE,
+  DOWNLOAD_INFO_GLOBAL,
+  type DownloadBannerInfo,
+  type DownloadFrameMessage,
+} from './banner';
 
 const FRAME_ID = 'tabsurd-download-banner';
 /** Address where the banner was closed: injecting again does not bring it back. */

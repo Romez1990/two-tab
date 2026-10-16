@@ -40,7 +40,11 @@ export function SaveCloseButton({
     <Tooltip title={error ?? `Сохранить и закрыть ${what}`}>
       <span>
         <IconButton size={size} disabled={busy} onClick={handleClick} color={error ? 'error' : 'default'}>
-          {busy ? <CircularProgress size={18} /> : <ArchiveOutlinedIcon fontSize={size === 'small' ? 'small' : 'medium'} />}
+          {busy ? (
+            <CircularProgress size={18} />
+          ) : (
+            <ArchiveOutlinedIcon fontSize={size === 'small' ? 'small' : 'medium'} />
+          )}
         </IconButton>
       </span>
     </Tooltip>

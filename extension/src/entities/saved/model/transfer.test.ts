@@ -40,7 +40,14 @@ describe('импорт из BetterOneTab и SupaTabs', () => {
     const file =
       '﻿' +
       JSON.stringify([
-        { title: 'Музыка', time: 100, tabs: [{ url: 'https://a/', title: 'A' }, { url: 'chrome://newtab/', title: 'New Tab' }] },
+        {
+          title: 'Музыка',
+          time: 100,
+          tabs: [
+            { url: 'https://a/', title: 'A' },
+            { url: 'chrome://newtab/', title: 'New Tab' },
+          ],
+        },
         { title: '', time: 200, tabs: [{ url: 'https://b/', title: 'B' }] },
         { title: 'Пустая', time: 300, tabs: [{ url: 'chrome://newtab/', title: '' }] },
       ]);
@@ -74,7 +81,9 @@ describe('импорт из BetterOneTab и SupaTabs', () => {
       },
       workspaces: { w: { groupOrder: ['g1', 'g2'] } },
     });
-    expect(parseExport(file).map((i) => [i.title, i.savedAt, i.window.tabs.map((t) => t.url), i.window.groups[0]?.color])).toEqual([
+    expect(
+      parseExport(file).map((i) => [i.title, i.savedAt, i.window.tabs.map((t) => t.url), i.window.groups[0]?.color]),
+    ).toEqual([
       ['Первая', 10, ['https://1/'], ''],
       ['', 20, ['https://2/'], ''],
     ]);

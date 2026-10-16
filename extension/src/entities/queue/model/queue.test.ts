@@ -20,14 +20,20 @@ describe('remaining', () => {
   const left = { count: 12, counting: false, approximate: false };
 
   it('writes the count always and the time only when it is known', () => {
-    expect(remainingText({ ...left, seconds: 12_000, bytes: 2.3 * 1024 ** 3 }, 'video')).toBe('осталось 12 видео · ≈ 3 ч 20 мин · ≈ 2,3 ГБ');
+    expect(remainingText({ ...left, seconds: 12_000, bytes: 2.3 * 1024 ** 3 }, 'video')).toBe(
+      'осталось 12 видео · ≈ 3 ч 20 мин · ≈ 2,3 ГБ',
+    );
     expect(remainingText({ ...left, seconds: null, bytes: null }, 'video')).toBe('осталось 12 видео');
-    expect(remainingText({ ...left, count: 3, seconds: 60, frees: 12 * 1024 ** 3 }, 'file')).toBe('осталось 3 файла · ≈ 1 мин · ≈ освободится 12 ГБ');
+    expect(remainingText({ ...left, count: 3, seconds: 60, frees: 12 * 1024 ** 3 }, 'file')).toBe(
+      'осталось 3 файла · ≈ 1 мин · ≈ освободится 12 ГБ',
+    );
   });
 
   it('says the channel is being counted', () => {
     expect(remainingText({ count: 0, counting: true, approximate: false }, 'video')).toBe('подсчитывается…');
-    expect(remainingText({ count: 2, counting: true, seconds: 60, approximate: false }, 'video')).toBe('осталось 2 видео · подсчитывается…');
+    expect(remainingText({ count: 2, counting: true, seconds: 60, approximate: false }, 'video')).toBe(
+      'осталось 2 видео · подсчитывается…',
+    );
     expect(remainingText({ count: 0, counting: false, approximate: false }, 'file')).toBe('ничего не осталось');
   });
 

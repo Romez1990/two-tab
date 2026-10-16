@@ -77,6 +77,10 @@ export function parseSupaTabs(data: unknown): SavedItem[] | undefined {
     const g = groups[id];
     if (!isObject(g)) return [];
     const tabIds = Array.isArray(g.tabIds) ? g.tabIds.map(String) : [];
-    return toItem(str(g.title), typeof g.date === 'number' ? g.date : 0, tabIds.flatMap((t) => foreignTab(tabs[t])));
+    return toItem(
+      str(g.title),
+      typeof g.date === 'number' ? g.date : 0,
+      tabIds.flatMap((t) => foreignTab(tabs[t])),
+    );
   });
 }

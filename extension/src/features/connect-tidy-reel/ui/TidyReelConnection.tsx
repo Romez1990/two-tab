@@ -32,7 +32,9 @@ export function TidyReelConnection({ disabled = false }: { disabled?: boolean })
     if (key === undefined) return;
     let alive = true;
     // "Disconnected in Tidy Reel" stays until connected again: after it the key is empty and the check would say "no".
-    void checkConnection().then((s) => alive && setStatus((prev) => (prev?.state === 'revoked' && s.state === 'none' ? prev : s)));
+    void checkConnection().then(
+      (s) => alive && setStatus((prev) => (prev?.state === 'revoked' && s.state === 'none' ? prev : s)),
+    );
     return () => {
       alive = false;
     };
@@ -51,7 +53,10 @@ export function TidyReelConnection({ disabled = false }: { disabled?: boolean })
     if (result.reason === 'taken') {
       setMessage({ severity: 'warning', text: `В Tidy Reel уже подключён профиль «${result.name}». ${MENU_HINT}` });
     } else if (result.reason === 'unreachable') {
-      setMessage({ severity: 'error', text: `tidy-reel не отвечает на порту ${portNumber}: запущен ли локальный сервис?` });
+      setMessage({
+        severity: 'error',
+        text: `tidy-reel не отвечает на порту ${portNumber}: запущен ли локальный сервис?`,
+      });
     } else {
       setMessage({ severity: 'error', text: `Не удалось подключиться: ${result.message}` });
     }

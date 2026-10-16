@@ -28,7 +28,10 @@ export async function deleteClosedTab(id: number): Promise<void> {
 }
 
 export async function pruneClosedTabs(now = Date.now()): Promise<void> {
-  await db.closedTabs.where('closedAt').below(now - KEEP_MS).delete();
+  await db.closedTabs
+    .where('closedAt')
+    .below(now - KEEP_MS)
+    .delete();
 }
 
 /** Tabs closed by the extension itself (saving a group, auto-close): they do not go to "Recently closed". */

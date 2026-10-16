@@ -56,7 +56,9 @@ async function createDiscardedTab(windowId: number, tab: SnapshotTab): Promise<n
   const id = created.id;
   if (id === undefined) throw new Error('Chrome не вернул вкладку');
   // The user may close or open the tab before it is discarded: then it simply stays loaded.
-  void waitForUrl(id).then(() => browser.tabs.discard(id)).catch(() => undefined);
+  void waitForUrl(id)
+    .then(() => browser.tabs.discard(id))
+    .catch(() => undefined);
   return id;
 }
 
@@ -124,7 +126,10 @@ export async function restoreTabs(window: SnapshotWindow, tabs: readonly Snapsho
 async function findWindowId(uid: string): Promise<number | undefined> {
   for (const [id, u] of await getWindowUids()) {
     if (u !== uid) continue;
-    const exists = await browser.windows.get(id).then(() => true, () => false);
+    const exists = await browser.windows.get(id).then(
+      () => true,
+      () => false,
+    );
     if (exists) return id;
   }
   return undefined;

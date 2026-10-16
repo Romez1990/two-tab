@@ -13,7 +13,13 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
-import { DEFAULT_FIELDS, listPresets, PresetFieldsEditor, type Preset, type PresetFields } from '@/features/recompress-presets';
+import {
+  DEFAULT_FIELDS,
+  listPresets,
+  PresetFieldsEditor,
+  type Preset,
+  type PresetFields,
+} from '@/features/recompress-presets';
 import { CreateFooter } from '@/entities/queue';
 import {
   categories as listCategories,
@@ -96,7 +102,11 @@ export function DownloadWindow() {
 
   const defaults = presets.find((p) => p.is_default);
   const site = sitePreset(presets, url);
-  const base: PresetFields = { ...DEFAULT_FIELDS, ...(defaults?.fields ?? {}), ...(site?.fields ?? {}) } as PresetFields;
+  const base: PresetFields = {
+    ...DEFAULT_FIELDS,
+    ...(defaults?.fields ?? {}),
+    ...(site?.fields ?? {}),
+  } as PresetFields;
   const presetEdits = Object.keys(edits).length ? (edits as Record<string, unknown>) : null;
 
   async function submit(action: 'video' | 'channel' | 'subscribe') {
@@ -146,7 +156,13 @@ export function DownloadWindow() {
         <Paper variant="outlined" sx={{ p: 1.5 }}>
           <Typography>{video.video.title}</Typography>
           <Typography variant="body2" color="text.secondary">
-            {[video.video.channel, video.video.published_at, video.video.duration ? `${Math.round(video.video.duration / 60)} мин` : ''].filter(Boolean).join(' · ')}
+            {[
+              video.video.channel,
+              video.video.published_at,
+              video.video.duration ? `${Math.round(video.video.duration / 60)} мин` : '',
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </Typography>
           {video.downloaded && <Alert severity="info">Уже скачано: {video.downloaded}</Alert>}
         </Paper>
@@ -158,7 +174,11 @@ export function DownloadWindow() {
             Видео на канале: {channel.videos}, уже скачано: {channel.downloaded}
           </Typography>
           <Typography variant="body2" color={matching === 0 ? 'error' : 'text.primary'}>
-            {matching === null ? 'Считается, сколько скачается…' : matching === 0 ? 'По фильтрам видео нет' : `Скачается видео: ${matching}`}
+            {matching === null
+              ? 'Считается, сколько скачается…'
+              : matching === 0
+                ? 'По фильтрам видео нет'
+                : `Скачается видео: ${matching}`}
           </Typography>
         </Paper>
       )}
@@ -173,7 +193,9 @@ export function DownloadWindow() {
       {channel && <FiltersForm filters={filters} onChange={setFilters} />}
       {check && presets.length > 0 && (
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Сжатие: {site ? `пресет «${site.name}»` : '«По умолчанию»'}; галочка — своё значение на этот раз</Typography>
+          <Typography variant="subtitle2">
+            Сжатие: {site ? `пресет «${site.name}»` : '«По умолчанию»'}; галочка — своё значение на этот раз
+          </Typography>
           <PresetFieldsEditor fields={edits} base={base} onChange={setEdits} />
         </Stack>
       )}
@@ -193,16 +215,27 @@ export function DownloadWindow() {
           {channel && (
             <>
               {/* No need to wait for the count: the group is queued showing "counting…". */}
-              <Button variant="contained" disabled={!folder || busy || matching === 0} onClick={() => void submit('channel')}>
+              <Button
+                variant="contained"
+                disabled={!folder || busy || matching === 0}
+                onClick={() => void submit('channel')}
+              >
                 Скачать канал
               </Button>
               <Button variant="outlined" disabled={!folder || busy} onClick={() => void submit('subscribe')}>
                 Подписаться
               </Button>
-              <FormControlLabel control={<Checkbox size="small" checked={onlyNew} onChange={(_, v) => setOnlyNew(v)} />} label="Подписка: только новое" />
+              <FormControlLabel
+                control={<Checkbox size="small" checked={onlyNew} onChange={(_, v) => setOnlyNew(v)} />}
+                label="Подписка: только новое"
+              />
             </>
           )}
-          {!folder && <Typography variant="body2" color="text.secondary">Выберите папку</Typography>}
+          {!folder && (
+            <Typography variant="body2" color="text.secondary">
+              Выберите папку
+            </Typography>
+          )}
         </CreateFooter>
       )}
     </Stack>
@@ -235,7 +268,13 @@ function FolderChoice({
     const list = found.models.map((model) => ({ label: `${model}\\New`, folder: `${model}\\New` }));
     return list;
   }, [found.models]);
-  const [target, setTarget] = useState<Target>(found.folder ? { kind: 'folder', folder: found.folder } : options[0] ? { kind: 'folder', folder: options[0].folder } : { kind: 'other' });
+  const [target, setTarget] = useState<Target>(
+    found.folder
+      ? { kind: 'folder', folder: found.folder }
+      : options[0]
+        ? { kind: 'folder', folder: options[0].folder }
+        : { kind: 'other' },
+  );
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [category, setCategory] = useState('');
   const [name, setName] = useState(channelName);
@@ -264,11 +303,14 @@ function FolderChoice({
   }
 
   const value = target.kind === 'folder' ? target.folder : target.kind;
-  const extra = target.kind === 'folder' && !options.some((o) => o.folder === target.folder) ? target.folder : undefined;
+  const extra =
+    target.kind === 'folder' && !options.some((o) => o.folder === target.folder) ? target.folder : undefined;
   return (
     <Stack spacing={1}>
       <Typography variant="subtitle2">Куда</Typography>
-      {found.found_by === 'name' && <Typography variant="body2">Модель нашлась только по имени канала — проверьте выбор.</Typography>}
+      {found.found_by === 'name' && (
+        <Typography variant="body2">Модель нашлась только по имени канала — проверьте выбор.</Typography>
+      )}
       <RadioGroup
         value={value}
         onChange={(_, v) => setTarget(v === 'create' || v === 'other' ? { kind: v } : { kind: 'folder', folder: v })}
@@ -287,7 +329,14 @@ function FolderChoice({
       </RadioGroup>
       {target.kind === 'create' && (
         <Stack direction="row" spacing={1}>
-          <TextField select size="small" label="Категория" value={category} onChange={(e) => setCategory(e.target.value)} sx={{ minWidth: 320 }}>
+          <TextField
+            select
+            size="small"
+            label="Категория"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            sx={{ minWidth: 320 }}
+          >
             {categoryList.map((c) => (
               <MenuItem key={c} value={c}>
                 {c}
@@ -303,7 +352,12 @@ function FolderChoice({
       {target.kind === 'other' && (
         <Stack spacing={0.5}>
           {found.recent.map((folder) => (
-            <Button key={folder} size="small" sx={{ alignSelf: 'flex-start', textTransform: 'none' }} onClick={() => setTarget({ kind: 'folder', folder })}>
+            <Button
+              key={folder}
+              size="small"
+              sx={{ alignSelf: 'flex-start', textTransform: 'none' }}
+              onClick={() => setTarget({ kind: 'folder', folder })}
+            >
               {folder}
             </Button>
           ))}
@@ -323,22 +377,73 @@ function FiltersForm({ filters, onChange }: { filters: Filters; onChange: (f: Fi
     <Stack spacing={1}>
       <Typography variant="subtitle2">Фильтры</Typography>
       <Stack direction="row" spacing={1}>
-        <TextField size="small" type="date" label="Опубликованы с" value={filters.date_from ?? ''} onChange={(e) => onChange({ ...filters, date_from: e.target.value || null })} slotProps={{ inputLabel: { shrink: true } }} />
-        <TextField size="small" type="date" label="по" value={filters.date_to ?? ''} onChange={(e) => onChange({ ...filters, date_to: e.target.value || null })} slotProps={{ inputLabel: { shrink: true } }} />
+        <TextField
+          size="small"
+          type="date"
+          label="Опубликованы с"
+          value={filters.date_from ?? ''}
+          onChange={(e) => onChange({ ...filters, date_from: e.target.value || null })}
+          slotProps={{ inputLabel: { shrink: true } }}
+        />
+        <TextField
+          size="small"
+          type="date"
+          label="по"
+          value={filters.date_to ?? ''}
+          onChange={(e) => onChange({ ...filters, date_to: e.target.value || null })}
+          slotProps={{ inputLabel: { shrink: true } }}
+        />
       </Stack>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <TextField size="small" type="number" label="Видео с №" value={filters.number_from ?? ''} onChange={(e) => onChange({ ...filters, number_from: num(e.target.value) })} sx={{ width: 140 }} />
-        <TextField size="small" type="number" label="по №" value={filters.number_to ?? ''} onChange={(e) => onChange({ ...filters, number_to: num(e.target.value) })} sx={{ width: 140 }} />
-        <ToggleButtonGroup size="small" exclusive value={filters.from_end ? 'end' : 'start'} onChange={(_, v: string | null) => v && onChange({ ...filters, from_end: v === 'end' })}>
+        <TextField
+          size="small"
+          type="number"
+          label="Видео с №"
+          value={filters.number_from ?? ''}
+          onChange={(e) => onChange({ ...filters, number_from: num(e.target.value) })}
+          sx={{ width: 140 }}
+        />
+        <TextField
+          size="small"
+          type="number"
+          label="по №"
+          value={filters.number_to ?? ''}
+          onChange={(e) => onChange({ ...filters, number_to: num(e.target.value) })}
+          sx={{ width: 140 }}
+        />
+        <ToggleButtonGroup
+          size="small"
+          exclusive
+          value={filters.from_end ? 'end' : 'start'}
+          onChange={(_, v: string | null) => v && onChange({ ...filters, from_end: v === 'end' })}
+        >
           <ToggleButton value="start">с начала (от старых)</ToggleButton>
           <ToggleButton value="end">с конца (от новых)</ToggleButton>
         </ToggleButtonGroup>
       </Stack>
       <Stack direction="row" spacing={1}>
-        <TextField size="small" type="number" label="Длительность от, мин" value={filters.min_duration ? filters.min_duration / 60 : ''} onChange={(e) => onChange({ ...filters, min_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 200 }} />
-        <TextField size="small" type="number" label="до, мин" value={filters.max_duration ? filters.max_duration / 60 : ''} onChange={(e) => onChange({ ...filters, max_duration: e.target.value ? Number(e.target.value) * 60 : null })} sx={{ width: 140 }} />
+        <TextField
+          size="small"
+          type="number"
+          label="Длительность от, мин"
+          value={filters.min_duration ? filters.min_duration / 60 : ''}
+          onChange={(e) => onChange({ ...filters, min_duration: e.target.value ? Number(e.target.value) * 60 : null })}
+          sx={{ width: 200 }}
+        />
+        <TextField
+          size="small"
+          type="number"
+          label="до, мин"
+          value={filters.max_duration ? filters.max_duration / 60 : ''}
+          onChange={(e) => onChange({ ...filters, max_duration: e.target.value ? Number(e.target.value) * 60 : null })}
+          sx={{ width: 140 }}
+        />
       </Stack>
-      <FormControlLabel disabled control={<Checkbox size="small" />} label="Только с музыкой — после распознавания музыки в Tidy Reel" />
+      <FormControlLabel
+        disabled
+        control={<Checkbox size="small" />}
+        label="Только с музыкой — после распознавания музыки в Tidy Reel"
+      />
     </Stack>
   );
 }

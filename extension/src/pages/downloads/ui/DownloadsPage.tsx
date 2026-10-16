@@ -6,7 +6,9 @@ import { SubscriptionsPage } from './SubscriptionsPage';
 
 /** "Downloads": queue and subscriptions (docs/extension/pages/downloads.md). */
 export function DownloadsPage() {
-  const [tab, setTab] = useState<'queue' | 'subscriptions'>(() => (location.hash.includes('subscriptions') ? 'subscriptions' : 'queue'));
+  const [tab, setTab] = useState<'queue' | 'subscriptions'>(() =>
+    location.hash.includes('subscriptions') ? 'subscriptions' : 'queue',
+  );
   return (
     <>
       <Tabs value={tab} onChange={(_, value: 'queue' | 'subscriptions') => setTab(value)} sx={{ mb: 2 }}>

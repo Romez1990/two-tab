@@ -9,7 +9,8 @@ export class PresetsUnavailableError extends Error {}
 export async function listPresets(): Promise<{ presets: Preset[]; sites: string[] }> {
   const c = await client();
   const [presets, sites] = await Promise.all([c.GET('/api/presets'), c.GET('/api/presets/sites')]);
-  if (!presets.data || !sites.data) throw new Error(serviceErrorText(presets.response.status, presets.error ?? sites.error));
+  if (!presets.data || !sites.data)
+    throw new Error(serviceErrorText(presets.response.status, presets.error ?? sites.error));
   return { presets: presets.data, sites: sites.data };
 }
 
@@ -22,7 +23,10 @@ async function client() {
 /** Saves a preset: a new one or in place of the old one. An error is a text for the user. */
 export async function savePreset(input: PresetInput, id?: number): Promise<Preset> {
   const c = await client();
-  const result = id === undefined ? await c.POST('/api/presets', { body: input }) : await c.PUT('/api/presets/{preset_id}', { params: { path: { preset_id: id } }, body: input });
+  const result =
+    id === undefined
+      ? await c.POST('/api/presets', { body: input })
+      : await c.PUT('/api/presets/{preset_id}', { params: { path: { preset_id: id } }, body: input });
   if (!result.data) throw new Error(serviceErrorText(result.response.status, result.error));
   return result.data;
 }

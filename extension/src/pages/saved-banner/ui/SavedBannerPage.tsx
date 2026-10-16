@@ -12,7 +12,9 @@ export function SavedBannerPage() {
     if (matches.length === 0) return post({ tabsurd: 'banner-close' });
     const el = box.current;
     if (!el) return;
-    const observer = new ResizeObserver(() => post({ tabsurd: 'banner-height', height: Math.ceil(el.getBoundingClientRect().height) }));
+    const observer = new ResizeObserver(() =>
+      post({ tabsurd: 'banner-height', height: Math.ceil(el.getBoundingClientRect().height) }),
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, [matches]);

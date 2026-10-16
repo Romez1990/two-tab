@@ -13,7 +13,10 @@ describe('parseQuery', () => {
       op: 'and',
       items: [{ op: 'or', items: [term('rain'), term('snow')] }, term('dance')],
     });
-    expect(parseQuery('path:"R lang T" rain')).toEqual({ op: 'and', items: [term('R lang T', 'path', true), term('rain')] });
+    expect(parseQuery('path:"R lang T" rain')).toEqual({
+      op: 'and',
+      items: [term('R lang T', 'path', true), term('rain')],
+    });
     expect(parseQuery('url:tiktok')).toEqual(term('tiktok', 'url'));
     expect(parseQuery('Song:Ankha name:x')).toEqual({ op: 'and', items: [term('Ankha', 'song'), term('x')] });
     expect(parseQuery('pre-roll')).toEqual(term('pre-roll'));
@@ -22,10 +25,19 @@ describe('parseQuery', () => {
   });
 
   it('applies a prefix before brackets to the words of the group without their own', () => {
-    expect(parseQuery('any:(cat | path:kitty)')).toEqual({ op: 'or', items: [term('cat', 'any'), term('kitty', 'path')] });
+    expect(parseQuery('any:(cat | path:kitty)')).toEqual({
+      op: 'or',
+      items: [term('cat', 'any'), term('kitty', 'path')],
+    });
     expect(parseQuery('-source:(open | saved)')).toEqual({
       op: 'not',
-      item: { op: 'or', items: [{ op: 'source', source: 'open' }, { op: 'source', source: 'saved' }] },
+      item: {
+        op: 'or',
+        items: [
+          { op: 'source', source: 'open' },
+          { op: 'source', source: 'saved' },
+        ],
+      },
     });
   });
 
@@ -74,6 +86,8 @@ describe('matches', () => {
   it('ranks a phrase in the name and a name starting with the word higher', () => {
     const query = parseQuery('"rain dance" | elka')!;
     expect(relevance(query, { name: 'Rain dance' })).toBeGreaterThan(relevance(query, { name: 'x elka' }));
-    expect(relevance(parseQuery('rain')!, { name: 'Rain x' })).toBeGreaterThan(relevance(parseQuery('rain')!, { name: 'x rain' }));
+    expect(relevance(parseQuery('rain')!, { name: 'Rain x' })).toBeGreaterThan(
+      relevance(parseQuery('rain')!, { name: 'x rain' }),
+    );
   });
 });

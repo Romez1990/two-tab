@@ -73,16 +73,26 @@ function WindowAccordion({ index, window, run }: { index: number; window: Snapsh
       </AccordionSummary>
       <AccordionDetails>
         <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-          <Button variant="outlined" size="small" startIcon={<RestoreIcon />} onClick={() => run(() => restoreWindows([window]), 'Окно открыто.')}>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<RestoreIcon />}
+            onClick={() => run(() => restoreWindows([window]), 'Окно открыто.')}
+          >
             Восстановить окно
           </Button>
           <Button
             size="small"
             disabled={checked.size === 0}
             onClick={() =>
-              run(() => restoreTabs(window, window.tabs.filter((_, i) => checked.has(i))), 'Вкладки открыты.').then(() =>
-                setChecked(new Set()),
-              )
+              run(
+                () =>
+                  restoreTabs(
+                    window,
+                    window.tabs.filter((_, i) => checked.has(i)),
+                  ),
+                'Вкладки открыты.',
+              ).then(() => setChecked(new Set()))
             }
           >
             Восстановить выбранные ({checked.size})
@@ -105,7 +115,11 @@ function WindowAccordion({ index, window, run }: { index: number; window: Snapsh
                       sx={{ mr: 1, bgcolor: groupColor(group.color), color: '#fff' }}
                     />
                   )}
-                  <ListItemText primary={t.title || t.url} secondary={t.url} slotProps={{ primary: { noWrap: true }, secondary: { noWrap: true } }} />
+                  <ListItemText
+                    primary={t.title || t.url}
+                    secondary={t.url}
+                    slotProps={{ primary: { noWrap: true }, secondary: { noWrap: true } }}
+                  />
                 </ListItemButton>
               </ListItem>
             );

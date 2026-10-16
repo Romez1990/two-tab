@@ -25,7 +25,10 @@ export function SettingsPage() {
 
   return (
     <Stack spacing={2} sx={{ maxWidth: 760 }}>
-      <Section title="Автозакрытие" hint="Окно или группа закрываются, если на их вкладки не переходили столько дней работы Chrome. Перед закрытием они сохраняются в «Сохранённые». 0 — не закрывать.">
+      <Section
+        title="Автозакрытие"
+        hint="Окно или группа закрываются, если на их вкладки не переходили столько дней работы Chrome. Перед закрытием они сохраняются в «Сохранённые». 0 — не закрывать."
+      >
         <TextField
           key={settings.autoCloseDays}
           type="number"
@@ -40,7 +43,10 @@ export function SettingsPage() {
         />
       </Section>
 
-      <Section title="Не закрывать" hint="Отмеченные окна не закрываются автоматически. Закреплённые вкладки не закрываются никогда.">
+      <Section
+        title="Не закрывать"
+        hint="Отмеченные окна не закрываются автоматически. Закреплённые вкладки не закрываются никогда."
+      >
         <KeepWindows settings={settings} />
       </Section>
 
@@ -72,7 +78,10 @@ export function SettingsPage() {
       </Section>
 
       {settings.localServiceKey && (
-        <Section title="Сжатие видео" hint="Пресеты сжатия в AV1 после скачивания. «По умолчанию» действует на все сайты, пресет сайта задаёт только то, что отличается.">
+        <Section
+          title="Сжатие видео"
+          hint="Пресеты сжатия в AV1 после скачивания. «По умолчанию» действует на все сайты, пресет сайта задаёт только то, что отличается."
+        >
           <RecompressPresets />
         </Section>
       )}
@@ -83,7 +92,10 @@ export function SettingsPage() {
         </Section>
       )}
 
-      <Section title="Хранилище" hint="Сколько места на этом компьютере занимает база расширения: сохранённые окна, снимки, недавно закрытые вкладки.">
+      <Section
+        title="Хранилище"
+        hint="Сколько места на этом компьютере занимает база расширения: сохранённые окна, снимки, недавно закрытые вкладки."
+      >
         <DbUsage />
       </Section>
 
@@ -127,7 +139,9 @@ function KeepWindows({ settings }: { settings: Settings }) {
   }, [reload]);
   const keep = new Set(settings.keepWindowUids);
   const toggle = (uid: string, on: boolean) =>
-    void updateSettings({ keepWindowUids: on ? [...settings.keepWindowUids, uid] : settings.keepWindowUids.filter((u) => u !== uid) });
+    void updateSettings({
+      keepWindowUids: on ? [...settings.keepWindowUids, uid] : settings.keepWindowUids.filter((u) => u !== uid),
+    });
   const open = windows.flatMap((w) => {
     const uid = uids.get(w.id);
     return uid ? [{ uid, window: w }] : [];
@@ -143,7 +157,8 @@ function KeepWindows({ settings }: { settings: Settings }) {
           <KeepRow key={uid} kept={keep.has(uid)} onToggle={() => toggle(uid, !keep.has(uid))}>
             {settings.windowNames[uid] || first?.title || first?.url || 'Окно'}
             <Typography component="span" variant="body2" color="text.secondary">
-              {' '}· {w.tabs.length} вкладок{w.focused ? ' · текущее окно' : ''}
+              {' '}
+              · {w.tabs.length} вкладок{w.focused ? ' · текущее окно' : ''}
             </Typography>
           </KeepRow>
         );
@@ -152,7 +167,8 @@ function KeepWindows({ settings }: { settings: Settings }) {
         <KeepRow key={uid} kept onToggle={() => toggle(uid, false)}>
           {settings.windowNames[uid] || `Окно ${uid.slice(0, 6)}`}
           <Typography component="span" variant="body2" color="text.secondary">
-            {' '}· сейчас закрыто
+            {' '}
+            · сейчас закрыто
           </Typography>
         </KeepRow>
       ))}
@@ -193,7 +209,9 @@ function QueueSettingsForm() {
         label="Повтор уведомлений, минут"
         helperText="Как часто звучит уведомление, пока очереди нужно ваше решение"
         defaultValue={value.notify_every_minutes}
-        onBlur={(e) => save({ ...value, notify_every_minutes: Math.min(1440, Math.max(1, Math.round(Number(e.target.value) || 1))) })}
+        onBlur={(e) =>
+          save({ ...value, notify_every_minutes: Math.min(1440, Math.max(1, Math.round(Number(e.target.value) || 1))) })
+        }
         slotProps={{ htmlInput: { min: 1, max: 1440 } }}
         sx={{ width: 320 }}
       />
@@ -213,4 +231,3 @@ function DbUsage() {
   }, []);
   return <Typography>{bytes === undefined ? '…' : `≈ ${formatBytes(bytes)}`}</Typography>;
 }
-

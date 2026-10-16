@@ -20,8 +20,26 @@ export const SOURCE_TITLES: Record<Source, string> = {
 export const DEFAULT_SOURCES: Source[] = ['open', 'saved', 'archive'];
 
 export type Found =
-  | { source: 'open'; key: string; title: string; url: string; date: number; rank: number; tabId: number; windowId: number }
-  | { source: 'saved'; key: string; title: string; url: string; date: number; rank: number; savedId: string; group: string }
+  | {
+      source: 'open';
+      key: string;
+      title: string;
+      url: string;
+      date: number;
+      rank: number;
+      tabId: number;
+      windowId: number;
+    }
+  | {
+      source: 'saved';
+      key: string;
+      title: string;
+      url: string;
+      date: number;
+      rank: number;
+      savedId: string;
+      group: string;
+    }
   | { source: 'closed' | 'snapshot'; key: string; title: string; url: string; date: number; rank: number }
   | {
       source: 'archive';
@@ -155,7 +173,12 @@ async function archive(query: Condition): Promise<{ found: Found[]; total: numbe
   let total = 0;
   for (let page = 0; page * ARCHIVE_PAGE < ARCHIVE_LIMIT; page++) {
     const { data, error } = await client.POST('/api/archive/search', {
-      body: { query: query as LocalServiceSchemas['SearchRequest']['query'], sort: 'relevance', page, page_size: ARCHIVE_PAGE },
+      body: {
+        query: query as LocalServiceSchemas['SearchRequest']['query'],
+        sort: 'relevance',
+        page,
+        page_size: ARCHIVE_PAGE,
+      },
     });
     if (!data) throw new Error(`Архив не ответил: ${JSON.stringify(error)}`);
     total = data.total;

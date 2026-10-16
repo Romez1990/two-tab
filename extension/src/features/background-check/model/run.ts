@@ -9,7 +9,9 @@ export type ReportProgress = (checked: number, total: number) => void;
  * on the title and icon features. `task` skips what is already checked by itself, so after a Chrome restart
  * the check continues from where it stopped.
  */
-export async function runBackgroundCheck(task: (signal: AbortSignal, report: ReportProgress) => Promise<void>): Promise<void> {
+export async function runBackgroundCheck(
+  task: (signal: AbortSignal, report: ReportProgress) => Promise<void>,
+): Promise<void> {
   let last = 0;
   const report: ReportProgress = (checked, total) => {
     const now = Date.now();

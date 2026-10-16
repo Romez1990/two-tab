@@ -24,7 +24,11 @@ export function SmartHint({ rows }: { rows: readonly (readonly [example: string,
     </Box>
   );
   return (
-    <Tooltip title={table} placement="bottom-start" slotProps={{ tooltip: { sx: { maxWidth: 520, fontSize: '0.8125rem' } } }}>
+    <Tooltip
+      title={table}
+      placement="bottom-start"
+      slotProps={{ tooltip: { sx: { maxWidth: 520, fontSize: '0.8125rem' } } }}
+    >
       <HelpOutline fontSize="small" sx={{ color: 'text.secondary', cursor: 'help' }} aria-label="Подсказка" />
     </Tooltip>
   );

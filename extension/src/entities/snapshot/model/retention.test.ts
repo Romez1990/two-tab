@@ -19,7 +19,11 @@ describe('snapshotsToDelete', () => {
     // 10 days ago: 7:00 and 23:00 are the same day; 5:00 of the next day is the same day too.
     const day = now - 10 * DAY;
     const t = (h: number) => new Date(day).setHours(h, 0, 0, 0);
-    const items = [{ id: 1, takenAt: t(7) }, { id: 2, takenAt: t(23) }, { id: 3, takenAt: t(29) }];
+    const items = [
+      { id: 1, takenAt: t(7) },
+      { id: 2, takenAt: t(23) },
+      { id: 3, takenAt: t(29) },
+    ];
     expect(snapshotsToDelete(items, now)).toEqual([2, 1]);
   });
 

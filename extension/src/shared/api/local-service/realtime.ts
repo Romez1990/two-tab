@@ -34,7 +34,10 @@ export interface ServiceConnection {
 }
 
 /** Open the connection; without a key in the settings it waits as if the service did not answer. */
-export function connectToService(onMessage: (message: ServiceMessage) => void, onOnline: (online: boolean) => void = () => undefined): ServiceConnection {
+export function connectToService(
+  onMessage: (message: ServiceMessage) => void,
+  onOnline: (online: boolean) => void = () => undefined,
+): ServiceConnection {
   let topics: ServiceTopics = {};
   let socket: WebSocket | null = null;
   let retry: number | null = null;

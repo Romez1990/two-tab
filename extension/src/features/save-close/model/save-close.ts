@@ -11,7 +11,12 @@ export async function saveAndCloseWindow(windowId: number, reason: SavedItem['re
     browser.tabGroups.query({ windowId }),
     getWindowUids(),
   ]);
-  const snapshot = toSnapshotWindow(window, window.tabs ?? [], uids.get(windowId) ?? newWindowUid(), new Map(groups.map((g) => [g.id, g])));
+  const snapshot = toSnapshotWindow(
+    window,
+    window.tabs ?? [],
+    uids.get(windowId) ?? newWindowUid(),
+    new Map(groups.map((g) => [g.id, g])),
+  );
   const first = snapshot.tabs[0];
   const item: SavedItem = {
     id: crypto.randomUUID(),
@@ -34,7 +39,12 @@ export async function saveAndCloseGroup(groupId: number, reason: SavedItem['reas
     browser.tabs.query({ groupId }),
     getWindowUids(),
   ]);
-  const snapshot = toSnapshotWindow(window, tabs, uids.get(group.windowId) ?? newWindowUid(), new Map([[group.id, group]]));
+  const snapshot = toSnapshotWindow(
+    window,
+    tabs,
+    uids.get(group.windowId) ?? newWindowUid(),
+    new Map([[group.id, group]]),
+  );
   const item: SavedItem = {
     id: crypto.randomUUID(),
     kind: 'group',

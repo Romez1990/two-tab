@@ -59,7 +59,15 @@ const STATES: Record<string, { label: string; color: 'default' | 'primary' | 'su
   no_music: { label: 'без музыки', color: 'warning' },
 };
 
-const ACTIVE = new Set(['counting', 'queued', 'paused', 'downloading', 'checking_music', 'checking_duplicates', 'compressing']);
+const ACTIVE = new Set([
+  'counting',
+  'queued',
+  'paused',
+  'downloading',
+  'checking_music',
+  'checking_duplicates',
+  'compressing',
+]);
 /** The new video is compressed: its path is final, "Keep the new one" is available (tidy-reel/docs/downloader.md, section 5.1). */
 const COMPRESSED = new Set(['done', 'original_waiting']);
 
@@ -104,22 +112,47 @@ export function QueuePage() {
           {message}
         </Alert>
       )}
-      {queue && <QueuePanel pause={queue.pause} remaining={remainingText(queue.remaining, 'video')} onPause={(paused) => run(() => pauseQueue(paused))} />}
+      {queue && (
+        <QueuePanel
+          pause={queue.pause}
+          remaining={remainingText(queue.remaining, 'video')}
+          onPause={(paused) => run(() => pauseQueue(paused))}
+        />
+      )}
       <QueueFilters value={address.filters} onChange={(filters) => setAddress({ filters, page: 1 })} />
       {items && groups.length === 0 && (
         <Typography color="text.secondary">
-          {queue?.groups.length ? 'По этим фильтрам видео нет.' : 'Очередь пуста. Скачать можно кнопкой на странице видео или во всплывающем окне.'}
+          {queue?.groups.length
+            ? 'По этим фильтрам видео нет.'
+            : 'Очередь пуста. Скачать можно кнопкой на странице видео или во всплывающем окне.'}
         </Typography>
       )}
       {groups.map((group) => (
         <GroupItem key={group.id} group={group} items={byGroup.get(group.id)!} target={target} run={run} />
       ))}
-      {items && <QueuePager total={items.total} pageSize={items.page_size} page={address.page} onPage={(page) => setAddress({ ...address, page })} />}
+      {items && (
+        <QueuePager
+          total={items.total}
+          pageSize={items.page_size}
+          page={address.page}
+          onPage={(page) => setAddress({ ...address, page })}
+        />
+      )}
     </Stack>
   );
 }
 
-function GroupItem({ group, items, target, run }: { group: GroupSummary; items: DownloadItem[]; target: number | null; run: Run }) {
+function GroupItem({
+  group,
+  items,
+  target,
+  run,
+}: {
+  group: GroupSummary;
+  items: DownloadItem[];
+  target: number | null;
+  run: Run;
+}) {
   const live = group.remaining.count > 0 || group.remaining.counting;
   const act = (action: GroupAction) => run(() => groupAction(group.id, action));
   // A group of one video looks like a plain row (tidy-reel/docs/downloader.md, section 2.1).
@@ -183,7 +216,10 @@ function DownloadRow({ download, target, run }: { download: DownloadItem; target
   const times = videoTimes(download);
   const below = download.error?.text ?? download.file_path ?? download.folder;
   return (
-    <Box id={`queue-item-${download.id}`} sx={{ py: 0.5, borderRadius: 1, bgcolor: target ? 'action.selected' : undefined }}>
+    <Box
+      id={`queue-item-${download.id}`}
+      sx={{ py: 0.5, borderRadius: 1, bgcolor: target ? 'action.selected' : undefined }}
+    >
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Stack>
           <IconButton size="small" sx={{ p: 0 }} aria-label="Выше" onClick={() => act('up')}>
@@ -197,7 +233,12 @@ function DownloadRow({ download, target, run }: { download: DownloadItem; target
           <Typography noWrap title={download.title ?? download.url}>
             {download.title ?? download.url}
           </Typography>
-          <Typography variant="body2" color={download.state === 'error' ? 'error' : 'text.secondary'} noWrap title={below}>
+          <Typography
+            variant="body2"
+            color={download.state === 'error' ? 'error' : 'text.secondary'}
+            noWrap
+            title={below}
+          >
             {below}
           </Typography>
         </Box>
@@ -254,7 +295,13 @@ function DownloadRow({ download, target, run }: { download: DownloadItem; target
           </Button>
         )}
       </Stack>
-      {working && <LinearProgress variant={download.progress == null ? 'indeterminate' : 'determinate'} value={(download.progress ?? 0) * 100} sx={{ mt: 0.5 }} />}
+      {working && (
+        <LinearProgress
+          variant={download.progress == null ? 'indeterminate' : 'determinate'}
+          value={(download.progress ?? 0) * 100}
+          sx={{ mt: 0.5 }}
+        />
+      )}
       {download.messages.map((m) => (
         <MessageLine key={m.id} message={m} onRead={() => run(() => readMessage(m.id))}>
           <MessageActions message={m} download={download} run={run} />
@@ -287,7 +334,11 @@ function MessageActions({ message, download, run }: { message: QueueMessage; dow
         </Button>
         <Tooltip title={COMPRESSED.has(download.state) ? '' : 'Доступно, когда новое сожмётся'}>
           <span>
-            <Button size="small" disabled={!COMPRESSED.has(download.state)} onClick={() => run(() => decideDuplicate(download.id, 'new'))}>
+            <Button
+              size="small"
+              disabled={!COMPRESSED.has(download.state)}
+              onClick={() => run(() => decideDuplicate(download.id, 'new'))}
+            >
               Оставить новое
             </Button>
           </span>
@@ -298,7 +349,11 @@ function MessageActions({ message, download, run }: { message: QueueMessage; dow
         <Button size="small" onClick={() => archive('open')}>
           Открыть старое
         </Button>
-        <Button size="small" disabled={!download.file_path} onClick={() => run(() => downloadAction(download.id, 'open'))}>
+        <Button
+          size="small"
+          disabled={!download.file_path}
+          onClick={() => run(() => downloadAction(download.id, 'open'))}
+        >
           Открыть новое
         </Button>
       </>

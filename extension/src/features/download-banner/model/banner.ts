@@ -18,7 +18,9 @@ export interface DownloadBannerInfo {
   downloaded: string | null;
 }
 
-export type DownloadFrameMessage = { tabsurd: 'download-banner-height'; height: number } | { tabsurd: 'download-banner-close' };
+export type DownloadFrameMessage =
+  | { tabsurd: 'download-banner-height'; height: number }
+  | { tabsurd: 'download-banner-close' };
 
 const recent = new Set<string>();
 
@@ -45,7 +47,10 @@ export async function showDownloadBanner(tabId: number, url: string | undefined)
       func: (name: string, value: DownloadBannerInfo) => void ((globalThis as Record<string, unknown>)[name] = value),
       args: [DOWNLOAD_INFO_GLOBAL, info],
     });
-    await browser.scripting.executeScript({ target: { tabId }, files: [BANNER_SCRIPT as '/content-scripts/download-banner-loader.js'] });
+    await browser.scripting.executeScript({
+      target: { tabId },
+      files: [BANNER_SCRIPT as '/content-scripts/download-banner-loader.js'],
+    });
   } catch {
     // The page closed or scripts cannot be injected into it.
   }

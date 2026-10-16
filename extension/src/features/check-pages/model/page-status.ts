@@ -40,7 +40,8 @@ const REASONS: Record<number, string> = {
 export function statusBadge(check: PageCheck | undefined): StatusBadge | null {
   if (!check) return null;
   const { code, url, finalUrl } = check;
-  if (check.failed) return { label: 'нет ответа', color: 'error', hint: 'Сайт не ответил: домена нет или он не ответил за 10 секунд.' };
+  if (check.failed)
+    return { label: 'нет ответа', color: 'error', hint: 'Сайт не ответил: домена нет или он не ответил за 10 секунд.' };
   if (code === undefined) return null;
   if (code === 404) return { label: '404', color: 'error', hint: '404 — страница не найдена.' };
   if (code === 410) return { label: '410', color: 'error', hint: '410 — страница удалена навсегда.' };
@@ -51,8 +52,14 @@ export function statusBadge(check: PageCheck | undefined): StatusBadge | null {
       hint: `${code} — ${REASONS[code]}: сайт не пустил проверку. Часто это защита от ботов, в браузере страница может открываться.`,
     };
   }
-  if (code >= 400) return { label: String(code), color: 'warning', hint: `${code} — ${REASONS[code] ?? (code >= 500 ? 'ошибка на сайте' : 'ошибка запроса')}.` };
-  if (finalUrl && isSuspiciousRedirect(url, finalUrl)) return { label: '↪', color: 'warning', hint: `Перенаправляет на ${finalUrl}` };
+  if (code >= 400)
+    return {
+      label: String(code),
+      color: 'warning',
+      hint: `${code} — ${REASONS[code] ?? (code >= 500 ? 'ошибка на сайте' : 'ошибка запроса')}.`,
+    };
+  if (finalUrl && isSuspiciousRedirect(url, finalUrl))
+    return { label: '↪', color: 'warning', hint: `Перенаправляет на ${finalUrl}` };
   return null;
 }
 

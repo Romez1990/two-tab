@@ -3,8 +3,18 @@ import { moveSavedTab, removeSavedTab } from './edit-tabs';
 import type { SavedItem } from './types';
 
 const item = (urls: string[]): SavedItem => ({
-  id: 'x', kind: 'group', title: '', savedAt: 0, reason: 'manual',
-  window: { uid: '', focused: false, state: 'normal', groups: [], tabs: urls.map((url) => ({ url, title: '', pinned: false, active: false, group: -1 })) },
+  id: 'x',
+  kind: 'group',
+  title: '',
+  savedAt: 0,
+  reason: 'manual',
+  window: {
+    uid: '',
+    focused: false,
+    state: 'normal',
+    groups: [],
+    tabs: urls.map((url) => ({ url, title: '', pinned: false, active: false, group: -1 })),
+  },
 });
 const urls = (i: SavedItem | undefined) => i?.window.tabs.map((t) => t.url);
 

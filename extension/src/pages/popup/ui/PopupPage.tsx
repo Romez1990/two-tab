@@ -32,7 +32,10 @@ export function PopupPage() {
   // Each queue has its own count of videos waiting for a decision (docs/extension/pages/popup.md).
   // From the background script's connection, at once and without asking the service.
   const attention = useAttention();
-  const decisions = { downloads: attention?.downloads.decisions ?? 0, recompress: attention?.recompress.decisions ?? 0 };
+  const decisions = {
+    downloads: attention?.downloads.decisions ?? 0,
+    recompress: attention?.recompress.decisions ?? 0,
+  };
   useEffect(() => {
     void browser.tabs
       .query({ active: true, currentWindow: true })
@@ -101,17 +104,16 @@ export function PopupPage() {
       <List dense sx={{ overflowY: 'auto', pt: 0 }}>
         {windows.map((w) => (
           <Box key={w.id}>
-            <WindowRow
-              window={w}
-              actions={
-                <SaveCloseButton windowId={w.id} onDone={reload} />
-              }
-            />
+            <WindowRow window={w} actions={<SaveCloseButton windowId={w.id} onDone={reload} />} />
             {w.groups.length > 0 && (
               <Stack direction="row" spacing={0.5} sx={{ px: 2, pb: 1, flexWrap: 'wrap', rowGap: 0.5 }}>
                 {w.groups.map((g) => (
                   <Stack key={g.id} direction="row" sx={{ alignItems: 'center' }}>
-                    <Chip size="small" label={`${g.title || 'Без названия'} · ${g.size}`} sx={{ bgcolor: groupColor(g.color), color: '#fff' }} />
+                    <Chip
+                      size="small"
+                      label={`${g.title || 'Без названия'} · ${g.size}`}
+                      sx={{ bgcolor: groupColor(g.color), color: '#fff' }}
+                    />
                     <SaveCloseButton groupId={g.id} onDone={reload} size="small" />
                   </Stack>
                 ))}

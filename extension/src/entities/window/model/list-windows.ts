@@ -13,13 +13,25 @@ export async function listWindows(): Promise<BrowserWindow[]> {
     const tabs: WindowTab[] = [];
     for (const t of w.tabs ?? []) {
       if (t.id === undefined) continue;
-      tabs.push({ id: t.id, index: t.index, title: t.title ?? '', url: t.url ?? '', pinned: t.pinned, groupId: t.groupId ?? -1 });
+      tabs.push({
+        id: t.id,
+        index: t.index,
+        title: t.title ?? '',
+        url: t.url ?? '',
+        pinned: t.pinned,
+        groupId: t.groupId ?? -1,
+      });
     }
     tabs.sort((a, b) => a.index - b.index);
     const windowGroups: WindowGroup[] = groups
       .filter((g) => g.windowId === w.id)
-      .map((g) => ({ id: g.id, title: g.title ?? '', color: g.color, size: tabs.filter((t) => t.groupId === g.id).length }))
-      .sort((a, b) => (tabs.findIndex((t) => t.groupId === a.id)) - tabs.findIndex((t) => t.groupId === b.id));
+      .map((g) => ({
+        id: g.id,
+        title: g.title ?? '',
+        color: g.color,
+        size: tabs.filter((t) => t.groupId === g.id).length,
+      }))
+      .sort((a, b) => tabs.findIndex((t) => t.groupId === a.id) - tabs.findIndex((t) => t.groupId === b.id));
     result.push({
       id: w.id,
       focused: w.focused,

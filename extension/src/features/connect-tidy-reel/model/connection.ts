@@ -39,7 +39,8 @@ export async function connectTidyReel(port: number): Promise<ConnectResult> {
     await updateSettings({ localServicePort: port, localServiceKey: data.key });
     return { ok: true, name: data.name, since: data.connected_at };
   }
-  if (response.status === 409) return { ok: false, reason: 'taken', name: takenBy((error as { detail?: unknown }).detail) };
+  if (response.status === 409)
+    return { ok: false, reason: 'taken', name: takenBy((error as { detail?: unknown }).detail) };
   return { ok: false, reason: 'error', message: `${response.status} ${JSON.stringify(error)}` };
 }
 

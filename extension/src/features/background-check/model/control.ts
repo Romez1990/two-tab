@@ -8,7 +8,10 @@ import { updateCheckState, getCheckState } from './state';
 
 const OFFSCREEN_PAGE = '/offscreen.html';
 
-export type CheckMessage = { type: 'tabsurd:check-start' } | { type: 'tabsurd:check-stop' } | { type: 'tabsurd:check-done' };
+export type CheckMessage =
+  | { type: 'tabsurd:check-start' }
+  | { type: 'tabsurd:check-stop' }
+  | { type: 'tabsurd:check-done' };
 
 export function sendCheckMessage(message: CheckMessage): Promise<void> {
   return browser.runtime.sendMessage(message);
@@ -18,7 +21,13 @@ export function sendCheckMessage(message: CheckMessage): Promise<void> {
 export function onCheckMessage(message: unknown, sendResponse: (response?: unknown) => void): boolean {
   const type = (message as CheckMessage | undefined)?.type;
   const action =
-    type === 'tabsurd:check-start' ? startCheck : type === 'tabsurd:check-stop' ? stopCheck : type === 'tabsurd:check-done' ? finishCheck : null;
+    type === 'tabsurd:check-start'
+      ? startCheck
+      : type === 'tabsurd:check-stop'
+        ? stopCheck
+        : type === 'tabsurd:check-done'
+          ? finishCheck
+          : null;
   if (!action) return false;
   void action().then(
     () => sendResponse(),
@@ -48,7 +57,9 @@ async function ensureOffscreen(): Promise<void> {
 }
 
 async function hasOffscreen(): Promise<boolean> {
-  const contexts = await browser.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT' as Browser.runtime.ContextType] });
+  const contexts = await browser.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT' as Browser.runtime.ContextType],
+  });
   return contexts.length > 0;
 }
 

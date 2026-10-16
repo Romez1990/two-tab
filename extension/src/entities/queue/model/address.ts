@@ -24,7 +24,8 @@ export const DEFAULT_QUEUE_STATE: QueueState = { filters: ['active'], page: 1 };
 
 export function writeQueueState(state: QueueState): string {
   const params = new URLSearchParams();
-  if (state.filters.length && !isDefault(state.filters)) params.set('filter', QUEUE_FILTERS.filter((f) => state.filters.includes(f)).join(','));
+  if (state.filters.length && !isDefault(state.filters))
+    params.set('filter', QUEUE_FILTERS.filter((f) => state.filters.includes(f)).join(','));
   if (state.page > 1) params.set('page', String(state.page));
   // Commas in the filter list stay as is: the address stays human-readable.
   const text = params.toString().replace(/%2C/g, ',');
@@ -46,5 +47,8 @@ export function readQueueState(search: string): QueueState {
   const filter = params.get('filter');
   const filters = filter === null ? [] : QUEUE_FILTERS.filter((f) => filter.split(',').includes(f));
   const page = Number(params.get('page'));
-  return { filters: filters.length ? filters : DEFAULT_QUEUE_STATE.filters, page: Number.isInteger(page) && page > 1 ? page : 1 };
+  return {
+    filters: filters.length ? filters : DEFAULT_QUEUE_STATE.filters,
+    page: Number.isInteger(page) && page > 1 ? page : 1,
+  };
 }

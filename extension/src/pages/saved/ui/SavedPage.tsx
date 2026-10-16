@@ -61,7 +61,12 @@ interface Loader {
   checks: ReadonlyMap<string, PageCheck>;
   recheck: (url: string) => void;
 }
-const LoaderContext = createContext<Loader>({ loadItem: () => () => {}, loadIcons: () => () => {}, checks: new Map(), recheck: () => {} });
+const LoaderContext = createContext<Loader>({
+  loadItem: () => () => {},
+  loadIcons: () => () => {},
+  checks: new Map(),
+  recheck: () => {},
+});
 
 /** The list pagination mode is remembered under this key. */
 const PAGING_KEY = 'tabsurd.savedPaging';
@@ -102,17 +107,28 @@ export function SavedPage() {
     setItems((list) =>
       list.map((i) =>
         i.window.tabs.some((t) => t.url === url)
-          ? { ...i, window: { ...i.window, tabs: i.window.tabs.map((t) => (t.url === url && needsTitle(t) ? { ...t, title } : t)) } }
+          ? {
+              ...i,
+              window: {
+                ...i.window,
+                tabs: i.window.tabs.map((t) => (t.url === url && needsTitle(t) ? { ...t, title } : t)),
+              },
+            }
           : i,
       ),
     );
   }, []);
 
   const { checks, loadItem, recheck } = usePageChecks(access, applyTitle);
-  const loader = useMemo<Loader>(() => ({ loadItem, loadIcons, checks, recheck }), [loadItem, loadIcons, checks, recheck]);
+  const loader = useMemo<Loader>(
+    () => ({ loadItem, loadIcons, checks, recheck }),
+    [loadItem, loadIcons, checks, recheck],
+  );
 
   async function edit(before: SavedItem, after: SavedItem | undefined) {
-    setItems((list) => (after ? list.map((i) => (i.id === after.id ? after : i)) : list.filter((i) => i.id !== before.id)));
+    setItems((list) =>
+      after ? list.map((i) => (i.id === after.id ? after : i)) : list.filter((i) => i.id !== before.id),
+    );
     try {
       if (after) await addSaved(after);
       else await deleteSaved(before.id);
@@ -193,11 +209,20 @@ export function SavedPage() {
         placeholder="Поиск по названию, заголовкам и адресам вкладок"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          },
+        }}
       />
       {items.length === 0 && (
         <Alert severity="info">
-          Сохранённых пока нет. Окно или группу можно сохранить и закрыть во всплывающем окне расширения или на странице «Окна».
+          Сохранённых пока нет. Окно или группу можно сохранить и закрыть во всплывающем окне расширения или на странице
+          «Окна».
         </Alert>
       )}
       {items.length > 0 && shown.length === 0 && <Typography color="text.secondary">Ничего не найдено.</Typography>}
@@ -223,8 +248,8 @@ export function SavedPage() {
       <Dialog open={toRemove !== null} onClose={() => setToRemove(null)}>
         <DialogTitle>Удалить из сохранённых?</DialogTitle>
         <DialogContent>
-          «{toRemove?.title}» и {toRemove?.window.tabs.length} вкладок пропадут из списка. Они останутся только в старых снимках
-          окон.
+          «{toRemove?.title}» и {toRemove?.window.tabs.length} вкладок пропадут из списка. Они останутся только в старых
+          снимках окон.
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setToRemove(null)}>Отмена</Button>
@@ -322,18 +347,15 @@ function SavedAccordion({
               <OpenInNewIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          {item.kind === 'window' ? (
-            <WebAssetIcon color="action" />
-          ) : (
-            <GroupIcon item={item} color={group?.color} />
-          )}
+          {item.kind === 'window' ? <WebAssetIcon color="action" /> : <GroupIcon item={item} color={group?.color} />}
           <Box sx={{ minWidth: 0, flex: 1 }}>
             {/* Without a name the first tab is shown in italics. */}
             <Typography noWrap sx={{ fontWeight: 500, fontStyle: item.title ? undefined : 'italic' }}>
               {item.title || item.window.tabs[0]?.title || item.window.tabs[0]?.url}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {item.kind === 'window' ? 'Окно' : 'Группа'} · {item.window.tabs.length} вкладок · {formatDateTime(item.savedAt)}
+              {item.kind === 'window' ? 'Окно' : 'Группа'} · {item.window.tabs.length} вкладок ·{' '}
+              {formatDateTime(item.savedAt)}
             </Typography>
           </Box>
           {item.reason === 'auto' && <Chip size="small" label="автозакрытие" variant="outlined" />}
@@ -362,7 +384,11 @@ function SavedAccordion({
               <ListItem
                 key={`${i}-${t.url}`}
                 // The tab arrived at from the banner is highlighted and scrolled to the middle of the screen.
-                ref={highlighted ? (el: HTMLLIElement | null) => el?.scrollIntoView({ block: 'center', behavior: 'smooth' }) : undefined}
+                ref={
+                  highlighted
+                    ? (el: HTMLLIElement | null) => el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                    : undefined
+                }
                 disableGutters
                 draggable
                 onDragStart={(e) => {
@@ -386,7 +412,12 @@ function SavedAccordion({
                 }}
                 secondaryAction={
                   <Tooltip title="Удалить вкладку">
-                    <IconButton edge="end" size="small" sx={{ p: 0.25 }} onClick={() => onEdit(removeSavedTab(item, i))}>
+                    <IconButton
+                      edge="end"
+                      size="small"
+                      sx={{ p: 0.25 }}
+                      onClick={() => onEdit(removeSavedTab(item, i))}
+                    >
                       <DeleteOutlineIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
@@ -396,13 +427,23 @@ function SavedAccordion({
                   borderTop: 2,
                   borderColor: overIndex === i && dragIndex !== null && dragIndex > i ? 'primary.main' : 'transparent',
                   borderBottom: 2,
-                  borderBottomColor: overIndex === i && dragIndex !== null && dragIndex < i ? 'primary.main' : 'transparent',
+                  borderBottomColor:
+                    overIndex === i && dragIndex !== null && dragIndex < i ? 'primary.main' : 'transparent',
                   py: 0,
                   pr: 5,
                 }}
               >
                 {/* The whole row is a link: a click opens it in a new tab, the middle button in a background one. */}
-                <ListItemButton component="a" href={t.url} target="_blank" rel="noreferrer" draggable={false} dense selected={highlighted} sx={{ borderRadius: 1, py: 0 }}>
+                <ListItemButton
+                  component="a"
+                  href={t.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  draggable={false}
+                  dense
+                  selected={highlighted}
+                  sx={{ borderRadius: 1, py: 0 }}
+                >
                   <DragIndicatorIcon fontSize="small" sx={{ color: 'text.disabled', cursor: 'grab', mr: 1 }} />
                   <Box sx={{ mr: 1.5 }}>
                     <SiteIcon url={t.url} />

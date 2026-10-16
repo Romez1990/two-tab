@@ -25,7 +25,8 @@ export async function captureWindows(): Promise<{ windows: SnapshotWindow[]; tab
     const uid = uids.get(w.id) ?? newWindowUid();
     liveUids.set(w.id, uid);
     const snapshot = toSnapshotWindow(w, w.tabs ?? [], uid, groupsById);
-    for (const t of w.tabs ?? []) if (t.id !== undefined) tabs[t.id] = { url: t.url || t.pendingUrl || '', title: t.title ?? '' };
+    for (const t of w.tabs ?? [])
+      if (t.id !== undefined) tabs[t.id] = { url: t.url || t.pendingUrl || '', title: t.title ?? '' };
     windows.push(snapshot);
   }
   // Closed windows drop out of the id table, new ones get an id.

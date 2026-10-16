@@ -47,12 +47,15 @@ export function AppRouter() {
           <Typography variant="h6" component="span" sx={{ fontWeight: 700 }}>
             Tabsurd
           </Typography>
-          <Tabs value={sections[section]?.hidden ? false : section} onChange={(_, name: string) => (location.hash = name)}>
+          <Tabs
+            value={sections[section]?.hidden ? false : section}
+            onChange={(_, name: string) => (location.hash = name)}
+          >
             {Object.entries(sections)
               .filter(([, s]) => !s.hidden)
               .map(([name, s]) => (
-              <Tab key={name} value={name} label={s.title} />
-            ))}
+                <Tab key={name} value={name} label={s.title} />
+              ))}
           </Tabs>
         </Toolbar>
       </AppBar>

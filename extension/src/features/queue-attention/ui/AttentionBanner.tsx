@@ -34,7 +34,11 @@ export function AttentionBanner({ onOpen, dense = false }: { onOpen: (section: s
         {cases.map((c) => (
           <span key={`${c.queue}:${c.reason}:${c.since}`}>
             {c.text}{' '}
-            <Button size="small" sx={{ p: 0, minWidth: 0, verticalAlign: 'baseline' }} onClick={() => onOpen(QUEUE_SECTIONS[c.queue] ?? 'downloads')}>
+            <Button
+              size="small"
+              sx={{ p: 0, minWidth: 0, verticalAlign: 'baseline' }}
+              onClick={() => onOpen(QUEUE_SECTIONS[c.queue] ?? 'downloads')}
+            >
               Открыть очередь
             </Button>
           </span>

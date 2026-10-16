@@ -28,7 +28,11 @@ async function readCache(): Promise<IconCache> {
  * Sites that have only the default icon in the Chrome cache and are not in our own cache (or failed
  * more than 30 days ago). For each site, the address of one of its tabs.
  */
-export async function missingIconSites(urls: readonly string[], signal: AbortSignal, now = Date.now()): Promise<Map<string, string>> {
+export async function missingIconSites(
+  urls: readonly string[],
+  signal: AbortSignal,
+  now = Date.now(),
+): Promise<Map<string, string>> {
   const cache = await readCache();
   const byHost = new Map<string, string>();
   for (const url of urls) {

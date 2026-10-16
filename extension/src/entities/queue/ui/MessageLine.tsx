@@ -12,7 +12,15 @@ export type QueueMessage = LocalServiceSchemas['QueueMessageModel'];
  * Message on a video: text, buttons of its case (`children`) and "Read" on info and errors,
  * per message only. Read and resolved messages stay in the history, dimmed.
  */
-export function MessageLine({ message, onRead, children }: { message: QueueMessage; onRead: () => void; children?: ReactNode }) {
+export function MessageLine({
+  message,
+  onRead,
+  children,
+}: {
+  message: QueueMessage;
+  onRead: () => void;
+  children?: ReactNode;
+}) {
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center', opacity: message.done ? 0.55 : 1, pl: 4 }}>
       <KindIcon kind={message.kind} />

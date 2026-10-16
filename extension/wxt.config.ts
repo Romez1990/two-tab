@@ -27,7 +27,18 @@ export default defineConfig({
     name: 'Tabsurd',
     description: 'Сохраняет окна и группы вкладок, восстанавливает пропавшие и освобождает память.',
     key: MANIFEST_KEY,
-    permissions: ['tabs', 'tabGroups', 'storage', 'unlimitedStorage', 'alarms', 'idle', 'notifications', 'favicon', 'scripting', 'offscreen'],
+    permissions: [
+      'tabs',
+      'tabGroups',
+      'storage',
+      'unlimitedStorage',
+      'alarms',
+      'idle',
+      'notifications',
+      'favicon',
+      'scripting',
+      'offscreen',
+    ],
     // Loading real titles of saved tabs; requested by a button on the "Saved" page.
     optional_host_permissions: ['<all_urls>'],
     // Site cookies of the video for downloading (docs/extension/pages/downloads.md); requested by the "Download" button.

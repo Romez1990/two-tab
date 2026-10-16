@@ -48,10 +48,15 @@ import {
   type JobCheck,
   type JobFile,
 } from '@/entities/recompress';
-import { DEFAULT_FIELDS, listPresets, PresetFieldsEditor, type Preset, type PresetFields } from '@/features/recompress-presets';
+import {
+  DEFAULT_FIELDS,
+  listPresets,
+  PresetFieldsEditor,
+  type Preset,
+  type PresetFields,
+} from '@/features/recompress-presets';
 import { useServiceTopic } from '@/shared/api';
 import { errorText } from '@/shared/lib';
-
 
 type Run = (action: () => Promise<void>) => void;
 
@@ -80,7 +85,10 @@ const ACTIONS: Record<string, string> = { recompress: 'сжать', sound: 'то
 /** "Compression queue" (docs/extension/pages/recompress.md): jobs in order, files in pages by filters. */
 export function RecompressPage() {
   const [address, setAddress] = useQueueAddress('recompress');
-  const { snapshot, online, error } = useServiceTopic('recompress', { filter: address.filters, page: address.page - 1 });
+  const { snapshot, online, error } = useServiceTopic('recompress', {
+    filter: address.filters,
+    page: address.page - 1,
+  });
   const queue = snapshot?.queue ?? null;
   const items = snapshot?.items ?? null;
   const [message, setMessage] = useState('');
@@ -113,13 +121,30 @@ export function RecompressPage() {
         </Alert>
       )}
       <NewJob run={run} />
-      {queue && <QueuePanel pause={queue.pause} remaining={remainingText(queue.remaining, 'file')} onPause={(paused) => run(() => pauseQueue(paused))} />}
+      {queue && (
+        <QueuePanel
+          pause={queue.pause}
+          remaining={remainingText(queue.remaining, 'file')}
+          onPause={(paused) => run(() => pauseQueue(paused))}
+        />
+      )}
       <QueueFilters value={address.filters} onChange={(filters) => setAddress({ filters, page: 1 })} />
-      {items && jobs.length === 0 && <Typography color="text.secondary">{queue?.jobs.length ? 'По этим фильтрам файлов нет.' : 'Заданий нет: создайте новое выше.'}</Typography>}
+      {items && jobs.length === 0 && (
+        <Typography color="text.secondary">
+          {queue?.jobs.length ? 'По этим фильтрам файлов нет.' : 'Заданий нет: создайте новое выше.'}
+        </Typography>
+      )}
       {jobs.map((job) => (
         <JobItem key={job.id} job={job} files={byJob.get(job.id)!} target={target} run={run} />
       ))}
-      {items && <QueuePager total={items.total} pageSize={items.page_size} page={address.page} onPage={(page) => setAddress({ ...address, page })} />}
+      {items && (
+        <QueuePager
+          total={items.total}
+          pageSize={items.page_size}
+          page={address.page}
+          onPage={(page) => setAddress({ ...address, page })}
+        />
+      )}
     </Stack>
   );
 }
@@ -171,11 +196,27 @@ function NewJob({ run }: { run: Run }) {
       <AccordionDetails>
         <Stack spacing={2}>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <TextField size="small" label="Папка архива" value={folder} onChange={(e) => setFolder(e.target.value)} sx={{ flex: 1 }} />
-            <Button size="small" onClick={() => run(async () => setFolder((await pickFolder(folder || undefined)) ?? folder))}>
+            <TextField
+              size="small"
+              label="Папка архива"
+              value={folder}
+              onChange={(e) => setFolder(e.target.value)}
+              sx={{ flex: 1 }}
+            />
+            <Button
+              size="small"
+              onClick={() => run(async () => setFolder((await pickFolder(folder || undefined)) ?? folder))}
+            >
               Выбрать папку…
             </Button>
-            <TextField select size="small" label="Пресет" value={preset} onChange={(e) => setPreset(e.target.value)} sx={{ minWidth: 200 }}>
+            <TextField
+              select
+              size="small"
+              label="Пресет"
+              value={preset}
+              onChange={(e) => setPreset(e.target.value)}
+              sx={{ minWidth: 200 }}
+            >
               {presets.map((p) => (
                 <MenuItem key={p.id} value={p.name}>
                   {p.name}
@@ -232,20 +273,33 @@ function NewJob({ run }: { run: Run }) {
 }
 
 /** All decisions before the start (recompress.md, section 6.2): warnings in one list, confirmation per file. */
-function CheckList({ check, confirmed, onConfirm }: { check: JobCheck; confirmed: Set<string>; onConfirm: (path: string, on: boolean) => void }) {
+function CheckList({
+  check,
+  confirmed,
+  onConfirm,
+}: {
+  check: JobCheck;
+  confirmed: Set<string>;
+  onConfirm: (path: string, on: boolean) => void;
+}) {
   const noted = check.files.filter((f: FileCheck) => f.notices.length > 0);
   return (
     <Stack spacing={1}>
       <Typography variant="body2">
         Файлов: {check.files.length}
-        {check.not_indexed > 0 && `, не в базе: ${check.not_indexed} (нужна индексация)`} · {formatDuration(check.seconds)} · ≈ освободится {formatSize(check.frees)}
+        {check.not_indexed > 0 && `, не в базе: ${check.not_indexed} (нужна индексация)`} ·{' '}
+        {formatDuration(check.seconds)} · ≈ освободится {formatSize(check.frees)}
       </Typography>
       {noted.map((file) => (
         <Paper key={file.path} variant="outlined" sx={{ px: 1.5, py: 0.5 }}>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             {file.needs_confirmation && (
               <Tooltip title="Без подтверждения файл не тронут">
-                <Checkbox size="small" checked={confirmed.has(file.path)} onChange={(_, on) => onConfirm(file.path, on)} />
+                <Checkbox
+                  size="small"
+                  checked={confirmed.has(file.path)}
+                  onChange={(_, on) => onConfirm(file.path, on)}
+                />
               </Tooltip>
             )}
             <Typography variant="body2" noWrap title={file.path} sx={{ flex: 1, minWidth: 0 }}>
@@ -253,7 +307,12 @@ function CheckList({ check, confirmed, onConfirm }: { check: JobCheck; confirmed
             </Typography>
           </Stack>
           {file.notices.map((n) => (
-            <Stack key={n.text} direction="row" spacing={1} sx={{ alignItems: 'center', pl: file.needs_confirmation ? 5 : 0 }}>
+            <Stack
+              key={n.text}
+              direction="row"
+              spacing={1}
+              sx={{ alignItems: 'center', pl: file.needs_confirmation ? 5 : 0 }}
+            >
               <NoticeIcon kind={n.kind} />
               <Typography variant="body2">{n.text}</Typography>
             </Stack>
@@ -272,7 +331,8 @@ function fileName(path: string): string {
 function NoticeIcon({ kind }: { kind: string }) {
   if (kind === 'ours') return <WarningAmber fontSize="small" color="warning" />;
   if (kind === 'worse') return <WarningAmber fontSize="small" color="error" />;
-  if (kind === 'checked' || kind === 'no_settings' || kind === 'mismatch') return <WarningAmber fontSize="small" color="error" />;
+  if (kind === 'checked' || kind === 'no_settings' || kind === 'mismatch')
+    return <WarningAmber fontSize="small" color="error" />;
   return <InfoOutlined fontSize="small" color="info" />;
 }
 
@@ -329,7 +389,10 @@ function JobItem({ job, files, target, run }: { job: Job; files: JobFile[]; targ
             <Typography variant="body2" noWrap title={job.current}>
               Сейчас: {fileName(job.current)}
             </Typography>
-            <LinearProgress variant={job.progress == null ? 'indeterminate' : 'determinate'} value={(job.progress ?? 0) * 100} />
+            <LinearProgress
+              variant={job.progress == null ? 'indeterminate' : 'determinate'}
+              value={(job.progress ?? 0) * 100}
+            />
           </Box>
         )}
         {files.map((f) => (
@@ -341,20 +404,34 @@ function JobItem({ job, files, target, run }: { job: Job; files: JobFile[]; targ
 }
 
 function FileRow({ file, target, run }: { file: JobFile; target: boolean; run: Run }) {
-  const sizes = file.size_before != null && file.size_after != null ? `${formatSize(file.size_before)} → ${formatSize(file.size_after)}` : '';
+  const sizes =
+    file.size_before != null && file.size_after != null
+      ? `${formatSize(file.size_before)} → ${formatSize(file.size_after)}`
+      : '';
   const pending = file.state === 'queued' || file.state === 'running';
   return (
-    <Box id={`queue-item-${file.id}`} sx={{ py: 0.5, borderRadius: 1, bgcolor: target ? 'action.selected' : undefined }}>
+    <Box
+      id={`queue-item-${file.id}`}
+      sx={{ py: 0.5, borderRadius: 1, bgcolor: target ? 'action.selected' : undefined }}
+    >
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography variant="body2" noWrap title={file.path} sx={{ flex: 1, minWidth: 0 }}>
           {fileName(file.path)}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {[file.outcome ? (OUTCOMES[file.outcome] ?? file.outcome) : '', sizes, pending && file.estimate_seconds ? formatDuration(file.estimate_seconds) : '']
+          {[
+            file.outcome ? (OUTCOMES[file.outcome] ?? file.outcome) : '',
+            sizes,
+            pending && file.estimate_seconds ? formatDuration(file.estimate_seconds) : '',
+          ]
             .filter(Boolean)
             .join(' · ')}
         </Typography>
-        <Chip size="small" color={JOB_STATES[file.state]?.color ?? 'default'} label={JOB_STATES[file.state]?.label ?? file.state} />
+        <Chip
+          size="small"
+          color={JOB_STATES[file.state]?.color ?? 'default'}
+          label={JOB_STATES[file.state]?.label ?? file.state}
+        />
         {file.state === 'error' && (
           <>
             <Button size="small" onClick={() => run(() => fileAction(file.id, 'skip'))}>

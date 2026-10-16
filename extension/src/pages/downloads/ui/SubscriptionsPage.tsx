@@ -33,7 +33,9 @@ export function SubscriptionsPage() {
         <Typography variant="body2" color="text.secondary">
           Каналы проверяются раз в 3 дня, пока работает Tidy Reel. Подписаться — на странице канала.
         </Typography>
-        <Button onClick={() => run(() => checkSubscriptionsNow(), 'Подписки будут проверены в ближайшие секунды')}>Проверить все сейчас</Button>
+        <Button onClick={() => run(() => checkSubscriptionsNow(), 'Подписки будут проверены в ближайшие секунды')}>
+          Проверить все сейчас
+        </Button>
       </Stack>
       {!online && <Alert severity="warning">Локальный сервис Tidy Reel не отвечает</Alert>}
       {subscriptions?.length === 0 && <Typography color="text.secondary">Подписок нет.</Typography>}
@@ -50,16 +52,25 @@ export function SubscriptionsPage() {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {describeFilters(s.filters)}
-                {s.checked_at ? ` · проверена ${formatDateTime(Date.parse(s.checked_at))}, новых: ${s.last_found ?? 0}` : ' · проверка скоро'}
+                {s.checked_at
+                  ? ` · проверена ${formatDateTime(Date.parse(s.checked_at))}, новых: ${s.last_found ?? 0}`
+                  : ' · проверка скоро'}
               </Typography>
             </Stack>
-            <Button size="small" onClick={() => run(() => checkSubscriptionsNow(s.id), `«${s.title}» будет проверена в ближайшие секунды`)}>
+            <Button
+              size="small"
+              onClick={() => run(() => checkSubscriptionsNow(s.id), `«${s.title}» будет проверена в ближайшие секунды`)}
+            >
               Проверить сейчас
             </Button>
             <Button size="small" onClick={() => run(() => updateSubscription(s.id, { paused: !s.paused }))}>
               {s.paused ? 'Продолжить' : 'Пауза'}
             </Button>
-            <Button size="small" color="warning" onClick={() => run(() => unsubscribe(s.id), `Отписка от «${s.title}»`)}>
+            <Button
+              size="small"
+              color="warning"
+              onClick={() => run(() => unsubscribe(s.id), `Отписка от «${s.title}»`)}
+            >
               Отписаться
             </Button>
           </Stack>

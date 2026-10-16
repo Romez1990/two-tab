@@ -28,16 +28,18 @@ export async function runAutoClose(save: {
     windows: chromeWindows.flatMap((w) =>
       w.id === undefined
         ? []
-        : [{
-            id: w.id,
-            uid: uids.get(w.id) ?? '',
-            tabs: (w.tabs ?? []).map((t) => ({
-              url: t.url ?? '',
-              pinned: t.pinned,
-              lastAccessed: t.lastAccessed,
-              groupId: t.groupId ?? -1,
-            })),
-          }],
+        : [
+            {
+              id: w.id,
+              uid: uids.get(w.id) ?? '',
+              tabs: (w.tabs ?? []).map((t) => ({
+                url: t.url ?? '',
+                pinned: t.pinned,
+                lastAccessed: t.lastAccessed,
+                groupId: t.groupId ?? -1,
+              })),
+            },
+          ],
     ),
     runDays,
     limitDays: settings.autoCloseDays,

@@ -21,7 +21,8 @@ describe('pageKind', () => {
     'https://www.pornhub.com/model/someone/videos',
   ])('channel: %s', (url) => expect(pageKind(url)).toBe('channel'));
 
-  it.each(['https://www.youtube.com/', 'https://www.youtube.com/results?search_query=x', 'https://mail.google.com/'])('other: %s', (url) =>
-    expect(pageKind(url)).toBeUndefined(),
+  it.each(['https://www.youtube.com/', 'https://www.youtube.com/results?search_query=x', 'https://mail.google.com/'])(
+    'other: %s',
+    (url) => expect(pageKind(url)).toBeUndefined(),
   );
 });

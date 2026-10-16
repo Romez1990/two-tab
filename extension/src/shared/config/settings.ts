@@ -52,12 +52,20 @@ export async function updateSettings(change: Partial<Settings>): Promise<void> {
     localServicePort: next.localServicePort,
     localServiceKey: next.localServiceKey,
   };
-  await Promise.all([browser.storage.sync.set({ [SYNC_KEY]: sync }), browser.storage.local.set({ [LOCAL_KEY]: local })]);
+  await Promise.all([
+    browser.storage.sync.set({ [SYNC_KEY]: sync }),
+    browser.storage.local.set({ [LOCAL_KEY]: local }),
+  ]);
 }
 
 export async function getSettings(): Promise<Settings> {
   const [sync, local] = await Promise.all([browser.storage.sync.get(SYNC_KEY), browser.storage.local.get(LOCAL_KEY)]);
-  return { ...SYNC_DEFAULTS, ...(sync[SYNC_KEY] as Partial<SyncSettings>), ...LOCAL_DEFAULTS, ...(local[LOCAL_KEY] as Partial<LocalSettings>) };
+  return {
+    ...SYNC_DEFAULTS,
+    ...(sync[SYNC_KEY] as Partial<SyncSettings>),
+    ...LOCAL_DEFAULTS,
+    ...(local[LOCAL_KEY] as Partial<LocalSettings>),
+  };
 }
 
 /** Settings for pages; updated when any part of the extension changes them. */

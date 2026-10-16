@@ -20,10 +20,7 @@ export function readState(search: string): SearchState {
   const page = Number(params.get('page'));
   return {
     query: params.get('q') ?? '',
-    sources:
-      sources === null
-        ? DEFAULT_SOURCES
-        : SEARCH_SOURCES.filter((s) => sources.split(',').includes(s)),
+    sources: sources === null ? DEFAULT_SOURCES : SEARCH_SOURCES.filter((s) => sources.split(',').includes(s)),
     sort: params.get('sort') === 'date' ? 'date' : 'relevance',
     page: Number.isInteger(page) && page > 1 ? page : 1,
   };
@@ -32,7 +29,8 @@ export function readState(search: string): SearchState {
 export function writeState(state: SearchState): string {
   const params = new URLSearchParams();
   if (state.query) params.set('q', state.query);
-  if (!sameSources(state.sources, DEFAULT_SOURCES)) params.set('in', SEARCH_SOURCES.filter((s) => state.sources.includes(s)).join(','));
+  if (!sameSources(state.sources, DEFAULT_SOURCES))
+    params.set('in', SEARCH_SOURCES.filter((s) => state.sources.includes(s)).join(','));
   if (state.sort !== 'relevance') params.set('sort', state.sort);
   if (state.page > 1) params.set('page', String(state.page));
   const text = params.toString();

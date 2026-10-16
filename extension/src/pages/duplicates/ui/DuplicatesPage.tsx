@@ -55,14 +55,23 @@ export function DuplicatesPage() {
           <AccordionDetails>
             <Stack spacing={0.5}>
               {duplicate.copies.map((copy) => (
-                <Stack key={copy.kind === 'open' ? `o${copy.tabId}` : `s${copy.savedId}:${copy.index}`} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                <Stack
+                  key={copy.kind === 'open' ? `o${copy.tabId}` : `s${copy.savedId}:${copy.index}`}
+                  direction="row"
+                  spacing={1}
+                  sx={{ alignItems: 'center' }}
+                >
                   <Typography variant="body2" sx={{ width: 260, flexShrink: 0 }} noWrap>
                     {placeOf(copy)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" noWrap sx={{ flex: 1 }} title={copy.url}>
                     {copy.url}
                   </Typography>
-                  <Button size="small" onClick={() => void goTo(copy, false)} onAuxClick={(e) => e.button === 1 && void goTo(copy, true)}>
+                  <Button
+                    size="small"
+                    onClick={() => void goTo(copy, false)}
+                    onAuxClick={(e) => e.button === 1 && void goTo(copy, true)}
+                  >
                     Перейти
                   </Button>
                   <Button size="small" color="warning" onClick={() => void remove(copy)}>
@@ -95,7 +104,8 @@ async function removeCopy(copy: Copy): Promise<void> {
   const item = await getSaved(copy.savedId);
   if (!item) return;
   // The tab index may have shifted: the tab with the same address closest to the old place is removed.
-  const index = item.window.tabs[copy.index]?.url === copy.url ? copy.index : item.window.tabs.findIndex((t) => t.url === copy.url);
+  const index =
+    item.window.tabs[copy.index]?.url === copy.url ? copy.index : item.window.tabs.findIndex((t) => t.url === copy.url);
   if (index < 0) return;
   const after = removeSavedTab(item, index);
   if (after) await addSaved(after);

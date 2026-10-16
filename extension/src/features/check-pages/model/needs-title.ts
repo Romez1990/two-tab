@@ -14,7 +14,9 @@ export function needsTitle(tab: { url: string; title: string }): boolean {
 export function titleFromHtml(html: string): string | undefined {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const title =
-    doc.querySelector('title')?.textContent ?? doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ?? '';
+    doc.querySelector('title')?.textContent ??
+    doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ??
+    '';
   const clean = title.replace(/\s+/g, ' ').trim();
   return clean || undefined;
 }
