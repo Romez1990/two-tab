@@ -41,7 +41,7 @@ export function SnapshotDetails({ snapshot, run }: { snapshot: Snapshot; run: Ru
       </Stack>
       <div>
         {snapshot.windows.map((w, i) => (
-          <WindowAccordion key={`${snapshot.id}-${w.uid}-${i}`} index={i + 1} window={w} run={run} />
+          <WindowAccordion key={`${snapshot.id}-${w.uid}`} index={i + 1} window={w} run={run} />
         ))}
       </div>
     </Stack>
@@ -102,6 +102,7 @@ function WindowAccordion({ index, window, run }: { index: number; window: Snapsh
           {window.tabs.map((t, i) => {
             const group = t.group === -1 ? undefined : window.groups[t.group];
             return (
+              // biome-ignore lint/suspicious/noArrayIndexKey: tabs have no id and an address may repeat; the list never changes
               <ListItem key={i} disablePadding>
                 <ListItemButton onClick={() => toggle(i)} dense>
                   <ListItemIcon sx={{ minWidth: 36 }}>

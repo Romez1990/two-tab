@@ -385,6 +385,7 @@ function SavedAccordion({
             const highlighted = highlightKey !== undefined && pageKey(t.url) === highlightKey;
             return (
               <ListItem
+                // biome-ignore lint/suspicious/noArrayIndexKey: tabs have no id and an address may repeat; rows keep no state of their own
                 key={`${i}-${t.url}`}
                 // The tab arrived at from the banner is highlighted and scrolled to the middle of the screen.
                 ref={
