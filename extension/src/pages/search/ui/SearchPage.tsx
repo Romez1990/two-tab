@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useRef, useState } from 'react';
 import { savedItemPageUrl } from '@/entities/saved';
 import { forgetSearch, listSearchHistory, rememberSearch, suggest, type SearchQuery } from '@/entities/search-query';
-import { localServiceClient } from '@/shared/api';
+import { localServiceClient, ServiceUnreachableError } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
 import { SEARCH_SOURCES, SearchSyntaxError, formatDateTime, mentionedSources, parseQuery } from '@/shared/lib';
@@ -311,8 +311,9 @@ async function archiveAction(fileId: number, action: 'open' | 'show'): Promise<s
     const { response, error } = await client.POST(path, { params: { path: { file_id: fileId } } });
     if (response.ok) return undefined;
     return response.status === 404 ? 'Файл переместили, нужна индексация' : `Ошибка ${response.status}: ${JSON.stringify(error)}`;
-  } catch {
-    return 'Локальный сервис Tidy Reel не отвечает';
+  } catch (error) {
+    if (!(error instanceof ServiceUnreachableError)) throw error;
+    return error.message;
   }
 }
 

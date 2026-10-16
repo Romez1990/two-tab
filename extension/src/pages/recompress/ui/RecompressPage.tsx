@@ -140,7 +140,10 @@ function NewJob({ run }: { run: Run }) {
         setPresets(r.presets);
         setPreset(r.presets.find((p) => p.is_default)?.name ?? r.presets[0]?.name ?? '');
       })
-      .catch(() => setPresets([]));
+      .catch((e: unknown) => {
+        console.error(e);
+        setPresets([]);
+      });
   }, []);
   // Any edit makes the previous check invalid.
   useEffect(() => setCheck(null), [folder, preset, edits]);

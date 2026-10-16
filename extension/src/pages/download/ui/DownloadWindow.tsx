@@ -73,7 +73,10 @@ export function DownloadWindow() {
     const timer = setTimeout(() => {
       void checkChannel(url, filters)
         .then((c) => alive && setMatching(c.matching))
-        .catch(() => alive && setMatching(null));
+        .catch((e: unknown) => {
+          console.error(e);
+          if (alive) setMatching(null);
+        });
     }, 300);
     return () => {
       alive = false;
@@ -85,7 +88,10 @@ export function DownloadWindow() {
     void load();
     void listPresets()
       .then((r) => setPresets(r.presets))
-      .catch(() => setPresets([]));
+      .catch((e: unknown) => {
+        console.error(e);
+        setPresets([]);
+      });
   }, []);
 
   const defaults = presets.find((p) => p.is_default);

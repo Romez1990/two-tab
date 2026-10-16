@@ -1,5 +1,5 @@
 import { knownDownload, pageKind, type PageKind } from '@/entities/download';
-import { connectedClient } from '@/shared/api';
+import { connectedClient, ServiceUnreachableError } from '@/shared/api';
 import { browser, hasSiteAccess } from '@/shared/browser';
 
 /**
@@ -37,7 +37,7 @@ export async function showDownloadBanner(tabId: number, url: string | undefined)
   recent.add(key);
   setTimeout(() => recent.delete(key), 2000);
   if (!(await hasSiteAccess()) || !(await connectedClient())) return;
-  const downloaded = kind === 'video' ? await knownDownload(url).catch(() => null) : null;
+  const downloaded = kind === 'video' ? await knownDownload(url).catch(nullIfUnreachable) : null;
   const info: DownloadBannerInfo = { kind, downloaded };
   try {
     await browser.scripting.executeScript({
@@ -49,4 +49,10 @@ export async function showDownloadBanner(tabId: number, url: string | undefined)
   } catch {
     // The page closed or scripts cannot be injected into it.
   }
+}
+
+/** The banner still shows when the service is down, just without "Already downloaded". */
+function nullIfUnreachable(error: unknown): null {
+  if (error instanceof ServiceUnreachableError) return null;
+  throw error;
 }

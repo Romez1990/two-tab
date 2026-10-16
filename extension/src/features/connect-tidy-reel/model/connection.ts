@@ -1,4 +1,4 @@
-import { localServiceClient } from '@/shared/api';
+import { localServiceClient, ServiceUnreachableError } from '@/shared/api';
 import { getSettings, updateSettings } from '@/shared/config';
 
 /**
@@ -30,7 +30,8 @@ export async function connectTidyReel(port: number): Promise<ConnectResult> {
   let result;
   try {
     result = await localServiceClient(port).POST('/api/connection', { body: { profile_id: profileId, name } });
-  } catch {
+  } catch (error) {
+    if (!(error instanceof ServiceUnreachableError)) throw error;
     return { ok: false, reason: 'unreachable' };
   }
   const { data, error, response } = result;
@@ -53,7 +54,8 @@ export async function checkConnection(): Promise<ConnectionStatus> {
   let result;
   try {
     result = await localServiceClient(localServicePort, localServiceKey).GET('/api/connection');
-  } catch {
+  } catch (error) {
+    if (!(error instanceof ServiceUnreachableError)) throw error;
     return { state: 'unreachable' };
   }
   if (result.data) return { state: 'connected', name: result.data.name, since: result.data.connected_at };
@@ -73,7 +75,8 @@ export async function disconnectTidyReel(): Promise<boolean> {
     const { response } = await localServiceClient(localServicePort, localServiceKey).DELETE('/api/connection');
     // 401: the service no longer knows this profile.
     forgotten = response.ok || response.status === 401;
-  } catch {
+  } catch (error) {
+    if (!(error instanceof ServiceUnreachableError)) throw error;
     forgotten = false;
   }
   await updateSettings({ localServiceKey: '' });

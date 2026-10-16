@@ -11,6 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { deletePreset, listPresets, PresetsUnavailableError, savePreset, type Preset } from '../api/presets';
 import { DEFAULT_FIELDS, trimError, type PresetFields } from '../model/fields';
 import { PresetFieldsEditor } from './PresetFieldsEditor';
+import { ServiceUnreachableError } from '@/shared/api';
 import { errorText } from '@/shared/lib';
 
 /** Preset draft on screen; no `id` means a new one. */
@@ -35,7 +36,7 @@ export function RecompressPresets() {
         setDrafts(presets.map(toDraft));
         setSites(sites);
       })
-      .catch((e: unknown) => setUnavailable(e instanceof PresetsUnavailableError ? e.message : 'Локальный сервис Tidy Reel не отвечает'));
+      .catch((e: unknown) => setUnavailable(e instanceof PresetsUnavailableError || e instanceof ServiceUnreachableError ? e.message : errorText(e)));
   }, []);
   useEffect(reload, [reload]);
 
