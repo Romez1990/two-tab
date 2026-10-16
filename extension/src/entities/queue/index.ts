@@ -1,5 +1,5 @@
 export { getQueueSettings, muteAttention, type QueueSettings, saveQueueSettings } from './api/service';
-export { type QueueFilter } from './model/address';
+export type { QueueFilter } from './model/address';
 export { type AttentionCase, type AttentionSnapshot, saveAttention, useAttention } from './model/attention-store';
 export { formatDuration, formatSize, type Remaining, remainingText } from './model/format';
 export { MessageLine, type QueueMessage } from './ui/MessageLine';

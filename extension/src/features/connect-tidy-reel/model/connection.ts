@@ -27,13 +27,10 @@ export async function connectTidyReel(port: number): Promise<ConnectResult> {
   const profileId = settings.profileId || crypto.randomUUID();
   if (!settings.profileId) await updateSettings({ profileId });
   const name = settings.profileName || 'Без названия';
-  let result;
-  try {
-    result = await localServiceClient(port).POST('/api/connection', { body: { profile_id: profileId, name } });
-  } catch (error) {
-    if (!(error instanceof ServiceUnreachableError)) throw error;
-    return { ok: false, reason: 'unreachable' };
-  }
+  const result = await localServiceClient(port)
+    .POST('/api/connection', { body: { profile_id: profileId, name } })
+    .catch(undefinedIfUnreachable);
+  if (!result) return { ok: false, reason: 'unreachable' };
   const { data, error, response } = result;
   if (data) {
     await updateSettings({ localServicePort: port, localServiceKey: data.key });
@@ -52,13 +49,10 @@ export function takenBy(detail: unknown): string {
 export async function checkConnection(): Promise<ConnectionStatus> {
   const { localServicePort, localServiceKey } = await getSettings();
   if (!localServiceKey) return { state: 'none' };
-  let result;
-  try {
-    result = await localServiceClient(localServicePort, localServiceKey).GET('/api/connection');
-  } catch (error) {
-    if (!(error instanceof ServiceUnreachableError)) throw error;
-    return { state: 'unreachable' };
-  }
+  const result = await localServiceClient(localServicePort, localServiceKey)
+    .GET('/api/connection')
+    .catch(undefinedIfUnreachable);
+  if (!result) return { state: 'unreachable' };
   if (result.data) return { state: 'connected', name: result.data.name, since: result.data.connected_at };
   // 401: the service does not know this key, the profile was disconnected in Tidy Reel.
   if (result.response.status === 401) {
@@ -82,4 +76,9 @@ export async function disconnectTidyReel(): Promise<boolean> {
   }
   await updateSettings({ localServiceKey: '' });
   return forgotten;
+}
+
+function undefinedIfUnreachable(error: unknown): undefined {
+  if (error instanceof ServiceUnreachableError) return undefined;
+  throw error;
 }

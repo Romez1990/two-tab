@@ -22,7 +22,14 @@ import { forgetSearch, listSearchHistory, rememberSearch, type SearchQuery, sugg
 import { localServiceClient, ServiceUnreachableError } from '@/shared/api';
 import { browser } from '@/shared/browser';
 import { getSettings } from '@/shared/config';
-import { formatDateTime, mentionedSources, parseQuery, SEARCH_SOURCES, SearchSyntaxError } from '@/shared/lib';
+import {
+  type Condition,
+  formatDateTime,
+  mentionedSources,
+  parseQuery,
+  SEARCH_SOURCES,
+  SearchSyntaxError,
+} from '@/shared/lib';
 import { Favicon, SMART_SEARCH_HINT, SmartHint, usePaging } from '@/shared/ui';
 import { ARCHIVE_SHOWN_LIMIT, type Found, SOURCE_TITLES, type Sort, type Source, search } from '../model/collect';
 import { EMPTY_STATE, readState, type SearchState, writeState } from '../model/url-state';
@@ -51,7 +58,7 @@ export function SearchPage() {
     setInput(state.query);
     setSources(state.sources);
     setSort(state.sort);
-    let condition;
+    let condition: Condition | null;
     try {
       condition = parseQuery(state.query);
     } catch (e) {

@@ -35,7 +35,10 @@ const sites = new Map<string, SiteState>();
 export async function siteFetch(url: string, signal: AbortSignal, init: RequestInit = {}): Promise<Response> {
   const host = siteOf(url);
   let site = sites.get(host);
-  if (!site) sites.set(host, (site = { lock: Promise.resolve(), nextAt: 0, strikes: 0, skipped: false }));
+  if (!site) {
+    site = { lock: Promise.resolve(), nextAt: 0, strikes: 0, skipped: false };
+    sites.set(host, site);
+  }
   const state = site;
   const previous = state.lock;
   let release!: () => void;

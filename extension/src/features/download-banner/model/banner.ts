@@ -44,7 +44,9 @@ export async function showDownloadBanner(tabId: number, url: string | undefined)
   try {
     await browser.scripting.executeScript({
       target: { tabId },
-      func: (name: string, value: DownloadBannerInfo) => void ((globalThis as Record<string, unknown>)[name] = value),
+      func: (name: string, value: DownloadBannerInfo) => {
+        (globalThis as Record<string, unknown>)[name] = value;
+      },
       args: [DOWNLOAD_INFO_GLOBAL, info],
     });
     await browser.scripting.executeScript({

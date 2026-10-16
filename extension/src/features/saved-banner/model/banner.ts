@@ -44,7 +44,9 @@ export async function showBannerIfSaved(
     await browser.scripting.executeScript({
       target: { tabId },
       injectImmediately: true,
-      func: (name: string, value: SavedMatch[]) => void ((globalThis as Record<string, unknown>)[name] = value),
+      func: (name: string, value: SavedMatch[]) => {
+        (globalThis as Record<string, unknown>)[name] = value;
+      },
       args: [MATCHES_GLOBAL, matches],
     });
     await browser.scripting.executeScript({

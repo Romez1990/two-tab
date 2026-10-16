@@ -17,11 +17,10 @@ export async function runAutoClose(save: {
   window: (windowId: number) => Promise<SavedItem>;
   group: (groupId: number) => Promise<SavedItem>;
 }): Promise<void> {
-  const [runDays, settings, chromeWindows, groups, uids] = await Promise.all([
+  const [runDays, settings, chromeWindows, uids] = await Promise.all([
     recordRunDay(),
     getSettings(),
     browser.windows.getAll({ populate: true, windowTypes: ['normal'] }),
-    browser.tabGroups.query({}),
     getWindowUids(),
   ]);
   const targets = findStale({

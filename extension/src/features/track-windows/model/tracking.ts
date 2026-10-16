@@ -42,7 +42,7 @@ export async function onTabRemoved(tabId: number, info: Browser.tabs.OnRemovedIn
   if (await takeClosingByExtension(tabId)) return;
   const tabs = (await browser.storage.session.get(TABS_KEY))[TABS_KEY] as Record<number, TabInfo> | undefined;
   const tab = tabs?.[tabId];
-  if (!tab || !tab.url || tab.url.startsWith('chrome://newtab')) return;
+  if (!tab?.url || tab.url.startsWith('chrome://newtab')) return;
   await addClosedTab({ url: tab.url, title: tab.title, closedAt: Date.now() });
 }
 
