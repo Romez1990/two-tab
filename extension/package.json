@@ -11,7 +11,8 @@
     "lint:fsd": "steiger ./src",
     "test": "vitest run",
     "postinstall": "wxt prepare",
-    "check": "pnpm compile && pnpm lint:fsd && pnpm test",
+    "lint": "biome check .",
+    "check": "pnpm compile && pnpm lint && pnpm lint:fsd && pnpm test",
     "api:update": "node scripts/api-update.mjs"
   },
   "dependencies": {
