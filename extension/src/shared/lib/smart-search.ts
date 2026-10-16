@@ -43,7 +43,7 @@ export interface SearchDoc {
   title?: string;
   channel?: string;
   song?: string;
-  group?: string;
+  group?: string | undefined;
 }
 
 const ANY_FIELDS = ['name', 'path', 'url', 'title', 'channel', 'song', 'group'] as const;

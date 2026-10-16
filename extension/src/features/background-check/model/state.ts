@@ -8,7 +8,8 @@ export interface CheckState {
   checked: number;
   total: number;
   startedAt?: number;
-  finishedAt?: number;
+  /** `undefined` clears it when a new check starts. */
+  finishedAt?: number | undefined;
 }
 
 const STATE_KEY = 'backgroundCheck';

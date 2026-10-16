@@ -4,6 +4,7 @@
     "strict": true,
     "jsx": "react-jsx",
     "noUncheckedIndexedAccess": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "exactOptionalPropertyTypes": true
   }
 }

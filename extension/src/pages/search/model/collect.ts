@@ -62,7 +62,7 @@ export interface SearchOutcome {
   results: Found[];
   /** Archive videos in total; at most ARCHIVE_LIMIT are shown. */
   archiveTotal: number;
-  archiveError?: string;
+  archiveError?: string | undefined;
 }
 
 /** Search over the selected sources as one combined list. */

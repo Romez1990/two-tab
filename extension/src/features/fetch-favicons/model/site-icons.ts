@@ -90,7 +90,7 @@ export async function fillIcons(
       return;
     }
     if (signal.aborted) return;
-    await writeCache(host, { data, at: Date.now() });
+    await writeCache(host, { ...(data ? { data } : {}), at: Date.now() });
     onIcon(host, data);
   });
 }

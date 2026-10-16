@@ -4,7 +4,7 @@ import { isSuspiciousRedirect, statusBadge } from './page-status';
 const check = (code: number | undefined, finalUrl?: string) =>
   code === undefined
     ? { url: 'https://a.com/page', at: 1, failed: true as const }
-    : { url: 'https://a.com/page', at: 1, code, finalUrl };
+    : { url: 'https://a.com/page', at: 1, code, ...(finalUrl ? { finalUrl } : {}) };
 
 describe('statusBadge', () => {
   it('всё хорошо — без метки', () => {

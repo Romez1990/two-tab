@@ -289,7 +289,7 @@ function useOpenedItem(): OpenedItem | undefined {
   return id;
 }
 
-type OpenedItem = { id: string; tabUrl?: string };
+type OpenedItem = { id: string; tabUrl?: string | undefined };
 
 function readOpenedItem(): OpenedItem | undefined {
   const [section, id, tabUrl] = location.hash.slice(1).split('/');
@@ -307,7 +307,7 @@ function SavedAccordion({
 }: {
   item: SavedItem;
   opened: boolean;
-  highlightUrl?: string;
+  highlightUrl?: string | undefined;
   onOpen: () => void;
   onRemove: () => void;
   onEdit: (next: SavedItem | undefined) => void;

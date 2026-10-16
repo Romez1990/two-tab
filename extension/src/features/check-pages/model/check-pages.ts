@@ -58,7 +58,10 @@ export async function checkPages(
 }
 
 /** Checks one page and stores the result; no result means the check was stopped or the site skipped. */
-export async function checkPage(url: string, signal: AbortSignal): Promise<{ check?: PageCheck; title?: string }> {
+export async function checkPage(
+  url: string,
+  signal: AbortSignal,
+): Promise<{ check?: PageCheck; title?: string | undefined }> {
   const at = Date.now();
   let check: PageCheck;
   let title: string | undefined;

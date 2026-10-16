@@ -12,10 +12,10 @@ export interface BrowserWindow {
   id: number;
   focused: boolean;
   state: string;
-  left?: number;
-  top?: number;
-  width?: number;
-  height?: number;
+  left?: number | undefined;
+  top?: number | undefined;
+  width?: number | undefined;
+  height?: number | undefined;
   tabs: WindowTab[];
   groups: WindowGroup[];
 }

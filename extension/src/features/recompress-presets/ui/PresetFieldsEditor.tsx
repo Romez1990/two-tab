@@ -32,7 +32,7 @@ export function PresetFieldsEditor({
 }: {
   fields: Partial<PresetFields>;
   /** None means "Default" is being edited: all fields are its own. */
-  base?: PresetFields;
+  base?: PresetFields | undefined;
   onChange: (fields: Partial<PresetFields>) => void;
 }) {
   const full: PresetFields = { ...DEFAULT_FIELDS, ...base, ...fields };

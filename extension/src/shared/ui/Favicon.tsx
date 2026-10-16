@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { browser } from '@/shared/browser';
 
 /** `src` is our own site icon when Chrome's cache does not have it. */
-export function Favicon({ url, size = 16, src }: { url: string; size?: number; src?: string }) {
+export function Favicon({ url, size = 16, src }: { url: string; size?: number | undefined; src?: string | undefined }) {
   return (
     <Box
       component="img"

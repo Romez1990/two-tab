@@ -6,7 +6,7 @@ export interface SavedMatch {
   kind: SavedItem['kind'];
   /** Record name, or the title of the first tab when there is none. */
   title: string;
-  color?: string;
+  color?: string | undefined;
   tabs: number;
   savedAt: number;
 }

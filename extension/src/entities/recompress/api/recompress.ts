@@ -50,7 +50,7 @@ export async function nextItem(
 ): Promise<{ id: number; page: number } | null> {
   return unwrap(
     await (await client()).GET('/api/recompress/items/next', {
-      params: { query: { kind, after: after ?? undefined, filter: filters.join(',') } },
+      params: { query: { kind, after, filter: filters.join(',') } },
     }),
   );
 }
