@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "includes": ["**", "!src/shared/api/local-service/schema.d.ts", "!!api", "!!public"]
   },
@@ -21,17 +25,30 @@
       "bracketSpacing": true
     }
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
-      "a11y": { "recommended": true },
-      "suspicious": { "noExplicitAny": "error" },
+      "a11y": {
+        "recommended": true
+      },
+      "suspicious": {
+        "noExplicitAny": "error"
+      },
       "correctness": {
         "noUnusedImports": "error",
         "noUnusedVariables": "error",
         "useExhaustiveDependencies": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
       }
     }
   }
